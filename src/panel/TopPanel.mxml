@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-5 -->
+<!-- 管理状态的跳转，可以跳回前一步 -->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+				   xmlns:s="library://ns.adobe.com/flex/spark"
+				   implements="interf.IStateChanged">
+	<s:layout>
+		<s:HorizontalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" verticalAlign="middle"/>	
+	</s:layout>
+	<s:Button id="prevBTN" label="返回上一步" enabled="{_prevState != null}" click="handler_prievBTNClick(event)"/>
+	<s:Spacer width="100%" height="20"/>
+	<s:HGroup visible="{Global.instance.currentState!='start'}" verticalAlign="middle">
+		<s:Label text="FPS:"/>
+		<s:NumericStepper id="fpsNS" maximum="60" minimum="1" value="30"/>
+		<s:Label text="显示比例："/>
+		<s:HSlider id="displayRatioHS" maximum="200" minimum="10" snapInterval="5" value="100" width="100"
+				   dataTipPrecision="0" dataTipFormatFunction="fun_displayRatioHSDataTip"/>
+	</s:HGroup>
+	<fx:Script>
+	<![CDATA[
+		import type.StateType;
+		
+		import utils.Funs;
+		import utils.Global;
+		
+		private var _oldState:String;
+		private var _newState:String;
+		[Bindable] private var _prevState:String;
+		
+		private function fun_displayRatioHSDataTip($val:String):String
+		{
+			return String($val)+'%';
+		}
+		
+		protected function handler_prievBTNClick(event:MouseEvent):void
+		{
+			Funs.changeState(_prevState);
+		}
+		
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+			_oldState = $old;
+			_newState = $new;
+			if(_newState == StateType.START)
+			{
+				_prevState = null;
+				return;
+			}
+			_prevState = $old;
+			//如果状态是反向跳转（从后一步跳转到前一步），那么就将返回按钮指向第一步
+			if( (_newState == StateType.PIC || _newState == StateType.SWF) &&
+				(_oldState != StateType.START) )
+					_prevState = StateType.START;
+			
+		}
+	]]>
+	</fx:Script>
+</s:BorderContainer>
+

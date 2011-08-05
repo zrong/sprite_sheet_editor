@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  implements="interf.IStateChanged">
+	<s:layout>
+		<s:HorizontalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+	</s:layout>
+	<s:VGroup width="80" height="100%">
+		<s:Label text="帧列表"/>
+		<s:List id="frameList" width="100%" height="100%"/>
+		<s:NumericStepper id="frameNS" width="100%" value="{frameList.selectedIndex}" minimum="0" maximum="{frameList.dataProvider.length-1}"/>
+	</s:VGroup>
+	<s:Group width="100%" height="100%">
+		<s:VGroup top="20" bottom="28" width="30" enabled="{labelCB.selected}" verticalAlign="middle">
+			<s:Button id="addLabelBTN" label="&gt;" width="100%" toolTip="添加一个Label到列表中" enabled="{labelCB.selected}"/>
+			<s:Button id="removeLabelBTN" label="&lt;" width="100%" toolTip="删除选中的Label" enabled="{labelCB.selected}"/>
+		</s:VGroup>
+		<s:CheckBox id="labelCB" left="5" top="-2" label="使用Label"/>
+		<s:List id="labelList" left="35" top="18" bottom="28" width="100%"
+				enabled="{labelCB.selected}"/>
+		<s:HGroup x="0" bottom="0" width="100%" enabled="{labelCB.selected}">
+			<s:TextInput id="labelInput" width="100%" text="{labelList.selectedItem}"
+						 toolTip="label格式：英文+数字"/>
+			<s:Button id="renameBTN" label="改" width="35" toolTip="修改Label名称"/>
+		</s:HGroup>
+	</s:Group>
+	<fx:Script>
+	<![CDATA[
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+		}
+	]]>
+	</fx:Script>
+</s:BorderContainer>

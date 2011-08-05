@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:utils="com.youxi.utils.*"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  implements="interf.IStateChanged">
+	<s:layout>
+		<s:VerticalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+	</s:layout>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="pic"/>
+		<s:RadioButtonGroup id="meta"/>
+	</fx:Declarations>
+	<s:HGroup width="100%">
+		<s:VGroup width="100%">
+			<s:Label text="保存SpriteSheet"/>
+			<s:RadioButton id="pngRB" groupName="pic" label="PNG格式" selected="true"/>
+			<s:RadioButton id="jpgRB" groupName="pic" label="JPEG格式"/>
+			<s:HGroup visible="{jpgRB.selected}" width="100%" verticalAlign="middle">
+				<s:Label text="JPEG压缩:"/>
+				<s:NumericStepper id="jpgNS" minimum="40" maximum="100" value="70" maxChars="3" width="100%"/>
+			</s:HGroup>
+			<s:CheckBox id="nameCB" label="包含文件名称" visible="{!simpleCB.selected}" />
+		</s:VGroup>
+		<s:VGroup width="100%">
+			<s:Label text="保存元数据"/>
+			<s:RadioButton id="xmlRB" groupName="meta" label="XML格式" selected="true"/>
+			<s:RadioButton id="jsonRB" groupName="meta" label="JSON格式"/>
+			<s:RadioButton id="txtRB" groupName="meta" label="TXT格式"/>
+			<s:CheckBox id="simpleCB" label="使用简单元数据" toolTip="选中后仅保存每帧的坐标和宽高"/>
+		</s:VGroup>
+	</s:HGroup>
+	<s:HGroup width="100%" horizontalAlign="center">
+		<s:Button id="savePicBTN" click="handler_savePicBTNClick(event)" label="保存SpriteSheet" height="40" width="80"/>
+		<s:Button id="saveAllBTN" click="handler_saveAllBTNClick(event)" label="同时保存" height="40" width="80"/>
+		<s:Button id="saveMetaBTN" click="handler_saveMetaBTNClick(event)" label="保存元数据" height="40" width="80"/>
+	</s:HGroup>
+	<fx:Script>
+	<![CDATA[
+		protected function handler_savePicBTNClick(event:MouseEvent):void
+		{
+			
+		}
+		protected function handler_saveMetaBTNClick(event:MouseEvent):void
+		{
+			
+		}
+		protected function handler_saveAllBTNClick(event:MouseEvent):void
+		{
+			
+		}
+		
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+		}
+	]]>
+	</fx:Script>
+</s:BorderContainer>

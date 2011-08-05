@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  implements="interf.IStateChanged">
+	<s:layout>
+		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
+	</s:layout>
+	<s:Button id="openSWFBTN" width="120" label="打开SWF文件" click="handler_openSWFBTNClick(event)"/>
+	<s:Button id="openPicBTN" width="120" label="导入图像文件" click="handler_openPicBTNClick(event)"/>
+	<s:Spacer width="100" height="10"/>
+	<s:Button id="openSSBTN" width="120" label="打开Sprite Sheet" click="handler_openSSBTNclick(event)"/>
+	<s:Button id="convertSSBTN" width="120" label="转换Sprite Sheet"/>
+	<s:Spacer width="100" height="30"/>
+	<s:Button id="aboutBTN" width="120" label="关于"/>
+	<fx:Script>
+	<![CDATA[
+		import type.StateType;
+		
+		import utils.FileProcessor;
+		import utils.Global;
+		
+		protected function handler_openSWFBTNClick(event:MouseEvent):void
+		{
+			FileProcessor.instance.openSwf();
+		}
+		
+		protected function handler_openPicBTNClick(event:MouseEvent):void
+		{
+			FileProcessor.instance.openPics();
+		}
+		
+		protected function handler_openSSBTNclick(event:MouseEvent):void
+		{
+			FileProcessor.instance.openSS();
+		}
+		
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+		}
+		
+	]]>
+	</fx:Script>
+</s:BorderContainer>

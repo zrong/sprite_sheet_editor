@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:utils="com.youxi.utils.*"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  verticalAlign="middle">
+	<s:HGroup width="100%" verticalAlign="middle">
+		<s:CheckBox id="smoothCB" label="平滑"/>
+		<s:CheckBox id="transparentCB" label="透明" selected="true"/>
+		<s:Spacer width="100%" height="20"/>
+		<mx:ColorPicker id="bgColorPicker" enabled="{!transparentCB.selected}"/>
+		<s:Label text="背景色"/>
+	</s:HGroup>
+	<s:HGroup width="100%" verticalAlign="middle">
+		<s:DropDownList id="whDDL" requireSelection="true" width="70" enabled="{!squareCB.selected}" toolTip="选择生成的SpriteSheet的宽度或者高度。另一个维度根据需要自动计算。">
+			<s:ArrayList>
+				<fx:String>宽度</fx:String>
+				<fx:String>高度</fx:String>
+			</s:ArrayList>
+		</s:DropDownList>
+		<!-- Flash Player 10最大支持8192宽度(或高度)，另外还有总像素量限制 -->
+		<s:NumericStepper id="dimensionNS" width="70" minimum="1" maximum="8192" maxChars="4" value="200"/>
+		<s:Spacer width="100%" height="20"/>
+		<s:CheckBox id="powerOf2CB" label="2的幂" toolTip="选中后，输出尺寸的宽高均为2的幂（如256,512）"/>
+		<s:CheckBox id="squareCB" label="正方形" toolTip="选中后，输出尺寸比例为正方形，宽高自动确定"/>
+	</s:HGroup>
+	
+</s:VGroup>

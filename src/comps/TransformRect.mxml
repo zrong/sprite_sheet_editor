@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-3 -->
+<!-- 
+一个以拖动方式更改大小的矩形，用于确定截取范围
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:comps="comps.*">
+	<s:Rect id="captureRect" width="100%" height="100%">
+		<s:stroke>
+			<s:SolidColorStroke color="0" weight="2"/>
+		</s:stroke>
+		<s:fill>
+			<s:SolidColor color="0" alpha="0"/>
+		</s:fill>
+	</s:Rect>
+	<comps:TransformHandler id="topHandle" top="0" horizontalCenter="0"/>
+	<comps:TransformHandler id="rightHandle"  right="0" verticalCenter="0"/>
+	<comps:TransformHandler id="bottomHandle" bottom="0" horizontalCenter="0"/>
+	<comps:TransformHandler id="leftHandle" left="0" verticalCenter="0"/>
+	<fx:Script>
+	<![CDATA[
+		import mx.events.FlexMouseEvent;
+		private var _curHandler:TransformHandler;
+		private var _oldRect:Rectangle;
+		
+		[Bindable] public var maxW:int;
+		[Bindable] public var maxH:int;
+		
+		public function init():void
+		{
+			this.addEventListener(MouseEvent.MOUSE_DOWN, handler_mouseDown);
+			this.addEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
+			this.addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, handler_mouseUp);
+			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
+		}
+		
+		public function destroy():void
+		{
+			this.removeEventListener(MouseEvent.MOUSE_DOWN, handler_mouseDown);
+			this.removeEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
+			this.removeEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE, handler_mouseUp);
+			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			_curHandler = null;
+		}
+		
+		protected function handler_mouseDown($event:MouseEvent):void
+		{
+			var __handlers:Vector.<TransformHandler> = Vector.<TransformHandler>([topHandle, rightHandle, bottomHandle, leftHandle]);
+			for(var i:int=0;i<__handlers.length;i++)
+			{
+				if(__handlers[i].hitTestPoint(this.stage.mouseX, this.stage.mouseY))
+				{
+					_curHandler = __handlers[i];
+					_oldRect = this.getRect(this.parent);
+					return;
+				}
+			}
+			_curHandler = null;
+			_oldRect = null;
+			this.startDrag(false, new Rectangle(0,0,maxW-this.width, maxH-this.height));	
+		}
+		
+		protected function handler_mouseUp($event:Event):void
+		{
+			_curHandler = null;
+			_oldRect = null;
+			this.stopDrag();
+		}
+		
+		protected function handler_enterFrame($event:Event):void
+		{
+			var __mouseX:int = this.parent.mouseX;
+			var __mouseY:int = this.parent.mouseY;
+			var __h:int = 0;
+			var __w:int = 0;
+			if(_curHandler == topHandle)
+			{
+				__h = _oldRect.height - (__mouseY - _oldRect.y);
+				if(__h<0)
+					__h = 0;
+				else if(__h>maxH-this.y)
+					__h = maxH-this.y;
+				if(__h>0 && __mouseY>0) this.y = __mouseY;
+				this.height = __h;
+			}
+			else if(_curHandler == bottomHandle)
+			{
+				__h = __mouseY - _oldRect.y;
+				if(__h<0)
+					__h = 0;
+				else if(__h>maxH-this.y)
+					__h = maxH-this.y;
+				else
+					__h+=2;
+				this.height = __h;
+			}
+			else if(_curHandler == leftHandle)
+			{
+				__w = _oldRect.width - (__mouseX - _oldRect.x);
+				if(__w<0)
+					__w=0;
+				else if(__w>maxW-this.x)
+					__w = maxW-this.x;
+				if(__w>0 && __mouseX>0) this.x = __mouseX;
+				this.width = __w;
+			}
+			else if(_curHandler == rightHandle)
+			{
+				__w = __mouseX - _oldRect.x;
+				if(__w<0)
+					__w=0;
+				else if(__w>maxW-this.x)
+					__w = maxW-this.x;
+				this.width = __w;
+			}
+		}
+		
+	]]>
+	</fx:Script>
+</s:Group>

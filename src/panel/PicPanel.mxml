@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" xmlns:comps="comps.*"
+		  horizontalAlign="center"
+		  implements="interf.IStateChanged">
+	<s:BorderContainer width="300" height="100%"  borderColor="0x878787" backgroundAlpha="0">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+		</s:layout>
+		<comps:XYWH id="xywh" width="100%" height="80"/>
+		<s:Label text="文件列表"/>
+		<s:HGroup width="100%">
+			<s:DataGrid id="fileDG" width="100%" height="100">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn headerText="文件名" width="150"/>
+						<s:GridColumn headerText="大小"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			<s:VGroup width="30" height="100%">
+				<s:Button id="addFile" width="100%" label="+" toolTip="添加一个文件"/>
+				<s:Button id="delFile" width="100%" label="x" toolTip="从列表中删除选择的文件"/>
+				<s:Button id="upFile" width="100%" label="↑" toolTip="将选择的文件上移"/>
+				<s:Button id="downFile" width="100%" label="↓" toolTip="将选择的文件下移"/>
+			</s:VGroup>
+		</s:HGroup>
+		<comps:BmpSetting id="bmpSetting" width="100%"/>
+	</s:BorderContainer>
+	<s:VGroup width="100%" height="100%">
+		<s:Label text="选择图像预览"/>
+	</s:VGroup>
+	<fx:Script>
+	<![CDATA[
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+		}
+	]]>
+	</fx:Script>
+</s:HGroup>

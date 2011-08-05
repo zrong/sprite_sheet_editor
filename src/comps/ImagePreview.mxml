@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-5 -->
+<!-- 显示载入的SWF动画或者图像 -->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:comps="comps.*" xmlns:mx="library://ns.adobe.com/flex/mx">
+	<s:Scroller width="100%" height="100%">
+		<s:viewport>
+			<s:Group id="scrollerView" width="100%" height="100%">
+				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewer.width}" height="{viewer.height}"/>
+				<s:SWFLoader id="viewer" width="100" height="100" scaleContent="false" showBusyCursor="true" complete="handler_swfcomplete(event)" />
+				<comps:TransformRect id="transf" width="100" height="100" maxW="{viewer.width}" maxH="{viewer.height}"/>
+			</s:Group>
+		</s:viewport>
+	</s:Scroller>
+	<fx:Script>
+	<![CDATA[
+		import mx.graphics.SolidColor;
+		
+		//----------------------------------------
+		// getter/setter
+		//----------------------------------------
+		/**
+		 * 被载入的显示对象的实际宽度。如果是swf，就是swf文件的宽度。
+		 */
+		public function get actualWidth():int
+		{
+			return viewer.content.loaderInfo.width;
+		}
+		
+		/**
+		 * 被载入的显示对象的实际高度。如果是swf，就是swf文件的高度。
+		 */
+		public function get actualHeight():int
+		{
+			return viewer.content.loaderInfo.height;
+		}
+		
+		protected function handler_viewerSecurityError($event:SecurityErrorEvent):void
+		{
+			trace('载入安全错误：', $event.text);
+		}
+		
+		protected function handler_swfcomplete($event:Event):void
+		{
+			//重设viewer和transf
+			viewer.width = actualWidth;
+			viewer.height = actualHeight;
+			transf.x = 0;
+			transf.y = 0;
+			transf.width = 100;
+			transf.height = 100;
+			//trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, actualWidth, actualHeight);
+		}
+	]]>
+	</fx:Script>
+</s:BorderContainer>

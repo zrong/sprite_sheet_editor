@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:comps="comps.*"
+				   implements="interf.IStateChanged">
+	<s:BorderContainer width="300" height="100%" borderColor="0x878787" backgroundAlpha="0">
+		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+			<s:Label text="位图动画预览"/>
+			<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%"/>
+			<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
+			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"/>
+			<comps:MaskSetting id="maskSetting" width="100%" height="35" backgroundColor="0x696969"/>
+			<comps:BmpSetting id="bmpSetting" width="100%"/>
+			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"/>
+			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"/>
+		</s:VGroup>
+	</s:BorderContainer>
+	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
+	<comps:BMPPreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
+	<fx:Script>
+	<![CDATA[
+		import type.StateType;
+		
+		import utils.Global;
+		
+		//正在播放的帧
+		private var _currentFrame:int;
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+			if($new == StateType.SS)
+			{
+				Global.instance.adjustedSheet = Global.instance.sheet.clone();
+				sheet.viewer.source = Global.instance.adjustedSheet.bitmapData;
+				this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			}
+			else
+			{
+				sheet.viewer.bitmapData.dispose();
+				sheet.viewer.source = null;
+				this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			}
+		}
+		
+		private function handler_enterFrame($evt:Event):void
+		{
+			if(playBTN.selected)
+			{
+				if(_currentFrame >= Global.instance.adjustedSheet.metadata.totalFrame)
+					_currentFrame == 0;
+				ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+			}
+		}
+		
+	]]>
+	</fx:Script>
+</s:HGroup>

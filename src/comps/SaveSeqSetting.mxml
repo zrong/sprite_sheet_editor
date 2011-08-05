@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:utils="com.youxi.utils.*"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  implements="interf.IStateChanged">
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+	</s:layout>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="format"/>
+	</fx:Declarations>
+	<s:Label text="保存序列"/>
+	<s:HGroup width="100%" verticalAlign="middle">
+		<s:Label text="序列前缀:"/>
+		<s:TextInput id="preTI" width="100%"/>
+	</s:HGroup>
+	<s:HGroup width="100%" verticalAlign="middle">
+		<s:Label text="起始编号:"/>
+		<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" width="100%"/>
+		<s:Label text="编号位数:"/>
+		<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%"/>
+	</s:HGroup>
+	<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
+		<s:RadioButton id="pngRB" groupName="format" label="PNG序列" selected="true"/>
+		<s:RadioButton id="jpgRB" groupName="format" label="JPEG序列"/>
+	</s:HGroup>
+	<s:HGroup width="100%" verticalAlign="middle">
+		<s:Label text="文件名预览:"/>
+		<s:Label text='' width="100%"/>
+	</s:HGroup>
+	<s:Button id="saveSeqBTN" click="handler_saveSeqBTNClick(event)" label="保存" height="40" width="80"/>
+	<fx:Script>
+	<![CDATA[
+		protected function handler_saveSeqBTNClick(event:MouseEvent):void
+		{
+			
+		}
+		
+		public function updateOnStateChanged($old:String, $new:String):void
+		{
+		}
+	]]>
+	</fx:Script>
+</s:BorderContainer>
