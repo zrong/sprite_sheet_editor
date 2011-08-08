@@ -9,7 +9,8 @@
 			<s:Label text="位图动画预览"/>
 			<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%"/>
 			<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
-			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"/>
+			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"
+								frameChange="handler_labelSettingframeChange(event)"/>
 			<comps:MaskSetting id="maskSetting" width="100%" height="35" backgroundColor="0x696969"/>
 			<comps:BmpSetting id="bmpSetting" width="100%"/>
 			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"/>
@@ -20,25 +21,59 @@
 	<comps:BMPPreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
+		
+		import mx.collections.ArrayCollection;
+		import mx.collections.ArrayList;
+		
 		import type.StateType;
 		
 		import utils.Global;
 		
 		//正在播放的帧
-		private var _currentFrame:int;
+		private var _currentFrame:int=0;
+		
 		public function updateOnStateChanged($old:String, $new:String):void
 		{
 			if($new == StateType.SS)
 			{
+				//更新调整后的Sheet
 				Global.instance.adjustedSheet = Global.instance.sheet.clone();
 				sheet.viewer.source = Global.instance.adjustedSheet.bitmapData;
+				updateLabels();
 				this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			}
 			else
 			{
 				sheet.viewer.bitmapData.dispose();
 				sheet.viewer.source = null;
+				_currentFrame = 0;
 				this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			}
+		}
+		
+		/**
+		 * 更新Label和Frame
+		 */
+		private function updateLabels():void
+		{
+			labelSetting.frameAC = new ArrayCollection();
+			for (var i:int = 0; i < Global.instance.adjustedSheet.metadata.totalFrame; i++) 
+			{
+				labelSetting.frameAC.addItem(i);
+			}
+			
+			
+			labelSetting.labelCB.selected = Global.instance.sheet.metadata.hasLabel;
+			labelSetting.labelAL = new ArrayList();
+			if(Global.instance.sheet.metadata.hasLabel)
+			{
+				var __label:String = '';
+				for (var j:int = 0; j < Global.instance.sheet.metadata.labels.length; j++) 
+				{
+					__label = Global.instance.sheet.metadata.labels[j];
+					labelSetting.labelAL.addItem({label:__label, frame:Global.instance.sheet.metadata.labelsFrame[__label]});
+				}
 			}
 		}
 		
@@ -47,9 +82,17 @@
 			if(playBTN.selected)
 			{
 				if(_currentFrame >= Global.instance.adjustedSheet.metadata.totalFrame)
-					_currentFrame == 0;
+					_currentFrame = 0;
 				ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+				_currentFrame ++;
 			}
+		}
+		
+		protected function handler_labelSettingframeChange($event:InfoEvent):void
+		{
+			playBTN.selected = false;
+			_currentFrame = int($event.info);
+			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
 		}
 		
 	]]>

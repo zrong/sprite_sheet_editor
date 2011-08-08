@@ -48,10 +48,6 @@
 			//重设viewer和transf
 			viewer.width = actualWidth;
 			viewer.height = actualHeight;
-			transf.x = 0;
-			transf.y = 0;
-			transf.width = 100;
-			transf.height = 100;
 			//trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, actualWidth, actualHeight);
 		}
 	]]>

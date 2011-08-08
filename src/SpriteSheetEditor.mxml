@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
-					   xmlns:comps="comps.*"
+					   xmlns:panel="panel.*"
 					   backgroundColor="#4D4D4D" showStatusBar="false"
 					   currentState="{Global.instance.currentState}"
-					   windowComplete="handler_init(event)" xmlns:panel="panel.*">
+					   windowComplete="handler_init(event)">
 	<fx:Style source="main.css"/>
 	<s:states>
 		<s:State name="start"/>
