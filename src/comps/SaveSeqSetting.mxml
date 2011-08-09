@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:utils="com.youxi.utils.*"
-		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  implements="interf.IStateChanged">
+		  xmlns:utils="com.youxi.utils.*">
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
 	<fx:Declarations>
 		<s:RadioButtonGroup id="format"/>
 	</fx:Declarations>
+	<fx:Metadata>
+		[Event(name="saveSeq", type="events.InfoEvent")]
+	</fx:Metadata>
 	<s:Label text="保存序列"/>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label text="序列前缀:"/>
@@ -32,13 +33,10 @@
 	<s:Button id="saveSeqBTN" click="handler_saveSeqBTNClick(event)" label="保存" height="40" width="80"/>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
 		protected function handler_saveSeqBTNClick(event:MouseEvent):void
 		{
-			
-		}
-		
-		public function updateOnStateChanged($old:String, $new:String):void
-		{
+			dispatchEvent(new InfoEvent(InfoEvent.SAVE_SEQ));
 		}
 	]]>
 	</fx:Script>

@@ -1,59 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  implements="interf.IStateChanged">
+		  xmlns:s="library://ns.adobe.com/flex/spark">
 	<s:layout>
 		<s:HorizontalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
 	<s:VGroup width="80" height="100%">
 		<s:Label text="帧列表"/>
-		<s:List id="frameList" width="100%" height="100%" dataProvider="{frameAC}" selectedIndex="@{frameNS.value}" allowMultipleSelection="true" change="handler_frameChange(event)"/>
-		<s:NumericStepper id="frameNS" width="100%" value="@{frameList.selectedIndex}" minimum="0" maximum="{frameList.dataProvider.length-1}" change="handler_frameChange(event)"/>
+		<s:List id="frameList" width="100%" height="100%" dataProvider="{frameAC}" allowMultipleSelection="true"
+				change="handler_frameChange(event)"/>
 	</s:VGroup>
 	<s:Group width="100%" height="100%">
 		<s:VGroup top="20" bottom="28" width="30" enabled="{labelCB.selected}" verticalAlign="middle">
-			<s:Button id="addLabelBTN" label="&gt;" width="100%" toolTip="添加一个Label到列表中" 
+			<s:Button id="addLabelBTN" label="&gt;" width="100%" toolTip="添加一个Label到列表中" click="handler_addLabelBTNclick(event)" 
 					  enabled="{labelCB.selected&amp;&amp;frameList.selectedItem&amp;&amp;labelInput.text}"/>
-			<s:Button id="removeLabelBTN" label="&lt;" width="100%" toolTip="删除选中的Label" 
+			<s:Button id="removeLabelBTN" label="&lt;" width="100%" toolTip="删除选中的Label" click="handler_removeLabelBTNclick(event)"
 					  enabled="{labelCB.selected&amp;&amp;labelList.selectedItem}"/>
 		</s:VGroup>
 		<s:CheckBox id="labelCB" left="5" top="-2" label="使用Label"/>
 		<s:List id="labelList" left="35" top="18" bottom="28" width="100%"
-				enabled="{labelCB.selected}" dataProvider="{labelAL}"/>
+				enabled="{labelCB.selected}" dataProvider="{labelAL}" change="handler_labelListchange(event)"/>
 		<s:HGroup x="0" bottom="0" width="100%" enabled="{labelCB.selected}">
-			<s:TextInput id="labelInput" width="100%" text="{labelList.selectedItem}"
+			<s:TextInput id="labelInput" width="100%" text="{labelList.selectedItem.label}"
 						 toolTip="label格式：英文+数字"/>
 			<s:Button id="renameBTN" label="改" width="35" toolTip="修改Label名称" click="handler_renameBTNclick(event)"
-					  enabled="{labelCB.selected&amp;&amp;labelInput.text&amp;&amp;(labelList.selectedItem||frameList.selectedItem)}"/>
+					  enabled="{labelCB.selected&amp;&amp;labelInput.text&amp;&amp;labelList.selectedItem}"/>
 		</s:HGroup>
 	</s:Group>
 	<fx:Metadata>
-		[Event(name="frameChange", type="events.InfoEvent")]
+		//[Event(name="frameChange", type="events.InfoEvent")]
+		//[Event(name="labelChange", type="events.InfoEvent")]
+		[Event(name="change",type="flash.events.Event")]
 	</fx:Metadata>
 	<fx:Script>
 	<![CDATA[
 		import events.InfoEvent;
 		
+		import flash.utils.setTimeout;
+		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		
+		import spark.collections.Sort;
+		import spark.collections.SortField;
+		import spark.events.IndexChangeEvent;
+		
+		import utils.Funs;
+		
 		[Bindable] public var frameAC:ArrayCollection;
 		[Bindable] public var labelAL:ArrayList;
+		[Bindable] public var firstFrame:int;			//起始帧编号
+		[Bindable] public var framesCount:int;		//选择的帧的数量
+		[Bindable] public var selectedLabel:String;	//当前选择的Label名称
 		
-		public function updateOnStateChanged($old:String, $new:String):void
+		public function destroy():void
 		{
+			frameAC = null;
+			labelAL = null;
+			firstFrame = 0;
+			framesCount = 0;
+			selectedLabel = null;
+		}
+		
+		protected function handler_frameChange($event:IndexChangeEvent):void
+		{
+			var __items:Vector.<Object> = frameList.selectedItems;
+			if(__items.length>1)
+			{
+				//因为selectedItems返回的数组是倒序的，需要排序一次
+				__items.sort(Array.NUMERIC);
+				for (var i:int = 0; i < __items.length; i++) 
+				{
+					if(i>0 && (int(__items[i])-int(__items[i-1])>1))
+					{
+						Funs.alert('不允许选择不连续的帧！');
+						setTimeout(function():void{frameList.selectedIndex=-1;},100);
+						return;
+					}
+				}
+			}
+			firstFrame = int(__items[0]);
+			framesCount = __items.length;
+			selectedLabel = null;
+			labelList.selectedIndex = -1;
+			dispatchEvent(new Event(Event.CHANGE));
+		}
+		
+		protected function handler_labelListchange($event:IndexChangeEvent):void
+		{
+			firstFrame = labelList.selectedItem.frame[0];
+			framesCount = labelList.selectedItem.frame[1];
+			selectedLabel = labelList.selectedItem.label;
+			frameList.selectedIndex = -1;
+			dispatchEvent(new Event(Event.CHANGE));
+		}
+		
+		protected function handler_addLabelBTNclick($event:MouseEvent):void
+		{
+			labelAL.addItem({label:labelInput.text, frame:[firstFrame, framesCount]});
+			var __newLen:int = frameAC.length-framesCount;
+			var __frameIndex:int = firstFrame;
+			while(frameAC.length>__newLen)
+			{
+				//根据当前的帧编号获取其在frameAC中的索引，并删除这个索引
+				frameAC.removeItemAt(frameAC.getItemIndex(__frameIndex++));
+			}
+			labelList.selectedIndex = labelAL.length - 1;
+			handler_labelListchange(null);
+		}
+		
+		protected function handler_removeLabelBTNclick($event:MouseEvent):void
+		{
+			var __item:Object = labelAL.getItemAt(labelList.selectedIndex);
+			for (var i:int = 0; i < __item.frame[1]; i++) 
+			{
+				frameAC.addItem(__item.frame[0]+i);
+			}
+			labelAL.removeItem(__item);
+			if(!frameAC.sort)
+			{
+				frameAC.sort = new Sort();
+				frameAC.sort.fields = [new SortField(null, false, true)];
+			}
+			frameAC.refresh();
+			frameList.selectedIndex = 0;
+			handler_frameChange(null);
 		}
 		
 		protected function handler_renameBTNclick($event:MouseEvent):void
 		{
-			labelAL.addItem({label:labelInput.text, frame:frameList.selectedIndices});
+			var __item:Object = labelAL.getItemAt(labelList.selectedIndex);
+			__item.label = labelInput.text;
+			labelAL.setItemAt(__item, labelList.selectedIndex);
+			selectedLabel = __item.label;
+			dispatchEvent(new Event(Event.CHANGE));
 		}
-		
-		protected function handler_frameChange($event:Event):void
-		{
-			dispatchEvent(new InfoEvent(InfoEvent.FRAME_CHANGE, frameNS.value));
-		}
-		
+
 	]]>
 	</fx:Script>
 </s:BorderContainer>

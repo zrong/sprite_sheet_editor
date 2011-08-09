@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-9 -->
+<!-- 预览创建或者打开的Sprite Sheet，并对其进行编辑、优化和保存 -->
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
@@ -8,13 +12,21 @@
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
 			<s:Label text="位图动画预览"/>
 			<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%"/>
-			<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
+				<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
+				<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
+			</s:HGroup>
 			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"
-								frameChange="handler_labelSettingframeChange(event)"/>
+								change="handler_labelSettingChange(event)"/>
 			<comps:MaskSetting id="maskSetting" width="100%" height="35" backgroundColor="0x696969"/>
 			<comps:BmpSetting id="bmpSetting" width="100%"/>
-			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"/>
-			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"/>
+			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"
+									saveAll="handler_saveSheetPanelsaveAll(event)"
+									saveMeta="handler_saveSheetPanelsaveMeta(event)"
+									savePic="handler_saveSheetPanelsavePic(event)"/>
+			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"
+								  saveSeq="handler_saveSeqPanelsaveSeq(event)"/>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
@@ -25,13 +37,19 @@
 		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
+		import mx.graphics.codec.JPEGEncoder;
+		import mx.graphics.codec.PNGEncoder;
+		
+		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
 		import type.StateType;
 		
 		import utils.Global;
+		import utils.MetadataBuilder;
 		
 		//正在播放的帧
-		private var _currentFrame:int=0;
+		[Bindable] private var _currentFrame:int=0;
+		private var _saveName:String;
 		
 		public function updateOnStateChanged($old:String, $new:String):void
 		{
@@ -40,29 +58,34 @@
 				//更新调整后的Sheet
 				Global.instance.adjustedSheet = Global.instance.sheet.clone();
 				sheet.viewer.source = Global.instance.adjustedSheet.bitmapData;
-				updateLabels();
+				initLabelAndFrame();
 				this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			}
 			else
 			{
+				labelSetting.destroy();
 				sheet.viewer.bitmapData.dispose();
 				sheet.viewer.source = null;
+				Global.instance.adjustedSheet.destroy();
+				Global.instance.adjustedSheet = null;
 				_currentFrame = 0;
 				this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			}
 		}
 		
 		/**
-		 * 更新Label和Frame
+		 * 从SpriteSheet中初始化Label和Frame
 		 */
-		private function updateLabels():void
+		private function initLabelAndFrame():void
 		{
 			labelSetting.frameAC = new ArrayCollection();
+			labelSetting.firstFrame = 0;
+			labelSetting.framesCount = Global.instance.adjustedSheet.metadata.totalFrame;
 			for (var i:int = 0; i < Global.instance.adjustedSheet.metadata.totalFrame; i++) 
 			{
+				//默认情况下选择的帧就是所有帧
 				labelSetting.frameAC.addItem(i);
 			}
-			
 			
 			labelSetting.labelCB.selected = Global.instance.sheet.metadata.hasLabel;
 			labelSetting.labelAL = new ArrayList();
@@ -75,24 +98,109 @@
 					labelSetting.labelAL.addItem({label:__label, frame:Global.instance.sheet.metadata.labelsFrame[__label]});
 				}
 			}
+			dispatchEvent(new Event('frameOrLabelChange'));
 		}
+		
+		[Bindable(event='frameOrLabelChange')]
+		private function getFrameLabelText():String
+		{
+			var __frames:String = '';
+			if(labelSetting.framesCount>1)
+				__frames = labelSetting.firstFrame+'-'+(labelSetting.firstFrame+labelSetting.framesCount-1)+'帧';
+			else
+				__frames = '第'+labelSetting.firstFrame+'帧';
+			if(labelSetting.selectedLabel)
+				return 'Label:'+labelSetting.selectedLabel+' '+__frames;
+			return __frames;
+		}
+		
+		private function updateFrameDisplay():void
+		{
+			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+		}
+		
+		private function getSheet():ByteArray
+		{
+			var __ba:ByteArray = null;
+			if(saveSheetPanel.sheetType == SpriteSheetType.PNG)
+			{
+				var __png:PNGEncoder = new PNGEncoder();
+				_saveName = 'sprite_sheet.jpg';
+				return __png.encode(Global.instance.adjustedSheet.bitmapData);
+			}
+			var __jpg:JPEGEncoder = new JPEGEncoder(saveSheetPanel.qualityNS.value);
+			_saveName = 'sprite_sheet.png';
+			return __jpg.encode(Global.instance.adjustedSheet.bitmapData);
+		}
+		
+		private function getMetadata():String
+		{
+			if(saveSheetPanel.jsonRB.selected)
+				return MetadataBuilder.getJSONMeta(saveSheetPanel.simpleCB.selected);
+			if(saveSheetPanel.xmlRB.selected)
+				return MetadataBuilder.getXMLMeta(saveSheetPanel.simpleCB.selected);
+			return MetadataBuilder.getTXTMeta(saveSheetPanel.simpleCB.selected);
+		}
+		
+		//更新spriteSheet的值
+		private function updateSheet():void
+		{
+			with(Global.instance.adjustedSheet.metadata)
+			{
+				type = saveSheetPanel.sheetType;
+				hasLabel = labelSetting.labelCB.selected;
+				//......
+			}
+		}
+		
+		//----------------------------------------
+		// handler
+		//----------------------------------------
 		
 		private function handler_enterFrame($evt:Event):void
 		{
 			if(playBTN.selected)
 			{
-				if(_currentFrame >= Global.instance.adjustedSheet.metadata.totalFrame)
-					_currentFrame = 0;
-				ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+				//判断当前播放的帧不要超过总帧数索引范围
+				if(_currentFrame >= (labelSetting.firstFrame+labelSetting.framesCount))
+					_currentFrame = labelSetting.firstFrame;
+				updateFrameDisplay();
 				_currentFrame ++;
 			}
 		}
 		
-		protected function handler_labelSettingframeChange($event:InfoEvent):void
+		protected function handler_labelSettingChange($event:Event):void
 		{
 			playBTN.selected = false;
-			_currentFrame = int($event.info);
-			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+			_currentFrame = labelSetting.firstFrame;
+			updateFrameDisplay();
+			dispatchEvent(new Event('frameOrLabelChange'));
+		}
+		
+		protected function handler_playFrameNSchange($event:Event):void
+		{
+			_currentFrame = playFrameNS.value;
+			updateFrameDisplay();
+		}
+		
+		protected function handler_saveSheetPanelsaveAll($event:InfoEvent):void
+		{
+			
+		}
+		
+		protected function handler_saveSheetPanelsaveMeta($event:InfoEvent):void
+		{
+			
+		}
+		
+		protected function handler_saveSheetPanelsavePic($event:InfoEvent):void
+		{
+			
+		}
+		
+		protected function handler_saveSeqPanelsaveSeq($event:InfoEvent):void
+		{
+			
 		}
 		
 	]]>

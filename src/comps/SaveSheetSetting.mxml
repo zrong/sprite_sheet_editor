@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:utils="com.youxi.utils.*"
-		  xmlns:mx="library://ns.adobe.com/flex/mx"
-		  implements="interf.IStateChanged">
+		  xmlns:utils="com.youxi.utils.*">
 	<s:layout>
 		<s:VerticalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
@@ -11,6 +9,11 @@
 		<s:RadioButtonGroup id="pic"/>
 		<s:RadioButtonGroup id="meta"/>
 	</fx:Declarations>
+	<fx:Metadata>
+		[Event(name="savePic", type="events.InfoEvent")]
+		[Event(name="saveMeta", type="events.InfoEvent")]
+		[Event(name="saveAll", type="events.InfoEvent")]
+	</fx:Metadata>
 	<s:HGroup width="100%">
 		<s:VGroup width="100%">
 			<s:Label text="保存SpriteSheet"/>
@@ -18,9 +21,9 @@
 			<s:RadioButton id="jpgRB" groupName="pic" label="JPEG格式"/>
 			<s:HGroup visible="{jpgRB.selected}" width="100%" verticalAlign="middle">
 				<s:Label text="JPEG压缩:"/>
-				<s:NumericStepper id="jpgNS" minimum="40" maximum="100" value="70" maxChars="3" width="100%"/>
+				<s:NumericStepper id="qualityNS" minimum="40" maximum="100" value="70" maxChars="3" width="100%"/>
 			</s:HGroup>
-			<s:CheckBox id="nameCB" label="包含文件名称" visible="{!simpleCB.selected}" />
+			<s:CheckBox id="nameCB" label="包含文件名称" visible="{!simpleCB.selected}" toolTip="选中后将图像文件的主文件与帧索引的关系保存到meta文件中。在使用的时候，就能通过主文件名获取对应的帧。"/>
 		</s:VGroup>
 		<s:VGroup width="100%">
 			<s:Label text="保存元数据"/>
@@ -37,21 +40,31 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
+		
+		import org.zengrong.display.spritesheet.SpriteSheetType;
+		
+		/**
+		 * 获取要保存的sheet的类型
+		 */	
+		public function get sheetType():String
+		{
+			if(jpgRB.selected)
+				return SpriteSheetType.JPG;
+			return SpriteSheetType.PNG;
+		}
+		
 		protected function handler_savePicBTNClick(event:MouseEvent):void
 		{
-			
+			dispatchEvent(new InfoEvent(InfoEvent.SAVE_PIC));
 		}
 		protected function handler_saveMetaBTNClick(event:MouseEvent):void
 		{
-			
+			dispatchEvent(new InfoEvent(InfoEvent.SAVE_META));
 		}
 		protected function handler_saveAllBTNClick(event:MouseEvent):void
 		{
-			
-		}
-		
-		public function updateOnStateChanged($old:String, $new:String):void
-		{
+			dispatchEvent(new InfoEvent(InfoEvent.SAVE_ALL));
 		}
 	]]>
 	</fx:Script>

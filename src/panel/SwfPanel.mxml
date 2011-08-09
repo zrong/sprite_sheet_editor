@@ -22,7 +22,7 @@
 			<s:Label text="第一帧(0基)："/>
 			<s:NumericStepper id="firstFrameNS" maximum="1000" minimum="0" stepSize="1" width="100%"/>
 			<s:Label text="总帧数："/>
-			<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" stepSize="1" width="100%"/>
+			<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100%"/>
 		</s:HGroup>
 		<comps:BmpSetting id="bmpSetting" width="100%"/>
 		<s:Button id="buildBTN" label="生成" height="40" width="80" enabled="{_state&amp;&amp;_state==StateType.LOAD_DONE}" click="handler_buildClick(event)"/>

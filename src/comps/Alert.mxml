@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="300" height="150"
+			   currentState="alert">
+	<s:RichEditableText left="5" right="5" top="5" bottom="35" editable="false" text="{text}"/>
+	<s:HGroup width="100%" horizontalAlign="center" bottom="5">
+		<s:Button id="okBTN" label="确定" click="handler_okBTNclick(event)"/>
+		<s:Button id="cancelBTN" label="取消" includeIn="confirm"/>
+	</s:HGroup>
+	<s:states>
+		<s:State name="alert"/>
+		<s:State name="confirm"/>
+	</s:states>
+	<fx:Script>
+	<![CDATA[
+		import mx.managers.PopUpManager;
+		
+		[Bindable] public var text:String;
+		public var okHandler:Function;
+		
+		protected function handler_okBTNclick($event:MouseEvent):void
+		{
+			if(okHandler is Function)
+				okHandler.call();
+			PopUpManager.removePopUp(this);
+		}
+	]]>
+	</fx:Script>
+</s:Panel>
