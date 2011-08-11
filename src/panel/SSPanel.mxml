@@ -22,9 +22,9 @@
 			<comps:MaskSetting id="maskSetting" width="100%" height="35" backgroundColor="0x696969"/>
 			<comps:BmpSetting id="bmpSetting" width="100%"/>
 			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"
-									saveAll="handler_saveSheetPanelsaveAll(event)"
-									saveMeta="handler_saveSheetPanelsaveMeta(event)"
-									savePic="handler_saveSheetPanelsavePic(event)"/>
+									saveAll="handler_saveAll(event)"
+									saveMeta="handler_saveMeta(event)"
+									savePic="handler_savePic(event)"/>
 			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"
 								  saveSeq="handler_saveSeqPanelsaveSeq(event)"/>
 		</s:VGroup>
@@ -33,6 +33,8 @@
 	<comps:BMPPreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
 	<fx:Script>
 	<![CDATA[
+		import com.adobe.serialization.json.JSON;
+		
 		import events.InfoEvent;
 		
 		import mx.collections.ArrayCollection;
@@ -40,16 +42,18 @@
 		import mx.graphics.codec.JPEGEncoder;
 		import mx.graphics.codec.PNGEncoder;
 		
+		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
 		import type.StateType;
 		
+		import utils.FileProcessor;
 		import utils.Global;
 		import utils.MetadataBuilder;
 		
 		//正在播放的帧
 		[Bindable] private var _currentFrame:int=0;
-		private var _saveName:String;
+		private var _fileExt:String;
 		
 		public function updateOnStateChanged($old:String, $new:String):void
 		{
@@ -119,37 +123,44 @@
 			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
 		}
 		
-		private function getSheet():ByteArray
-		{
-			var __ba:ByteArray = null;
-			if(saveSheetPanel.sheetType == SpriteSheetType.PNG)
-			{
-				var __png:PNGEncoder = new PNGEncoder();
-				_saveName = 'sprite_sheet.jpg';
-				return __png.encode(Global.instance.adjustedSheet.bitmapData);
-			}
-			var __jpg:JPEGEncoder = new JPEGEncoder(saveSheetPanel.qualityNS.value);
-			_saveName = 'sprite_sheet.png';
-			return __jpg.encode(Global.instance.adjustedSheet.bitmapData);
-		}
-		
 		private function getMetadata():String
 		{
 			if(saveSheetPanel.jsonRB.selected)
-				return MetadataBuilder.getJSONMeta(saveSheetPanel.simpleCB.selected);
+			{
+				_fileExt = '.json';
+				return JSON.encode(Global.instance.adjustedSheet.metadata.toObject(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected));
+			}
 			if(saveSheetPanel.xmlRB.selected)
-				return MetadataBuilder.getXMLMeta(saveSheetPanel.simpleCB.selected);
-			return MetadataBuilder.getTXTMeta(saveSheetPanel.simpleCB.selected);
+			{
+				_fileExt = '.xml';
+				return Global.instance.adjustedSheet.metadata.toXMLString(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
+			}
+			_fileExt = '.txt';
+			return Global.instance.adjustedSheet.metadata.toTXT(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
 		}
 		
 		//更新spriteSheet的值
 		private function updateSheet():void
 		{
-			with(Global.instance.adjustedSheet.metadata)
+			//hasName, names, namesIndex, totalFrame, frameSizeRect 这几个变量
+			//是在生成Sheet的时候填充的，因此这里不需要更新
+			var __meta:SpriteSheetMetadata = Global.instance.adjustedSheet.metadata;
+			__meta.type = saveSheetPanel.picRBG.selectedValue.toString();
+			__meta.hasLabel = labelSetting.labelCB.selected;
+			__meta.maskType = maskSetting.maskRBG.selectedValue.toString();
+			if(__meta.hasLabel)
 			{
-				type = saveSheetPanel.sheetType;
-				hasLabel = labelSetting.labelCB.selected;
-				//......
+				var __labels:Vector.<String> = new Vector.<String>(labelSetting.labelAL.length, true);
+				var __labelsFrame:Object = {};
+				var __labelItem:Object = null;
+				for (var i:int = 0; i < labelSetting.labelAL.length; i++) 
+				{
+					__labelItem = labelSetting.labelAL.getItemAt(i);
+					__labels[i] = __labelItem.label;
+					__labelsFrame[__labelItem.label] = __labelItem.frame;
+				}
+				__meta.labels = __labels;
+				__meta.labelsFrame = __labelsFrame;
 			}
 		}
 		
@@ -183,19 +194,27 @@
 			updateFrameDisplay();
 		}
 		
-		protected function handler_saveSheetPanelsaveAll($event:InfoEvent):void
+		protected function handler_saveAll($event:InfoEvent):void
 		{
-			
+			updateSheet();
+			var __data:Object = {meta:getMetadata(), bitmapData:Global.instance.adjustedSheet.bitmapData};
+			FileProcessor.instance.saveAll(__data, saveSheetPanel.picRBG.selectedValue.toString()+','+_fileExt);
 		}
 		
-		protected function handler_saveSheetPanelsaveMeta($event:InfoEvent):void
+		protected function handler_saveMeta($event:InfoEvent):void
 		{
-			
+			updateSheet();
+			FileProcessor.instance.saveMeta(getMetadata(), saveSheetPanel.metaRBG.selectedValue.toString());
 		}
 		
-		protected function handler_saveSheetPanelsavePic($event:InfoEvent):void
+		protected function handler_savePic($event:InfoEvent):void
 		{
-			
+			updateSheet();
+			FileProcessor.instance.saveSS(
+				Global.instance.adjustedSheet.bitmapData, 
+				saveSheetPanel.picRBG.selectedValue.toString(),
+				saveSheetPanel.qualityNS.value
+			);
 		}
 		
 		protected function handler_saveSeqPanelsaveSeq($event:InfoEvent):void

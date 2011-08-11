@@ -6,8 +6,8 @@
 		<s:VerticalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
 	<fx:Declarations>
-		<s:RadioButtonGroup id="pic"/>
-		<s:RadioButtonGroup id="meta"/>
+		<s:RadioButtonGroup id="picRBG"/>
+		<s:RadioButtonGroup id="metaRBG"/>
 	</fx:Declarations>
 	<fx:Metadata>
 		[Event(name="savePic", type="events.InfoEvent")]
@@ -17,8 +17,8 @@
 	<s:HGroup width="100%">
 		<s:VGroup width="100%">
 			<s:Label text="保存SpriteSheet"/>
-			<s:RadioButton id="pngRB" groupName="pic" label="PNG格式" selected="true"/>
-			<s:RadioButton id="jpgRB" groupName="pic" label="JPEG格式"/>
+			<s:RadioButton id="pngRB" groupName="picRBG" label="PNG格式" value="SSP" selected="true"/>
+			<s:RadioButton id="jpgRB" groupName="picRBG" label="JPEG格式" value="SSJ"/>
 			<s:HGroup visible="{jpgRB.selected}" width="100%" verticalAlign="middle">
 				<s:Label text="JPEG压缩:"/>
 				<s:NumericStepper id="qualityNS" minimum="40" maximum="100" value="70" maxChars="3" width="100%"/>
@@ -27,9 +27,9 @@
 		</s:VGroup>
 		<s:VGroup width="100%">
 			<s:Label text="保存元数据"/>
-			<s:RadioButton id="xmlRB" groupName="meta" label="XML格式" selected="true"/>
-			<s:RadioButton id="jsonRB" groupName="meta" label="JSON格式"/>
-			<s:RadioButton id="txtRB" groupName="meta" label="TXT格式"/>
+			<s:RadioButton id="xmlRB" groupName="metaRBG" label="XML格式" value=".xml" selected="true"/>
+			<s:RadioButton id="jsonRB" groupName="metaRBG" label="JSON格式" value=".json"/>
+			<s:RadioButton id="txtRB" groupName="metaRBG" label="TXT格式" value=".txt"/>
 			<s:CheckBox id="simpleCB" label="使用简单元数据" toolTip="选中后仅保存每帧的坐标和宽高"/>
 		</s:VGroup>
 	</s:HGroup>
@@ -43,16 +43,6 @@
 		import events.InfoEvent;
 		
 		import org.zengrong.display.spritesheet.SpriteSheetType;
-		
-		/**
-		 * 获取要保存的sheet的类型
-		 */	
-		public function get sheetType():String
-		{
-			if(jpgRB.selected)
-				return SpriteSheetType.JPG;
-			return SpriteSheetType.PNG;
-		}
 		
 		protected function handler_savePicBTNClick(event:MouseEvent):void
 		{
