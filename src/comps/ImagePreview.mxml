@@ -11,14 +11,14 @@
 			<s:Group id="scrollerView" width="100%" height="100%">
 				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewer.width}" height="{viewer.height}"/>
 				<s:SWFLoader id="viewer" width="100" height="100" scaleContent="false" showBusyCursor="true" complete="handler_swfcomplete(event)" />
-				<comps:TransformRect id="transf" width="100" height="100" maxW="{viewer.width}" maxH="{viewer.height}"/>
+				<comps:TransformTool id="transf" width="100" height="100" maxW="{viewer.width}" maxH="{viewer.height}" visible="{showTransformTool}"/>
 			</s:Group>
 		</s:viewport>
 	</s:Scroller>
 	<fx:Script>
 	<![CDATA[
-		import mx.graphics.SolidColor;
 		
+		[Bindable] public var showTransformTool:Boolean;
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
@@ -45,6 +45,7 @@
 		
 		protected function handler_swfcomplete($event:Event):void
 		{
+//			trace('ImagePreview载入成功:', viewer.source);
 			//重设viewer和transf
 			viewer.width = actualWidth;
 			viewer.height = actualHeight;

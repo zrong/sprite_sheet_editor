@@ -8,28 +8,34 @@
 		<s:layout>
 			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 		</s:layout>
-		<s:VGroup width="100%">
+		<s:BorderContainer width="100%" backgroundColor="0x696969">
+			<s:layout>
+				<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+			</s:layout>
+			<s:Label text="帧设置(x,y,w,h)"/>
 			<s:CheckBox id="useOriginalSizeCB" label="使用帧的原始大小"/>
-			<s:Label text="帧设置(x,y,w,h):"/>
 			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
 				<s:NumericStepper id="frameX" width="100%" value="@{swf.transf.x}" minimum="0" maximum="{swf.viewer.width-1}"/>
 				<s:NumericStepper id="frameY" width="100%" value="@{swf.transf.y}" minimum="0" maximum="{swf.viewer.height-1}"/>
 				<s:NumericStepper id="frameW" width="100%" value="@{swf.transf.width}" minimum="1" maximum="{swf.viewer.width}"/>
 				<s:NumericStepper id="frameH" width="100%" value="@{swf.transf.height}" minimum="1" maximum="{swf.viewer.height}"/>
 			</s:HGroup>
-		</s:VGroup>
-		<s:HGroup width="100%" verticalAlign="middle">
-			<s:Label text="第一帧(0基)："/>
-			<s:NumericStepper id="firstFrameNS" maximum="1000" minimum="0" stepSize="1" width="100%"/>
-			<s:Label text="总帧数："/>
-			<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100%"/>
-		</s:HGroup>
-		<comps:BmpSetting id="bmpSetting" width="100%"/>
-		<s:Button id="buildBTN" label="生成" height="40" width="80" enabled="{_state&amp;&amp;_state==StateType.LOAD_DONE}" click="handler_buildClick(event)"/>
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:Label text="第一帧(0基)："/>
+				<s:NumericStepper id="firstFrameNS" maximum="1000" minimum="0" stepSize="1" width="100%"/>
+				<s:Label text="总帧数："/>
+				<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100%"/>
+			</s:HGroup>
+		</s:BorderContainer>
+		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" buildTitle="生成"
+						  enabled="{_state&amp;&amp;_state==StateType.LOAD_DONE}" 
+						  build="handler_buildClick(event)"/>
 	</s:BorderContainer>
-	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0"/>
+	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
+		
 		import flash.utils.setTimeout;
 		
 		import mx.binding.utils.ChangeWatcher;
@@ -40,22 +46,17 @@
 		
 		import type.StateType;
 		
+		import utils.FileProcessor;
 		import utils.Funs;
 		import utils.Global;
 		
+		private var _swfURL:String;				//保存选择的swf文件的路径
 		private var _frameNum:int;					//当前正在播放的帧的索引
 		[Bindable] private var _state:String;		//当前的处理状态
 		
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
-		/**
-		 * 获取选择的swf文件的路径
-		 */
-		public function get swfUrl():String
-		{
-			return File(Global.instance.files.getItemAt(0)).url;
-		}
 		
 		public function get frameWidth():int
 		{
@@ -75,13 +76,18 @@
 			trace('swfPanel updateOnStateChanged:', $new);
 			if($new == StateType.SWF)
 			{
+				//如果是从START状态跳转过来的，就更新一次swfURL的值
+				if($old == StateType.START)
+					_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
+				trace('swfPanel.load:', _swfURL);
 				swf.viewer.addEventListener(Event.COMPLETE, handler_swfLoadDone);
-				swf.viewer.load(swfUrl);
+				swf.viewer.load(_swfURL);
 				swf.transf.init();
 			}
 			else
 			{
 				swf.viewer.removeEventListener(Event.COMPLETE, handler_swfLoadDone);
+				swf.viewer.source = null;
 				swf.transf.destroy();
 			}
 		}
@@ -92,15 +98,18 @@
 		
 		private function capture():void
 		{
-			trace('capture');
+			trace('swf capture');
 			_state = StateType.PROCESSING;
-			var __dimension:Object = getSheetDimension();
+			var __dimension:Object = getSheetDimension(
+				buildSetting.whDDL.selectedIndex == 0, 
+				buildSetting.dimensionNS.value,
+				totalFrameNS.value);
 			trace(__dimension.w, __dimension.h, __dimension.rects);
 			//直接将计算好的Vector保存到metadata中
 			var __meta:SpriteSheetMetadata = new SpriteSheetMetadata((__dimension.rects  as Vector.<Rectangle>).length);
 			__meta.frameSizeRect = __dimension.rects;
-			var __bmd:BitmapData = new BitmapData(__dimension.w, __dimension.h, bmpSetting.transparentCB.selected, bmpSetting.bgColorPicker.selectedColor)
-			//根据计算出的Sheet宽高重置bmd
+			var __bmd:BitmapData = new BitmapData(__dimension.w, __dimension.h, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
+			//根据计算出的Sheet宽高重置SpriteSheet和bmd
 			Funs.resetSheet(__bmd, __meta);
 			//帧索引永远从0开始，无论正在播放的主时间轴有几帧（可能只有1帧，使用MC做动画），也可以实现多帧捕获
 			_frameNum = 0;
@@ -139,28 +148,29 @@
 		 */
 		private function drawBMD():BitmapData
 		{
-			var __bmd:BitmapData = new BitmapData(frameWidth, frameHeight, bmpSetting.transparentCB.selected, bmpSetting.bgColorPicker.selectedColor);
+			var __bmd:BitmapData = new BitmapData(frameWidth, frameHeight, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
 			if(useOriginalSizeCB.selected)
 			{
-				__bmd.draw(swf.viewer.content, null, null, null, null, bmpSetting.smoothCB.selected);
+				__bmd.draw(swf.viewer.content, null, null, null, null, buildSetting.smoothCB.selected);
 			}
 			else
 			{
 				//需要向“左上角”移动，将当前帧绘制成位图
 				var __ma:Matrix = new Matrix();
 				__ma.translate(-1*frameX.value, -1*frameY.value);
-				__bmd.draw(swf.viewer.content, __ma, null, null, null, bmpSetting.smoothCB.selected);
+				__bmd.draw(swf.viewer.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			}
 			return __bmd;
 		}
 		
 		/**
 		 * 通过当前帧应该放置的位置
+		 * @param $limitW 是否限制宽度，若为否则是限制高度
+		 * @param $wh 被限制的宽度或者高度的最大值
 		 * @return 返回一个Object，其中的w代表sheet宽度，h代表sheet高度，rects代表sheet中每帧的位置和大小的Vector.<Rectangle>
 		 */
-		private function getSheetDimension():Object
+		private function getSheetDimension($limitW:Boolean, $wh:int, $frameNum:int):Object
 		{
-			var __limitW:Boolean = bmpSetting.whDDL.selectedIndex == 0;
 			//frame的宽高
 			var __fw:int = frameWidth;
 			var __fh:int = frameHeight;
@@ -168,26 +178,25 @@
 			var __sw:int = 0;
 			var __sh:int = 0;
 			//设置sheet的初始宽高
-			if(__limitW)
+			if($limitW)
 			{
-				__sw = bmpSetting.dimensionNS.value;
+				__sw = $wh;
 				__sh = __fh;
 			}
 			else
 			{
-				__sh = bmpSetting.dimensionNS.value;
+				__sh = $wh;
 				__sw = __fw;
 			}
 			
-			var __total:int = totalFrameNS.value;
 			var __rect:Rectangle = new Rectangle(0,0,__fw,__fh);
 			//直接加入第一个尺寸，第一个不参与计算
 			var __rects:Vector.<Rectangle> = Vector.<Rectangle>([__rect.clone()]);
 			//由于第一个尺寸已经加入，循环从第二个元素开始(i=1)
-			for (var i:int = 1; i < __total; i++) 
+			for (var i:int = 1; i < $frameNum; i++) 
 			{
 				//限制宽度的计算
-				if(__limitW)
+				if($limitW)
 				{
 					//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
 					if(__rect.right + __fw > __sw)
@@ -239,12 +248,12 @@
 			}
 		}
 		
-		private function handler_buildClick($evt:MouseEvent):void
+		private function handler_buildClick($evt:InfoEvent):void
 		{
 			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
 			_state = StateType.WAIT_LOADED;
 			swf.viewer.unloadAndStop();
-			swf.viewer.load(swfUrl);
+			swf.viewer.load(_swfURL);
 		}
 	]]>
 	</fx:Script>

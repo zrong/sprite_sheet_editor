@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-12 -->
+<!-- 设置JPEG压缩质量 -->
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  verticalAlign="middle">
+	<s:Label text="压缩:"/>
+	<s:NumericStepper id="qualityNS" minimum="1" maximum="100" value="70" maxChars="3" width="100%"/>
+	<fx:Script>
+	<![CDATA[
+		public function get value():int
+		{
+			return qualityNS.value;
+		}
+	]]>
+	</fx:Script>
+</s:HGroup>

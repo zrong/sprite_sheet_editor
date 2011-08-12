@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark">
-	<s:layout>
-		<s:HorizontalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
-	</s:layout>
-	<s:VGroup width="80" height="100%">
+	<s:Label top="5" horizontalCenter="0" text="Label设置" fontWeight="bold"/>
+	<s:VGroup left="5" top="25" bottom="5" width="80">
 		<s:Label text="帧列表"/>
 		<s:List id="frameList" width="100%" height="100%" dataProvider="{frameAC}" allowMultipleSelection="true"
 				change="handler_frameChange(event)"/>
 	</s:VGroup>
-	<s:Group width="100%" height="100%">
+	<s:Group left="90" right="5" top="25" bottom="5">
 		<s:VGroup top="20" bottom="28" width="30" enabled="{labelCB.selected}" verticalAlign="middle">
 			<s:Button id="addLabelBTN" label="&gt;" width="100%" toolTip="添加一个Label到列表中" click="handler_addLabelBTNclick(event)" 
 					  enabled="{labelCB.selected&amp;&amp;frameList.selectedItem&amp;&amp;labelInput.text}"/>

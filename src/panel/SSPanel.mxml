@@ -10,23 +10,27 @@
 				   implements="interf.IStateChanged">
 	<s:BorderContainer width="300" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
-			<s:Label text="位图动画预览"/>
-			<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%"/>
-			<s:HGroup width="100%" verticalAlign="middle">
-				<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
-				<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
-				<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
-			</s:HGroup>
+			<s:BorderContainer width="100%" backgroundColor="0x696969">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+				</s:layout>
+				<s:Label text="位图动画预览" fontWeight="bold"/>
+				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%"/>
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
+					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
+					<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
+				</s:HGroup>
+			</s:BorderContainer>
 			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"
 								change="handler_labelSettingChange(event)"/>
-			<comps:MaskSetting id="maskSetting" width="100%" height="35" backgroundColor="0x696969"/>
-			<comps:BmpSetting id="bmpSetting" width="100%"/>
+			<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" buildTitle="优化"/>
 			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"
 									saveAll="handler_saveAll(event)"
 									saveMeta="handler_saveMeta(event)"
 									savePic="handler_savePic(event)"/>
 			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"
-								  saveSeq="handler_saveSeqPanelsaveSeq(event)"/>
+								  saveSeq="handler_saveSeq(event)"/>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
@@ -62,6 +66,10 @@
 				//更新调整后的Sheet
 				Global.instance.adjustedSheet = Global.instance.sheet.clone();
 				sheet.viewer.source = Global.instance.adjustedSheet.bitmapData;
+				//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
+				//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
+				saveSheetPanel.nameCB.visible = Global.instance.sheet.metadata.hasName;
+				saveSheetPanel.nameCB.selected =Global.instance.sheet.metadata.hasName; 
 				initLabelAndFrame();
 				this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			}
@@ -118,6 +126,9 @@
 			return __frames;
 		}
 		
+		/**
+		 * 更新帧显示
+		 */
 		private function updateFrameDisplay():void
 		{
 			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
@@ -139,15 +150,17 @@
 			return Global.instance.adjustedSheet.metadata.toTXT(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
 		}
 		
-		//更新spriteSheet的值
+		/**
+		 * 更新spriteSheet的值
+		 */
 		private function updateSheet():void
 		{
 			//hasName, names, namesIndex, totalFrame, frameSizeRect 这几个变量
 			//是在生成Sheet的时候填充的，因此这里不需要更新
 			var __meta:SpriteSheetMetadata = Global.instance.adjustedSheet.metadata;
-			__meta.type = saveSheetPanel.picRBG.selectedValue.toString();
+			__meta.type = saveSheetPanel.sheetType;
 			__meta.hasLabel = labelSetting.labelCB.selected;
-			__meta.maskType = maskSetting.maskRBG.selectedValue.toString();
+			__meta.maskType = saveSheetPanel.maskDDL.selectedIndex;
 			if(__meta.hasLabel)
 			{
 				var __labels:Vector.<String> = new Vector.<String>(labelSetting.labelAL.length, true);
@@ -167,7 +180,9 @@
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		
+		/**
+		 * 实现帧的动画预览
+		 */
 		private function handler_enterFrame($evt:Event):void
 		{
 			if(playBTN.selected)
@@ -180,6 +195,9 @@
 			}
 		}
 		
+		/**
+		 * Lable修改的时候更新动画预览
+		 */
 		protected function handler_labelSettingChange($event:Event):void
 		{
 			playBTN.selected = false;
@@ -194,11 +212,14 @@
 			updateFrameDisplay();
 		}
 		
+		/**
+		 * 保存metadata和位图
+		 */
 		protected function handler_saveAll($event:InfoEvent):void
 		{
 			updateSheet();
 			var __data:Object = {meta:getMetadata(), bitmapData:Global.instance.adjustedSheet.bitmapData};
-			FileProcessor.instance.saveAll(__data, saveSheetPanel.picRBG.selectedValue.toString()+','+_fileExt);
+			FileProcessor.instance.saveAll(__data, [saveSheetPanel.picRBG.selectedValue.toString(),_fileExt]);
 		}
 		
 		protected function handler_saveMeta($event:InfoEvent):void
@@ -213,13 +234,18 @@
 			FileProcessor.instance.saveSS(
 				Global.instance.adjustedSheet.bitmapData, 
 				saveSheetPanel.picRBG.selectedValue.toString(),
-				saveSheetPanel.qualityNS.value
+				saveSheetPanel.quality.value
 			);
 		}
 		
-		protected function handler_saveSeqPanelsaveSeq($event:InfoEvent):void
+		protected function handler_saveSeq($event:InfoEvent):void
 		{
-			
+			updateSheet();
+			FileProcessor.instance.saveSeq(
+				Global.instance.adjustedSheet.getAll(),
+				saveSeqPanel.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
+				(saveSeqPanel.quality?saveSeqPanel.quality.value:0)
+			)
 		}
 		
 	]]>

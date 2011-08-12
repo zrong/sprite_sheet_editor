@@ -47,6 +47,18 @@
 			_curHandler = null;
 		}
 		
+		public function transformFromRect($rect:Rectangle):void
+		{
+			move($rect.x, $rect.y);
+			resize($rect.width, $rect.height);
+		}
+		
+		public function resize($w:int, $h:int):void
+		{
+			this.width = $w;
+			this.height = $h;
+		}
+	
 		protected function handler_mouseDown($event:MouseEvent):void
 		{
 			var __handlers:Vector.<TransformHandler> = Vector.<TransformHandler>([topHandle, rightHandle, bottomHandle, leftHandle]);

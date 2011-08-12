@@ -18,6 +18,14 @@ public class InfoEvent extends Event
 	public static const SAVE_ALL:String = 'saveAll';
 	public static const SAVE_SEQ:String = 'saveSeq';
 	
+	public static const FILE_MANAGER_SELECTION_CHANGE:String = 'selectionChange';
+	public static const FILE_MANAGER_SELECTION_CHANGING:String = 'selectionChanging';
+	
+	/**
+	 * 建立或优化SpriteSheet
+	 */
+	public static const BUILD:String = 'build';
+	
 	public var info:*;
 	
 	public function InfoEvent($type:String, $info:*=null, $bubbles:Boolean=false, $cancelable:Boolean=false)

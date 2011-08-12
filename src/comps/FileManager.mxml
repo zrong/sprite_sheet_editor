@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Metadata>
+		[Event(name="selectionChange", type="events.InfoEvent")]
+		[Event(name="selectionChanging", type="events.InfoEvent")]
+	</fx:Metadata>
+	<s:Label top="0" fontWeight="bold" horizontalCenter="0" text="文件列表"/>
+	<s:DataGrid id="fileDG" left="0" right="0" top="45" bottom="0" 
+				dataProvider="{fileList}" selectionChange="selectionChange()"
+				selectionChanging="selectionChanging()">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn headerText="文件名" width="150"  dataField="file.name"/>
+				<s:GridColumn headerText="大小" dataField="file.size"/>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
+	<s:HGroup right="0" top="20" width="100%" verticalAlign="middle">
+		<s:Button id="addFile" width="100%" label="+" toolTip="添加多个文件。如果列表中有选择项，添加的文件会出现在选择项的上方。" click="handler_addFileclick(event)"/>
+		<s:Button id="delFile" width="100%" label="x" toolTip="从列表中删除选择的文件" enabled="{fileDG.selectedItem}" click="handler_delFileclick(event)"/>
+		<s:Button id="upFile" width="100%" label="↑" toolTip="将选择的文件上移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex>0}" click="handler_upFileclick(event)"/>
+		<s:Button id="downFile" width="100%" label="↓" toolTip="将选择的文件下移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex&lt;(fileList.length-1)}" click="handler_downFileclick(event)"/>
+	</s:HGroup>
+	<fx:Script>
+	<![CDATA[
+		import events.InfoEvent;
+		
+		import mx.collections.ArrayCollection;
+		
+		import utils.FileProcessor;
+		
+		[Bindable] public var fileList:ArrayCollection;
+		
+		public function setFileList($files:Array):void
+		{
+			fileList = new ArrayCollection();
+			for (var i:int = 0; i < $files.length; i++) 
+			{
+				fileList.addItem({file:$files[i]});
+			}
+		}
+		
+		private function selectionChange():void
+		{
+			this.dispatchEvent(new InfoEvent(InfoEvent.FILE_MANAGER_SELECTION_CHANGE));
+		}
+		
+		private function selectionChanging():void
+		{
+			this.dispatchEvent(new InfoEvent(InfoEvent.FILE_MANAGER_SELECTION_CHANGING));
+		}
+		
+		protected function handler_upFileclick($event:MouseEvent):void
+		{
+			var __index:int = fileDG.selectedIndex;
+			var __item:Object = fileList.removeItemAt(__index);
+			fileList.addItemAt(__item, __index-1);
+			fileDG.selectedIndex = __index-1;
+		}
+		
+		protected function handler_downFileclick($event:MouseEvent):void
+		{
+			var __index:int = fileDG.selectedIndex;
+			var __item:Object = fileList.removeItemAt(__index);
+			fileList.addItemAt(__item, __index+1);
+			fileDG.selectedIndex = __index+1;
+		}
+		
+		protected function handler_delFileclick($event:MouseEvent):void
+		{
+			fileList.removeItemAt(fileDG.selectedIndex);
+			fileDG.selectedIndex = -1;
+			selectionChange();
+		}
+		
+		protected function handler_addFileclick($event:MouseEvent):void
+		{
+			FileProcessor.instance.openPics(fun_addFile);
+		}
+		
+		private function fun_addFile():void
+		{
+			var __selectedFiles:Array = FileProcessor.instance.selectedFiles;
+			var __index:int = fileDG.selectedIndex>-1?fileDG.selectedIndex:fileList.length;
+			trace(__selectedFiles, __index);
+			for (var i:int = 0; i < __selectedFiles.length; i++) 
+			{
+				fileList.addItemAt({file:__selectedFiles[i]}, __index+i);
+			}
+		}
+	]]>
+	</fx:Script>
+</s:Group>
