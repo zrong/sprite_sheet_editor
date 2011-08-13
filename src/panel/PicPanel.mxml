@@ -24,9 +24,7 @@
 		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" enabled="{fileM.fileList.length>0}" build="handler_buildClick(event)" buildTitle="生成"/>
 		<comps:FileManager id="fileM" width="100%" height="100%" selectionChange="handler_selectionChange(event)" selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
-	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" 
-						showTransformTool="{!useOriginalSizeCB.selected}"
-						currentState="state_bmp"/>
+	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
 	<fx:Script>
 	<![CDATA[
 		import events.InfoEvent;
@@ -87,7 +85,7 @@
 			}
 			else
 			{
-				pic.source = null;
+				pic.viewer.source = null;
 				pic.transf.destroy();
 			}
 		}
@@ -101,8 +99,8 @@
 			trace('pic capture');
 			//保存当前选择的文件的rect
 			handler_selectionChanging(null);
-			pic.source = null;
-			pic.addEventListener(InfoEvent.IMAGE_PREVIEW_LOAD_COMPLETE, handler_picLoadDone);
+			pic.viewer.source = null;
+			pic.viewer.addEventListener(Event.COMPLETE, handler_picLoadDone);
 			//根据计算出的Sheet宽高重置bmd
 			Funs.resetSheet(null, new SpriteSheetMetadata());
 			_frameNum = 0;
@@ -114,7 +112,7 @@
 		
 		private function captureDone():void
 		{
-			pic.removeEventListener(InfoEvent.IMAGE_PREVIEW_LOAD_COMPLETE, handler_picLoadDone);
+			pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
 			//根据sheet的w和h建立一个大bitmapData
 			var __bmd:BitmapData = new BitmapData(_sw, _sh, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
 			Global.instance.sheet.drawSheet(__bmd);
@@ -132,7 +130,7 @@
 			if (_frameNum < fileM.fileList.length)
 			{
 				trace('drawing frame:', _frameNum, fileM.fileList.length);
-				pic.source = File(fileM.fileList.getItemAt(_frameNum).file).url;
+				pic.viewer.source = File(fileM.fileList.getItemAt(_frameNum).file).url;
 			}
 			else
 			{
@@ -165,7 +163,7 @@
 				__ma = new Matrix();
 				__ma.translate(-1*$rect.x, -1*$rect.y);
 			}
-			__bmd.draw(pic.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+			__bmd.draw(pic.viewer.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			return __bmd;
 		}
 		
@@ -321,14 +319,14 @@
 			var __item:Object = fileM.fileDG.selectedItem;
 			if(__item)
 			{
-				pic.source = __item.file.url;
+				pic.viewer.source = __item.file.url;
 				//若为这个文件记录了rect，则改变当前rect的显示
 				if(__item.rect)
 					pic.transf.transformFromRect(__item.rect);
 			}
 			else
 			{
-				pic.source = null;
+				pic.viewer.source = null;
 			}
 		}
 		

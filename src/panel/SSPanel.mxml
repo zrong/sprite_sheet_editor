@@ -15,7 +15,7 @@
 					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 				</s:layout>
 				<s:Label text="位图动画预览" fontWeight="bold"/>
-				<comps:ImagePreview id="ani" backgroundColor="0x696969" width="100%" height="300" currentState="state_bmp"/>
+				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="300"/>
 				<s:HGroup width="100%" verticalAlign="middle">
 					<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
 					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
@@ -34,7 +34,7 @@
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
-	<comps:ImagePreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0" currentState="state_bmp"/>
+	<comps:BMPPreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
 	<fx:Script>
 	<![CDATA[
 		import com.adobe.serialization.json.JSON;
@@ -65,7 +65,7 @@
 			{
 				//更新调整后的Sheet
 				Global.instance.adjustedSheet = Global.instance.sheet.clone();
-				sheet.source = Global.instance.adjustedSheet.bitmapData;
+				sheet.viewer.source = Global.instance.adjustedSheet.bitmapData;
 				//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
 				//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
 				saveSheetPanel.nameCB.visible = Global.instance.sheet.metadata.hasName;
@@ -76,8 +76,8 @@
 			else
 			{
 				labelSetting.destroy();
-				sheet.destroy();
-				sheet.source = null;
+				sheet.viewer.bitmapData.dispose();
+				sheet.viewer.source = null;
 				Global.instance.adjustedSheet.destroy();
 				Global.instance.adjustedSheet = null;
 				_currentFrame = 0;
@@ -131,7 +131,7 @@
 		 */
 		private function updateFrameDisplay():void
 		{
-			ani.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
 		}
 		
 		private function getMetadata():String

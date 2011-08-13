@@ -21,9 +21,6 @@ public class InfoEvent extends Event
 	public static const FILE_MANAGER_SELECTION_CHANGE:String = 'selectionChange';
 	public static const FILE_MANAGER_SELECTION_CHANGING:String = 'selectionChanging';
 	
-	public static const IMAGE_PREVIEW_LOAD_COMPLETE:String = 'loadComplete';
-	public static const IMAGE_PREVIEW_LOAD_READY:String = 'loadReady';
-	
 	/**
 	 * 建立或优化SpriteSheet
 	 */
