@@ -31,7 +31,9 @@
 						  enabled="{_state&amp;&amp;_state==StateType.LOAD_DONE}" 
 						  build="handler_buildClick(event)"/>
 	</s:BorderContainer>
-	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
+	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0"
+						showTransformTool="{!useOriginalSizeCB.selected}"
+						currentState="state_swf"/>
 	<fx:Script>
 	<![CDATA[
 		import events.InfoEvent;
@@ -80,14 +82,14 @@
 				if($old == StateType.START)
 					_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
 				trace('swfPanel.load:', _swfURL);
-				swf.viewer.addEventListener(Event.COMPLETE, handler_swfLoadDone);
-				swf.viewer.load(_swfURL);
+				swf.addEventListener(InfoEvent.IMAGE_PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+				swf.source = _swfURL;
 				swf.transf.init();
 			}
 			else
 			{
-				swf.viewer.removeEventListener(Event.COMPLETE, handler_swfLoadDone);
-				swf.viewer.source = null;
+				swf.removeEventListener(InfoEvent.IMAGE_PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+				swf.source = null;
 				swf.transf.destroy();
 			}
 		}
@@ -152,14 +154,14 @@
 			var __bmd:BitmapData = new BitmapData(frameWidth, frameHeight, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
 			if(useOriginalSizeCB.selected)
 			{
-				__bmd.draw(swf.viewer.content, null, null, null, null, buildSetting.smoothCB.selected);
+				__bmd.draw(swf.content, null, null, null, null, buildSetting.smoothCB.selected);
 			}
 			else
 			{
 				//需要向“左上角”移动，将当前帧绘制成位图
 				var __ma:Matrix = new Matrix();
 				__ma.translate(-1*frameX.value, -1*frameY.value);
-				__bmd.draw(swf.viewer.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+				__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			}
 			return __bmd;
 		}
@@ -253,8 +255,8 @@
 		{
 			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
 			_state = StateType.WAIT_LOADED;
-			swf.viewer.unloadAndStop();
-			swf.viewer.load(_swfURL);
+			swf.source = null;
+			swf.source = _swfURL;
 		}
 	]]>
 	</fx:Script>

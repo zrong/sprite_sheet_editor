@@ -7,21 +7,40 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:comps="comps.*" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   creationComplete="init()">
+				   creationComplete="init()"
+				   stateChangeComplete="handler_stageChange(event)">
+	<fx:Metadata>
+		[Event(name="loadComplete", type="events.InfoEvent")]
+	</fx:Metadata>
+	<s:states>
+		<s:State name="state_swf"/>
+		<s:State name="state_bmp"/>
+	</s:states>
 	<s:Scroller width="100%" height="100%" id="viewScroller" measuredSizeIncludesScrollBars="false">
 		<s:viewport>
 			<s:Group id="scrollerView" width="100%" height="100%">
 				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewer.width}" height="{viewer.height}"/>
-				<s:SWFLoader id="viewer" width="100" height="100" scaleContent="{scaleContent}" showBusyCursor="true" complete="handler_swfcomplete(event)" />
+				<s:SWFLoader id="swf" width="100" height="100" showBusyCursor="true" 
+							 scaleContent="{scaleContent}" 
+							 complete="handler_loaded(event)" 
+							 itemCreationPolicy="immediate"  includeIn="state_swf"/>
+				<s:BitmapImage id="bmp" clearOnLoad="true" scaleMode="letterbox" horizontalAlign="left" verticalAlign="top" 
+							   ready="handler_loaded(event)"
+							   itemCreationPolicy="immediate" includeIn="state_bmp" />
 				<comps:TransformTool id="transf" width="100" height="100" maxW="{viewer.width}" maxH="{viewer.height}" visible="{showTransformTool}"/>
 			</s:Group>
 		</s:viewport>
 	</s:Scroller>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
+		
+		import mx.core.IVisualElement;
+		import mx.events.FlexEvent;
 		
 		[Bindable] public var showTransformTool:Boolean;
 		[Bindable] public var scaleContent:Boolean;
+		[Bindable] public var viewer:*;
 		
 		private function init():void
 		{
@@ -31,15 +50,39 @@
 			this.contextMenu = __menu;
 		}
 		
+		public function destroy():void
+		{
+			if(currentState == 'state_bmp')
+				bmp.bitmapData.dispose();
+		}
+		
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
+		
+		public function get content():IBitmapDrawable
+		{
+			if(currentState == 'state_swf')
+				return swf.content;
+			return bmp.bitmapData;
+		}
+		
+		public function set source($so:*):void
+		{
+			if(currentState == 'state_swf')
+				swf.source = $so;
+			else
+				bmp.source = $so;
+		}
+		
 		/**
 		 * 被载入的显示对象的实际宽度。如果是swf，就是swf文件的宽度。
 		 */
 		public function get actualWidth():int
 		{
-			return viewer.content.loaderInfo.width;
+			if(currentState == 'state_swf')
+				return swf.content.loaderInfo.width;
+			return bmp.sourceWidth;
 		}
 		
 		/**
@@ -47,7 +90,9 @@
 		 */
 		public function get actualHeight():int
 		{
-			return viewer.content.loaderInfo.height;
+			if(currentState == 'state_swf')
+				return swf.content.loaderInfo.height;
+			return bmp.sourceHeight;
 		}
 		
 		//----------------------------------------
@@ -59,7 +104,7 @@
 			var __menuItem:ContextMenuItem = $evt.target as ContextMenuItem;
 			__menuItem.checked = !__menuItem.checked;
 			scaleContent = __menuItem.checked;
-			handler_swfcomplete(null);
+			handler_loaded(null);
 		}
 		
 		protected function handler_viewerSecurityError($event:SecurityErrorEvent):void
@@ -67,7 +112,7 @@
 			trace('载入安全错误：', $event.text);
 		}
 		
-		protected function handler_swfcomplete($event:Event):void
+		protected function handler_loaded($event:Event):void
 		{
 //			trace('ImagePreview载入成功:', viewer.source);
 			//重设viewer和transf
@@ -78,12 +123,26 @@
 			}
 			else
 			{
-				viewer.width = actualWidth;
-				viewer.height = actualHeight;
+				if(currentState == 'state_bmp')
+				{
+					viewer.width = NaN;
+					viewer.height = NaN;
+				}
+				else if(currentState == 'state_swf')
+				{
+					viewer.width = actualWidth;
+					viewer.height = actualHeight;
+				}
 			}
-			
+			this.dispatchEvent(new InfoEvent(InfoEvent.IMAGE_PREVIEW_LOAD_COMPLETE));
 			//trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, actualWidth, actualHeight);
 		}
+		
+		protected function handler_stageChange($event:FlexEvent):void
+		{
+			viewer = currentState =='state_swf'?swf:bmp;
+		}
+		
 	]]>
 	</fx:Script>
 </s:BorderContainer>
