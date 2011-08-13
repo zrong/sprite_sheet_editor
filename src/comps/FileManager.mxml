@@ -71,7 +71,7 @@
 		protected function handler_delFileclick($event:MouseEvent):void
 		{
 			fileList.removeItemAt(fileDG.selectedIndex);
-			fileDG.selectedIndex = -1;
+			delFile.enabled = false;
 			selectionChange();
 		}
 		

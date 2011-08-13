@@ -106,7 +106,7 @@
 				totalFrameNS.value);
 			trace(__dimension.w, __dimension.h, __dimension.rects);
 			//直接将计算好的Vector保存到metadata中
-			var __meta:SpriteSheetMetadata = new SpriteSheetMetadata((__dimension.rects  as Vector.<Rectangle>).length);
+			var __meta:SpriteSheetMetadata = new SpriteSheetMetadata();
 			__meta.frameSizeRect = __dimension.rects;
 			var __bmd:BitmapData = new BitmapData(__dimension.w, __dimension.h, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
 			//根据计算出的Sheet宽高重置SpriteSheet和bmd
@@ -120,6 +120,8 @@
 		private function captureDone():void
 		{
 			_state = StateType.LOAD_DONE;
+			this.removeEventListener(Event.EXIT_FRAME, drawFrame);
+			Global.instance.sheet.drawSheet();
 			Funs.changeState(StateType.SS);
 		}
 		
@@ -138,7 +140,6 @@
 			//所有帧捕获完毕后取消侦听
 			if (_frameNum - firstFrameNS.value >= totalFrameNS.value)
 			{
-				this.removeEventListener(Event.EXIT_FRAME, drawFrame);
 				captureDone();
 			}
 		}

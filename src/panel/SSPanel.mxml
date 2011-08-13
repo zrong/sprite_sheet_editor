@@ -15,7 +15,7 @@
 					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 				</s:layout>
 				<s:Label text="位图动画预览" fontWeight="bold"/>
-				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%"/>
+				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="300"/>
 				<s:HGroup width="100%" verticalAlign="middle">
 					<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
 					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>

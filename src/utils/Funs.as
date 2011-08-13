@@ -26,14 +26,7 @@ public class Funs
 	{
 		if(Global.instance.sheet)
 			Global.instance.sheet.destroy();
-		//使用不带参数的SpriteSheet，是为了不让其执行parseBMD方法。因为这里的位图是空位图，并不需要解析
-		Global.instance.sheet = new SpriteSheet();
-		if($bmd)
-			Global.instance.sheet.bitmapData = $bmd;
-		if($meta)
-			Global.instance.sheet.metadata = $meta;
-		else
-			Global.instance.sheet.metadata = new SpriteSheetMetadata();
+		Global.instance.sheet = new SpriteSheet($bmd, $meta);
 	}
 	
 	public static function alert($text:String, $title:String='警告'):void
