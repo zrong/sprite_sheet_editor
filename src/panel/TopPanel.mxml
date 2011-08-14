@@ -13,7 +13,7 @@
 	<s:Spacer width="100%" height="20"/>
 	<s:HGroup visible="{Global.instance.currentState!='start'}" verticalAlign="middle">
 		<s:Label text="FPS:"/>
-		<s:NumericStepper id="fpsNS" maximum="60" minimum="1" value="30"/>
+		<s:NumericStepper id="fpsNS" maximum="60" minimum="1" value="30" change="handler_fpsNSChange(event)"/>
 		<s:Label text="显示比例："/>
 		<s:HSlider id="displayRatioHS" maximum="200" minimum="10" snapInterval="5" value="100" width="100"
 				   dataTipPrecision="0" dataTipFormatFunction="fun_displayRatioHSDataTip"/>
@@ -55,6 +55,12 @@
 					_prevState = StateType.START;
 			
 		}
+		
+		protected function handler_fpsNSChange(event:Event):void
+		{
+			this.stage.frameRate = fpsNS.value;
+		}
+		
 	]]>
 	</fx:Script>
 </s:BorderContainer>

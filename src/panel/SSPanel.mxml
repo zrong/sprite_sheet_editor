@@ -15,16 +15,18 @@
 					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 				</s:layout>
 				<s:Label text="位图动画预览" fontWeight="bold"/>
-				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="300"/>
+				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220" previewLoadComplete="handler_aniPreviewLoadComplete(event)"/>
 				<s:HGroup width="100%" verticalAlign="middle">
 					<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
 					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
 					<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
 				</s:HGroup>
+				<s:Label id="frameInfo" width="100%"/>
 			</s:BorderContainer>
 			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"
 								change="handler_labelSettingChange(event)"/>
-			<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" buildTitle="优化"/>
+			<comps:BuildSetting id="optimization" width="100%" backgroundColor="0x696969" buildTitle="优化"
+								build="handler_opt(event)"/>
 			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"
 									saveAll="handler_saveAll(event)"
 									saveMeta="handler_saveMeta(event)"
@@ -46,6 +48,7 @@
 		import mx.graphics.codec.JPEGEncoder;
 		import mx.graphics.codec.PNGEncoder;
 		
+		import org.zengrong.display.spritesheet.SpriteSheet;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
@@ -57,7 +60,6 @@
 		
 		//正在播放的帧
 		[Bindable] private var _currentFrame:int=0;
-		private var _fileExt:String;
 		
 		public function updateOnStateChanged($old:String, $new:String):void
 		{
@@ -131,22 +133,16 @@
 		 */
 		private function updateFrameDisplay():void
 		{
-			ani.viewer.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+			ani.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+			trace('载入第'+_currentFrame+'帧');
 		}
 		
 		private function getMetadata():String
 		{
 			if(saveSheetPanel.jsonRB.selected)
-			{
-				_fileExt = '.json';
 				return JSON.encode(Global.instance.adjustedSheet.metadata.toObject(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected));
-			}
 			if(saveSheetPanel.xmlRB.selected)
-			{
-				_fileExt = '.xml';
 				return Global.instance.adjustedSheet.metadata.toXMLString(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
-			}
-			_fileExt = '.txt';
 			return Global.instance.adjustedSheet.metadata.toTXT(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
 		}
 		
@@ -219,7 +215,7 @@
 		{
 			updateSheet();
 			var __data:Object = {meta:getMetadata(), bitmapData:Global.instance.adjustedSheet.bitmapData};
-			FileProcessor.instance.saveAll(__data, [saveSheetPanel.picRBG.selectedValue.toString(),_fileExt]);
+			FileProcessor.instance.saveAll(__data, [saveSheetPanel.picRBG.selectedValue.toString(),saveSheetPanel.metaRBG.selectedValue.toString()]);
 		}
 		
 		protected function handler_saveMeta($event:InfoEvent):void
@@ -246,6 +242,27 @@
 				saveSeqPanel.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
 				(saveSeqPanel.quality?saveSeqPanel.quality.value:0)
 			)
+		}
+		
+		protected function handler_aniPreviewLoadComplete(event:InfoEvent):void
+		{
+			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
+			var __rect:Rectangle = __sheet.metadata.frameSizeRect[_currentFrame-1];
+			var __name:String = '';
+			if(__sheet.metadata.hasName)
+				__name = ',name:'+__sheet.metadata.names[_currentFrame-1];
+			frameInfo.text = 'x:'+__rect.x+',y:'+__rect.y+',w:'+__rect.width+',h:'+__rect.height+__name;
+		}
+		
+		protected function handler_opt(event:InfoEvent):void
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+		private function trim():Rectangle
+		{
+			return null;
 		}
 		
 	]]>

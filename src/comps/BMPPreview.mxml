@@ -6,27 +6,61 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   creationComplete="init()">
-	<s:Scroller width="100%" height="100%" id="viewScroller">
+	<fx:Metadata>
+		[Event(name="previewLoadComplete", type="events.InfoEvent")]
+	</fx:Metadata>
+	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
 		<s:viewport>
 			<s:Group id="scrollerView" width="100%" height="100%">
-				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewer.width}" height="{viewer.height}"/>
-				<s:BitmapImage id="viewer" clearOnLoad="true" scaleMode="letterbox" horizontalAlign="left" verticalAlign="top" ready="handler_viewerReady(event)"/>
+				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
+				<s:BitmapImage id="viewer" clearOnLoad="true" scaleMode="letterbox" horizontalAlign="left" verticalAlign="top"
+							   ready="handler_viewerReady(event)"/>
 			</s:Group>
 		</s:viewport>
 	</s:Scroller>
+	<s:Label right="0" bottom="0" text="{sourceInfo}"/>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
+		
 		import mx.events.FlexEvent;
 		[Bindable] public var scaleContent:Boolean;
-		//----------------------------------------
-		// getter/setter
-		//----------------------------------------
+		[Bindable] public var sourceWidth:int;
+		[Bindable] public var sourceHeight:int;
+		[Bindable] public var viewerWidth:int;
+		[Bindable] public var viewerHeight:int;
+		[Bindable] public var sourceInfo:String;
+		
 		private function init():void
 		{
 			var __menu:ContextMenu = new ContextMenu();
 			__menu.addEventListener(Event.SELECT, handler_menuSelect);
 			__menu.customItems = [new ContextMenuItem('显示全部')];
 			this.contextMenu = __menu;
+		}
+		
+		//----------------------------------------
+		// getter/setter
+		//----------------------------------------
+		public function set source($so:*):void
+		{
+			viewer.source = $so;
+		}
+		public function get content():IBitmapDrawable
+		{
+			return viewer.bitmapData;
+		}
+		//----------------------------------------
+		// public
+		//----------------------------------------
+		public function destroy():void
+		{
+			if(viewer.bitmapData)
+				viewer.bitmapData.dispose();
+			sourceWidth = 0;
+			sourceHeight = 0;
+			viewerWidth = 0;
+			viewerHeight = 0;
 		}
 		
 		private function handler_menuSelect($evt:Event):void
@@ -39,16 +73,26 @@
 		
 		protected function handler_viewerReady($event:FlexEvent):void
 		{
+			trace('BMPPreview:', viewer.width, viewer.height);
+			sourceWidth = viewer.sourceWidth;
+			sourceHeight = viewer.sourceHeight;
 			if(scaleContent)
 			{
 				viewer.width = viewScroller.viewport.width;
 				viewer.height = viewScroller.viewport.height;
+				viewerWidth = viewScroller.viewport.width;
+				viewerHeight = viewScroller.viewport.height;
 			}
 			else
 			{
-				viewer.width = NaN;
-				viewer.height = NaN;
+				viewer.width = sourceWidth;
+				viewer.height = sourceHeight;
+				viewerWidth = sourceWidth;
+				viewerHeight = sourceHeight;
 			}
+			sourceInfo = 'W:'+sourceWidth+',H:'+sourceHeight;
+			this.dispatchEvent(new InfoEvent(InfoEvent.PREVIEW_LOAD_COMPLETE));
+			trace('BMPPreview:', viewerWidth, viewerHeight, sourceWidth, sourceHeight);
 		}
 		
 	]]>

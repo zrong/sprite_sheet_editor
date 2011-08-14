@@ -38,7 +38,7 @@
 	<fx:Script>
 	<![CDATA[
 		import events.InfoEvent;
-		[Bindable] public var buildTitle:String; 
+		[Bindable] public var buildTitle:String="生成"; 
 	]]>
 	</fx:Script>
 </s:BorderContainer>

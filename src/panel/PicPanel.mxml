@@ -15,13 +15,13 @@
 			<s:Label text="帧设置(x,y,w,h)" fontWeight="bold"/>
 			<s:CheckBox id="useOriginalSizeCB" label="使用帧的原始大小"/>
 			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
-				<s:NumericStepper id="frameX" width="100%" value="@{pic.transf.x}" minimum="0" maximum="{pic.viewer.width-1}"/>
-				<s:NumericStepper id="frameY" width="100%" value="@{pic.transf.y}" minimum="0" maximum="{pic.viewer.height-1}"/>
-				<s:NumericStepper id="frameW" width="100%" value="@{pic.transf.width}" minimum="1" maximum="{pic.viewer.width}"/>
-				<s:NumericStepper id="frameH" width="100%" value="@{pic.transf.height}" minimum="1" maximum="{pic.viewer.height}"/>
+				<s:NumericStepper id="frameX" width="100%" value="@{pic.transf.x}" minimum="0" maximum="{pic.viewerWidth-1}"/>
+				<s:NumericStepper id="frameY" width="100%" value="@{pic.transf.y}" minimum="0" maximum="{pic.viewerHeight-1}"/>
+				<s:NumericStepper id="frameW" width="100%" value="@{pic.transf.width}" minimum="1" maximum="{pic.viewerWidth}"/>
+				<s:NumericStepper id="frameH" width="100%" value="@{pic.transf.height}" minimum="1" maximum="{pic.viewerHeight}"/>
 			</s:HGroup>
 		</s:BorderContainer>
-		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" enabled="{fileM.fileList.length>0}" build="handler_buildClick(event)" buildTitle="生成"/>
+		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" enabled="{fileM.fileList.length>0}" build="handler_buildClick(event)"/>
 		<comps:FileManager id="fileM" width="100%" height="100%" selectionChange="handler_selectionChange(event)" selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
 	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
@@ -53,7 +53,7 @@
 		public function getFrameRect():Rectangle
 		{
 			if(useOriginalSizeCB.selected)
-				return new Rectangle(0,0,pic.actualWidth, pic.actualHeight);
+				return new Rectangle(0,0,pic.sourceWidth, pic.sourceHeight);
 			return new Rectangle(frameX.value,frameY.value,frameW.value,frameH.value);
 		}
 		

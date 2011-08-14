@@ -2,9 +2,7 @@
 <!-- zengrong.net -->
 <!-- 创建者:zrong(zrongzrong@gmail.com) -->
 <!-- 创建时间：2011-8-3 -->
-<!-- 
-一个以拖动方式更改大小的矩形，用于确定截取范围
--->
+<!-- 一个以拖动方式更改大小的矩形，用于确定截取范围 -->
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
@@ -14,7 +12,7 @@
 			<s:SolidColorStroke color="0" weight="2"/>
 		</s:stroke>
 		<s:fill>
-			<s:SolidColor color="0" alpha="0"/>
+			<s:SolidColor color="0" alpha="0.2"/>
 		</s:fill>
 	</s:Rect>
 	<comps:TransformHandler id="topHandle" top="0" horizontalCenter="0"/>
@@ -107,6 +105,7 @@
 				else if(__h>maxH-this.y)
 					__h = maxH-this.y;
 				else
+					//貌似高度计算有点问题 +2试试看
 					__h+=2;
 				this.height = __h;
 			}

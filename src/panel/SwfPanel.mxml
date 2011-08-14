@@ -15,10 +15,10 @@
 			<s:Label text="帧设置(x,y,w,h)"/>
 			<s:CheckBox id="useOriginalSizeCB" label="使用帧的原始大小"/>
 			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
-				<s:NumericStepper id="frameX" width="100%" value="@{swf.transf.x}" minimum="0" maximum="{swf.viewer.width-1}"/>
-				<s:NumericStepper id="frameY" width="100%" value="@{swf.transf.y}" minimum="0" maximum="{swf.viewer.height-1}"/>
-				<s:NumericStepper id="frameW" width="100%" value="@{swf.transf.width}" minimum="1" maximum="{swf.viewer.width}"/>
-				<s:NumericStepper id="frameH" width="100%" value="@{swf.transf.height}" minimum="1" maximum="{swf.viewer.height}"/>
+				<s:NumericStepper id="frameX" width="100%" value="@{swf.transf.x}" minimum="0" maximum="{swf.sourceWidth-1}"/>
+				<s:NumericStepper id="frameY" width="100%" value="@{swf.transf.y}" minimum="0" maximum="{swf.sourceHeight-1}"/>
+				<s:NumericStepper id="frameW" width="100%" value="@{swf.transf.width}" minimum="1" maximum="{swf.sourceWidth}"/>
+				<s:NumericStepper id="frameH" width="100%" value="@{swf.transf.height}" minimum="1" maximum="{swf.sourceHeight}"/>
 			</s:HGroup>
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label text="第一帧(0基)："/>
@@ -27,11 +27,12 @@
 				<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100%"/>
 			</s:HGroup>
 		</s:BorderContainer>
-		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" buildTitle="生成"
+		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
 						  enabled="{_state&amp;&amp;_state==StateType.LOAD_DONE}" 
 						  build="handler_buildClick(event)"/>
 	</s:BorderContainer>
-	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
+	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" 
+						showTransformTool="{!useOriginalSizeCB.selected}"/>
 	<fx:Script>
 	<![CDATA[
 		import events.InfoEvent;
@@ -60,12 +61,12 @@
 		
 		public function get frameWidth():int
 		{
-			return useOriginalSizeCB.selected ? swf.actualWidth : frameW.value;
+			return useOriginalSizeCB.selected ? swf.sourceWidth : frameW.value;
 		}
 		
 		public function get frameHeight():int
 		{
-			return useOriginalSizeCB.selected ? swf.actualHeight : frameH.value;
+			return useOriginalSizeCB.selected ? swf.sourceHeight : frameH.value;
 		}
 		//----------------------------------------
 		// public
@@ -80,14 +81,14 @@
 				if($old == StateType.START)
 					_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
 				trace('swfPanel.load:', _swfURL);
-				swf.viewer.addEventListener(Event.COMPLETE, handler_swfLoadDone);
-				swf.viewer.load(_swfURL);
+				swf.addEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+				swf.source = _swfURL;
 				swf.transf.init();
 			}
 			else
 			{
-				swf.viewer.removeEventListener(Event.COMPLETE, handler_swfLoadDone);
-				swf.viewer.source = null;
+				swf.removeEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+				swf.source = null;
 				swf.transf.destroy();
 			}
 		}
@@ -152,14 +153,14 @@
 			var __bmd:BitmapData = new BitmapData(frameWidth, frameHeight, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
 			if(useOriginalSizeCB.selected)
 			{
-				__bmd.draw(swf.viewer.content, null, null, null, null, buildSetting.smoothCB.selected);
+				__bmd.draw(swf.content, null, null, null, null, buildSetting.smoothCB.selected);
 			}
 			else
 			{
 				//需要向“左上角”移动，将当前帧绘制成位图
 				var __ma:Matrix = new Matrix();
 				__ma.translate(-1*frameX.value, -1*frameY.value);
-				__bmd.draw(swf.viewer.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+				__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			}
 			return __bmd;
 		}
@@ -199,8 +200,16 @@
 				//限制宽度的计算
 				if($limitW)
 				{
+					
+					//若限制宽度小于帧的宽度，就扩大限制宽度
+					if(__sw < __fw)
+					{
+						__sw = __fw;
+						__rect.x = 0;
+						__rect.y += __fh;
+					}
 					//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
-					if(__rect.right + __fw > __sw)
+					else if(__rect.right + __fw > __sw)
 					{
 						__rect.x = 0;
 						__rect.y += __fh;
@@ -214,8 +223,14 @@
 				//限制高度的计算
 				else
 				{
+					if(__sh < __fh)
+					{
+						__sh = __fh;
+						__rect.y = 0;
+						__rect.x += __fw;
+					}
 					//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
-					if(__rect.bottom + __fh > __sh)
+					else if(__rect.bottom + __fh > __sh)
 					{
 						__rect.y = 0;
 						__rect.x += __fw;
@@ -235,7 +250,7 @@
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		private function handler_swfLoadDone(event:Event) : void
+		private function handler_swfLoadDone(event:InfoEvent) : void
 		{
 			//若当前处于等待载入状态，则开始建立sheet
 			if(_state == StateType.WAIT_LOADED)
@@ -253,8 +268,8 @@
 		{
 			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
 			_state = StateType.WAIT_LOADED;
-			swf.viewer.unloadAndStop();
-			swf.viewer.load(_swfURL);
+			swf.destroy();
+			swf.source = _swfURL;
 		}
 	]]>
 	</fx:Script>

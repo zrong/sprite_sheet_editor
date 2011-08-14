@@ -8,20 +8,45 @@
 				   xmlns:comps="comps.*" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   creationComplete="init()">
-	<s:Scroller width="100%" height="100%" id="viewScroller" measuredSizeIncludesScrollBars="false">
+	<fx:Metadata>
+		[Event(name="previewLoadComplete", type="events.InfoEvent")]
+	</fx:Metadata>
+	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
 		<s:viewport>
 			<s:Group id="scrollerView" width="100%" height="100%">
-				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewer.width}" height="{viewer.height}"/>
-				<s:SWFLoader id="viewer" width="100" height="100" scaleContent="{scaleContent}" showBusyCursor="true" complete="handler_swfcomplete(event)" />
-				<comps:TransformTool id="transf" width="100" height="100" maxW="{viewer.width}" maxH="{viewer.height}" visible="{showTransformTool}"/>
+				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
+				<s:SWFLoader id="viewer" scaleContent="{scaleContent}" showBusyCursor="true" 
+							 complete="handler_swfcomplete(event)" />
+				<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
+									 visible="{showTransformTool&amp;&amp;!scaleContent}"/>
 			</s:Group>
 		</s:viewport>
 	</s:Scroller>
+	<s:Label right="0" bottom="0" text="W:{sourceWidth},H:{sourceHeight}"/>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
 		
 		[Bindable] public var showTransformTool:Boolean;
 		[Bindable] public var scaleContent:Boolean;
+		
+		/**
+		 * 被载入的显示对象的实际宽度。例如，对于swf来说，就是swf文件的宽度。
+		 */
+		[Bindable] public var sourceWidth:int=100;
+		/**
+		 * 被载入的显示对象的实际高度。
+		 */
+		[Bindable] public var sourceHeight:int=100;
+		
+		/**
+		 * viewer的显示宽度。当scaleContent为false的时候，它与sourceWidth相等。
+		 */
+		[Bindable] public var viewerWidth:int=100;
+		/**
+		 * viewer的显示高度。当scaleContent为false的时候，它与sourceWidth相等。
+		 */
+		[Bindable] public var viewerHeight:int=100;
 		
 		private function init():void
 		{
@@ -32,22 +57,29 @@
 		}
 		
 		//----------------------------------------
-		// getter/setter
+		// public
 		//----------------------------------------
-		/**
-		 * 被载入的显示对象的实际宽度。如果是swf，就是swf文件的宽度。
-		 */
-		public function get actualWidth():int
+		public function destroy():void
 		{
-			return viewer.content.loaderInfo.width;
+			viewer.unloadAndStop(true);
+//			sourceWidth = 0;
+//			sourceHeight = 0;
+//			viewerWidth = 0;
+//			viewerHeight = 0;
 		}
 		
-		/**
-		 * 被载入的显示对象的实际高度。如果是swf，就是swf文件的高度。
-		 */
-		public function get actualHeight():int
+		//----------------------------------------
+		// getter/setter
+		//----------------------------------------
+		public function set source($so:*):void
 		{
-			return viewer.content.loaderInfo.height;
+			viewer.unloadAndStop(true);
+			viewer.load($so);
+		}
+		
+		public function get content():IBitmapDrawable
+		{
+			return viewer.content;
 		}
 		
 		//----------------------------------------
@@ -69,20 +101,26 @@
 		
 		protected function handler_swfcomplete($event:Event):void
 		{
-//			trace('ImagePreview载入成功:', viewer.source);
+			trace('ImagePreview载入成功:', viewer.source);
 			//重设viewer和transf
+			sourceWidth = viewer.content.loaderInfo.width;
+			sourceHeight = viewer.content.loaderInfo.height;
 			if(scaleContent)
 			{
 				viewer.width = viewScroller.viewport.width;
 				viewer.height = viewScroller.viewport.height;
+				viewerWidth = viewScroller.viewport.width;
+				viewerHeight = viewScroller.viewport.height;
 			}
 			else
 			{
-				viewer.width = actualWidth;
-				viewer.height = actualHeight;
+				viewer.width = sourceWidth;
+				viewer.height = sourceHeight;
+				viewerWidth = sourceWidth;
+				viewerHeight = sourceHeight;
 			}
-			
-			//trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, actualWidth, actualHeight);
+			this.dispatchEvent(new InfoEvent(InfoEvent.PREVIEW_LOAD_COMPLETE));
+			trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, sourceWidth, sourceHeight);
 		}
 	]]>
 	</fx:Script>
