@@ -36,59 +36,76 @@ public class Funs
 											 $frameRect:Rectangle,
 											 $limitW:Boolean):void
 	{
+
 		//限制宽度的计算
 		if($limitW)
 		{
-			//若限制宽度小于帧的宽度，就扩大限制宽度
+			$rectInSheet.height = $frameRect.height;
+			//若限制宽度小于帧的宽度，就扩大限制宽度，并进入新行
 			if($whRect.width < $frameRect.width)
 			{
 				$whRect.width = $frameRect.width;
-				$rectInSheet.x = 0;
-				//$rectInSheet.y += $frameRect.height;
-				$rectInSheet.y = $rectInSheet.bottom;
+				newRow($rectInSheet, $frameRect, $whRect);
 			}
-				//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
+				//如果这一行的宽度已经不够放下当前的位图，就进入新行
 			else if($rectInSheet.right + $frameRect.width > $whRect.width)
 			{
-				$rectInSheet.x = 0;
-				//$rectInSheet.y += $frameRect.height;
-				$rectInSheet.y = $rectInSheet.bottom;
+				newRow($rectInSheet, $frameRect, $whRect);
 			}
 			else
 			{
 				$rectInSheet.x += $rectInSheet.width;
+				//如果当前帧比较高，就增加Sheet的高度
+				if($whRect.height<$rectInSheet.bottom)
+					$whRect.height = $rectInSheet.bottom;
 			}
-			//更新帧的宽高
+			//更新帧的宽
 			$rectInSheet.width = $frameRect.width;
-			$rectInSheet.height = $frameRect.height;
-			$whRect.height = $rectInSheet.bottom;
 		}
 		//限制高度的计算
 		else
 		{
+			//更新帧的宽
+			$rectInSheet.width = $frameRect.width;
+			//若限制高度小于帧的高度，就扩大限制高度，并进入新列
 			if($whRect.height < $frameRect.height)
 			{
 				$whRect.height = $frameRect.height;
-				$rectInSheet.y = 0;
-				//$rectInSheet.x += $frameRect.width;
-				$rectInSheet.x = $rectInSheet.right;
+				newColumn($rectInSheet, $frameRect, $whRect);
 			}
-				//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
+			//如果这一列的高度已经放不下当前的位图，就进入新列
 			else if($rectInSheet.bottom + $frameRect.height > $whRect.height)
 			{
-				$rectInSheet.y = 0;
-				//$rectInSheet.x += $frameRect.width;
-				$rectInSheet.x = $rectInSheet.right;
+				newColumn($rectInSheet, $frameRect, $whRect);
 			}
 			else
 			{
+				//如果当前帧比Sheet还要宽，就增大Sheet的宽度
 				$rectInSheet.y += $rectInSheet.height;
+				if($whRect.width<$rectInSheet.right)
+					$whRect.width = $rectInSheet.right;
 			}
-			//更新帧的宽高
-			$rectInSheet.width = $frameRect.width;
+			
 			$rectInSheet.height = $frameRect.height;
-			$whRect.width = $rectInSheet.right;
 		}
+	}
+	
+	private static function newRow($rectInSheet:Rectangle, $frameRect:Rectangle, $whRect:Rectangle):void
+	{
+		//让x回到行首
+		$rectInSheet.x = 0;
+		//更新新行的y值
+		$rectInSheet.y = $whRect.height;
+		//更新Sheet的高度
+		$whRect.height += $frameRect.height;
+		
+	}
+	
+	private static function newColumn($rectInSheet:Rectangle, $frameRect:Rectangle, $whRect:Rectangle):void
+	{
+		$rectInSheet.y = 0;
+		$rectInSheet.x = $whRect.width;
+		$whRect.width += $frameRect.width;
 	}
 	
 	public static function resetSheet($bmd:BitmapData=null, $meta:SpriteSheetMetadata=null):void

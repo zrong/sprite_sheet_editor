@@ -50,6 +50,20 @@ public class StateType
 		return false;
 	}
 	
+	public static function toMainStateName($state:String):String
+	{
+		switch($state)
+		{
+			case StateType.START:
+				return '开始 ';
+			case StateType.SS:
+				return '编辑SpriteSheet';
+			case StateType.SWF:
+				return '导入SWF文件';
+		}
+		return '处理图像文件';
+	}
+	
 	//----------------------------------------
 	// 以下是保存状态
 	//----------------------------------------

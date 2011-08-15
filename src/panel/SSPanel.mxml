@@ -59,7 +59,6 @@
 		import utils.FileProcessor;
 		import utils.Funs;
 		import utils.Global;
-		import utils.MetadataBuilder;
 		
 		//正在播放的帧
 		[Bindable] private var _currentFrame:int=0;
@@ -141,7 +140,7 @@
 			var __trimRect:Rectangle = __sheet.metadata.originalFrameRects[_currentFrame];
 			var __name:String = '';
 			if(__sheet.metadata.hasName)
-				__name = '\nname:'+__sheet.metadata.names[_currentFrame-1];
+				__name = '\nname:'+__sheet.metadata.names[_currentFrame];
 			frameInfo.text = 'size x:'+__sizeRect.x+',y:'+__sizeRect.y+',w:'+__sizeRect.width+',h:'+__sizeRect.height+
 				'\ntrim x:'+__trimRect.x+',y:'+__trimRect.y+',w:'+__trimRect.width+',h:'+__trimRect.height+__name;
 			ani.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
@@ -257,25 +256,36 @@
 		
 		protected function handler_opt(event:InfoEvent):void
 		{
-			var __bmds:Vector.<BitmapData> = new Vector.<BitmapData>;
-			var __trimRects:Vector.<Rectangle> = new Vector.<Rectangle>;
-			var __originalRects:Vector.<Rectangle> = new Vector.<Rectangle>; 
-			var __sizeRect:Rectangle = null;
-			var i:int=0;
-			for (i = 0; i < Global.instance.sheet.metadata.totalFrame; i++) 
+			var __bmds:Vector.<BitmapData> = null;
+			var __frameRects:Vector.<Rectangle> = null;
+			var __originalRects:Vector.<Rectangle> = null; 
+			if(optimization.trimCB.selected)
 			{
-				var __trimObj:Object = BitmapUtil.trim(Global.instance.sheet.getBMDByIndex(i));
-				__sizeRect = Global.instance.sheet.metadata.frameRects[i];
-				__trimRects[i] = __trimObj.rect;
-				__bmds[i] = __trimObj.bitmapData;
-				__originalRects[i] = new Rectangle(0-__trimObj.rect.x,0-__trimObj.rect.y,__sizeRect.width, __sizeRect.height);
+				__bmds = new Vector.<BitmapData>;
+				__frameRects = new Vector.<Rectangle>;
+				__originalRects = new Vector.<Rectangle>; 
+				var __sizeRect:Rectangle = null;
+				var i:int=0;
+				for (i = 0; i < Global.instance.sheet.metadata.totalFrame; i++) 
+				{
+					var __trimObj:Object = BitmapUtil.trim(Global.instance.sheet.getBMDByIndex(i));
+					__sizeRect = Global.instance.sheet.metadata.frameRects[i];
+					__frameRects[i] = __trimObj.rect;
+					__bmds[i] = __trimObj.bitmapData;
+					__originalRects[i] = new Rectangle(0-__trimObj.rect.x,0-__trimObj.rect.y,__sizeRect.width, __sizeRect.height);
+				}
 			}
-			
+			else
+			{
+				__bmds = Global.instance.sheet.cloneFrames();
+				__frameRects = Global.instance.sheet.metadata.frameRects.concat();
+				__originalRects = Global.instance.sheet.metadata.originalFrameRects.concat();
+			}
 			var __whRect:Rectangle = new Rectangle();
 			var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
-			//根据trim过的帧大小计算出最终Sheet的宽高以及修改过的frameRect
-			optimizeSheet(__trimRects, __newFrameRects, __whRect,
-				optimization.whDDL.selectedIndex == 0,optimization.whNS.value);
+			//重新计算出最终Sheet的宽高以及修改过的frameRect
+			optimizeSheet(__frameRects, __newFrameRects, __whRect,
+				optimization.whDDL.selectedIndex == 0, optimization.whNS.value);
 			Global.instance.adjustedSheet.setFrames(__bmds, __newFrameRects, __originalRects);
 			//绘制大Sheet位图
 			var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, optimization.transparentCB.selected, optimization.bgColorPicker.selectedColor);

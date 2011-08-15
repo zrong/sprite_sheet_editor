@@ -72,6 +72,8 @@
 		{
 			fileList.removeItemAt(fileDG.selectedIndex);
 			delFile.enabled = false;
+			upFile.enabled = false;
+			downFile.enabled = false;
 			selectionChange();
 		}
 		

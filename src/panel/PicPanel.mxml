@@ -207,7 +207,7 @@
 		private function handler_picLoadDone($evt:Event):void
 		{
 			var __rect:Rectangle = getCaptureFrameRect();
-			trace('handler_picLoadDone:', __rect, _rectInSheet, _whRect);
+			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
 			//如果没有创建过_rectInSheet，且当前是第一帧捕获，就建立第一帧在sheet中的rect位置
 			if(!_rectInSheet && _frameNum==0)
 			{
@@ -233,7 +233,7 @@
 				//计算并更新当前帧在整个Sheet中的位置
 				Funs.updateRectInSheet(_rectInSheet, _whRect, __rect, _limitW);
 			}
-			trace('handler_picLoadDone:', __rect, _rectInSheet, _whRect);
+			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
 			var __bmd:BitmapData =  drawBMD(__rect);
 			//向Sheet中添加这个位图，同时添加当前帧在Sheet中的位置
 			Global.instance.sheet.addFrame(__bmd, _rectInSheet.clone());
