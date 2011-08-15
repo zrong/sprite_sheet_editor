@@ -55,6 +55,7 @@
 		private var _frameNum:int;					//当前正在播放的帧的索引
 		private var _whRect:Rectangle;				//保存Sheet的宽高
 		private var _rectInSheet:Rectangle;		//保存当前帧在Sheet中的位置和大小
+		private var _limitW:Boolean;
 		private var _frameRect:Rectangle;			//当前当前帧的位置
 		[Bindable] private var _state:String;		//当前的处理状态
 		
@@ -111,6 +112,7 @@
 			_whRect = null;
 			_rectInSheet = null;
 			_frameRect = null;
+			_limitW = buildSetting.whDDL.selectedIndex == 0;
 			drawFrame();
 		}
 		
@@ -131,7 +133,6 @@
 			if (_frameNum++ >= firstFrameNS.value)
 			{
 				trace('drawing frame:', _frameNum-1)
-				var __limitW:Boolean = buildSetting.whDDL.selectedIndex == 0;
 				//如果没有设置_rectInSheet，应该是截取第一帧，这种情况下初始化rectInSheet、frameRect和whRect
 				if(!_rectInSheet)
 				{
@@ -139,7 +140,7 @@
 					_rectInSheet = _frameRect.clone();
 					var __w:int=0;
 					var __h:int=0;
-					if(__limitW)
+					if(_limitW)
 					{
 						__w = buildSetting.whNS.value;
 						__h = _frameRect.height;
@@ -154,7 +155,7 @@
 				else
 				{
 					//不是第一帧，直接更新rect
-					Funs.updateRectInSheet(_rectInSheet, _whRect, _frameRect, __limitW);
+					Funs.updateRectInSheet(_rectInSheet, _whRect, _frameRect, _limitW);
 				}
 				var __bmd:BitmapData =  drawBMD(_frameRect);
 				//向Sheet中添加这个位图

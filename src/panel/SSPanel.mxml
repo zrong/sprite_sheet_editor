@@ -57,6 +57,7 @@
 		import type.StateType;
 		
 		import utils.FileProcessor;
+		import utils.Funs;
 		import utils.Global;
 		import utils.MetadataBuilder;
 		
@@ -136,8 +137,8 @@
 		private function updateFrameDisplay():void
 		{
 			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
-			var __sizeRect:Rectangle = __sheet.metadata.frameSizeRect[_currentFrame];
-			var __trimRect:Rectangle = __sheet.metadata.frameTrimRect[_currentFrame];
+			var __sizeRect:Rectangle = __sheet.metadata.frameRects[_currentFrame];
+			var __trimRect:Rectangle = __sheet.metadata.originalFrameRects[_currentFrame];
 			var __name:String = '';
 			if(__sheet.metadata.hasName)
 				__name = '\nname:'+__sheet.metadata.names[_currentFrame-1];
@@ -257,22 +258,27 @@
 		protected function handler_opt(event:InfoEvent):void
 		{
 			var __bmds:Vector.<BitmapData> = new Vector.<BitmapData>;
-			var __sizeRects:Vector.<Rectangle> = new Vector.<Rectangle>;
 			var __trimRects:Vector.<Rectangle> = new Vector.<Rectangle>;
-			for (var i:int = 0; i < Global.instance.sheet.metadata.totalFrame; i++) 
+			var __originalRects:Vector.<Rectangle> = new Vector.<Rectangle>; 
+			var __sizeRect:Rectangle = null;
+			var i:int=0;
+			for (i = 0; i < Global.instance.sheet.metadata.totalFrame; i++) 
 			{
 				var __trimObj:Object = BitmapUtil.trim(Global.instance.sheet.getBMDByIndex(i));
-				Global.instance.adjustedSheet.addFrameAt(i, __trimObj.bitmapData, 
-					Global.instance.sheet.metadata.frameSizeRect[i], 
-					__trimObj.rect);
+				__sizeRect = Global.instance.sheet.metadata.frameRects[i];
+				__trimRects[i] = __trimObj.rect;
+				__bmds[i] = __trimObj.bitmapData;
+				__originalRects[i] = new Rectangle(0-__trimObj.rect.x,0-__trimObj.rect.y,__sizeRect.width, __sizeRect.height);
 			}
-			//根据trim过的帧大小计算出最终Sheet的宽高
-			var __rect:Rectangle = getSheetWH(	optimization.whDDL.selectedIndex == 0,
-				optimization.whNS.value,
-				Global.instance.adjustedSheet.metadata.frameTrimRect
-			);
+			
+			var __whRect:Rectangle = new Rectangle();
+			var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
+			//根据trim过的帧大小计算出最终Sheet的宽高以及修改过的frameRect
+			optimizeSheet(__trimRects, __newFrameRects, __whRect,
+				optimization.whDDL.selectedIndex == 0,optimization.whNS.value);
+			Global.instance.adjustedSheet.setFrames(__bmds, __newFrameRects, __originalRects);
 			//绘制大Sheet位图
-			var __sheetBmd:BitmapData = new BitmapData(__rect.width, __rect.height, optimization.transparentCB.selected, optimization.bgColorPicker.selectedColor);
+			var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, optimization.transparentCB.selected, optimization.bgColorPicker.selectedColor);
 			Global.instance.adjustedSheet.drawSheet(__sheetBmd);
 			sheet.source = Global.instance.adjustedSheet.bitmapData;
 		}
@@ -282,82 +288,34 @@
 		 * 根据提供的Rectangle数组计算最终Sheet的宽高
 		 * @param $frameRect 当前帧的独立大小
 		 */
-		private function getSheetWH($limitW:Boolean, $wh:int, $rects:Vector.<Rectangle>):Rectangle
+		private function optimizeSheet($trimRects:Vector.<Rectangle>, $newSizeRects:Vector.<Rectangle>, $whRect:Rectangle, $limitW:Boolean, $wh:int):void
 		{
 			var __sw:int=0;
 			var __sh:int=0;
-			var __frameRect:Rectangle = $rects[0];
+			var __frameRect:Rectangle = $trimRects[0];
+			$newSizeRects[0] = new Rectangle(0,0,__frameRect.width, __frameRect.height);
 			var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
 			//设置sheet的初始宽高
 			if($limitW)
 			{
 				//若限制宽度小于帧的宽度，就扩大限制宽度
-				__sw = $wh;
-				if(__sw<__frameRect.width) __sw = __frameRect.width;
-				__sh = __frameRect.height;
+				$whRect.width = $wh;
+				if($whRect.width<__frameRect.width) $whRect.width = __frameRect.width;
+				$whRect.height = __frameRect.height;
 			}
 			else
 			{
-				__sh = $wh;
-				if(__sh<__frameRect.height) __sh = __frameRect.height;
-				__sw = __frameRect.width;
+				$whRect.height = $wh;
+				if($whRect.height<__frameRect.height) $whRect.height = __frameRect.height;
+				$whRect.width = __frameRect.width;
 			}
-			
-			for (var i:int = 0; i < $rects.length; i++) 
+			for (var i:int = 1; i < $trimRects.length; i++) 
 			{
-				__frameRect = $rects[i];
-				//限制宽度的计算
-				if($limitW)
-				{
-					//若限制宽度小于帧的宽度，就扩大限制宽度
-					if(__sw < __frameRect.width)
-					{
-						__sw = __frameRect.width;
-						__rectInSheet.x = 0;
-						__rectInSheet.y = __rectInSheet.bottom;
-					}
-						//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
-					else if(__rectInSheet.right + __frameRect.width > __sw)
-					{
-						__rectInSheet.x = 0;
-						__rectInSheet.y = __rectInSheet.bottom;
-						
-					}
-					else
-					{
-						__rectInSheet.x += __rectInSheet.width;
-					}
-					//更新帧的宽高
-					__rectInSheet.width = __frameRect.width;
-					__rectInSheet.height = __frameRect.height;
-					__sh = __rectInSheet.bottom;
-				}
-				//限制高度的计算
-				else
-				{
-					if(__sh < __frameRect.height)
-					{
-						__sh = __frameRect.height;
-						__rectInSheet.y = 0;
-						__rectInSheet.x = __rectInSheet.right;
-					}
-						//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
-					else if(__rectInSheet.bottom + __frameRect.height > __sh)
-					{
-						__rectInSheet.y = 0;
-						__rectInSheet.x = __rectInSheet.right;
-					}
-					else
-					{
-						__rectInSheet.y += __rectInSheet.height;
-					}
-					//更新帧的宽高
-					__rectInSheet.width = __frameRect.width;
-					__rectInSheet.height = __frameRect.height;
-					__sw = __rectInSheet.right;
-				}
+				__frameRect = $trimRects[i];
+				Funs.updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
+				trace('getSheetWH:', __rectInSheet, $whRect, __frameRect);
+				$newSizeRects[i] = __rectInSheet.clone();
 			}
-			return new Rectangle(0,0,__sw, __sh);
 		}
 	]]>
 	</fx:Script>

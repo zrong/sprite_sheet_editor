@@ -24,7 +24,12 @@ public class Funs
 	}
 	
 	/**
-	 * 更新在Sheet中帧的Rect的位置，会直接修改$rectInSheet和$whRect参数的值。
+	 * 更新在Sheet中帧的Rect的位置，根据Rect位置计算出大Sheet的WH
+	 * 会直接修改$rectInSheet和$whRect参数的值。
+	 * @param $rectInSheet	当前处理的帧在整个Sheet中的位置和大小，会修改此参数的值
+	 * @param $whRect		保存Sheet的W和H，会修改此参数的值
+	 * @param $frameRect	要处理的帧大小的Rect
+	 * @param $limitW		为true代表限制宽度，否则是显示高度
 	 */
 	public static function updateRectInSheet($rectInSheet:Rectangle, 
 											 $whRect:Rectangle,
@@ -39,13 +44,15 @@ public class Funs
 			{
 				$whRect.width = $frameRect.width;
 				$rectInSheet.x = 0;
-				$rectInSheet.y += $frameRect.height;
+				//$rectInSheet.y += $frameRect.height;
+				$rectInSheet.y = $rectInSheet.bottom;
 			}
 				//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
 			else if($rectInSheet.right + $frameRect.width > $whRect.width)
 			{
 				$rectInSheet.x = 0;
-				$rectInSheet.y += $frameRect.height;
+				//$rectInSheet.y += $frameRect.height;
+				$rectInSheet.y = $rectInSheet.bottom;
 			}
 			else
 			{
@@ -56,20 +63,22 @@ public class Funs
 			$rectInSheet.height = $frameRect.height;
 			$whRect.height = $rectInSheet.bottom;
 		}
-			//限制高度的计算
+		//限制高度的计算
 		else
 		{
 			if($whRect.height < $frameRect.height)
 			{
 				$whRect.height = $frameRect.height;
 				$rectInSheet.y = 0;
-				$rectInSheet.x += $frameRect.width;
+				//$rectInSheet.x += $frameRect.width;
+				$rectInSheet.x = $rectInSheet.right;
 			}
 				//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
 			else if($rectInSheet.bottom + $frameRect.height > $whRect.height)
 			{
 				$rectInSheet.y = 0;
-				$rectInSheet.x += $frameRect.width;
+				//$rectInSheet.x += $frameRect.width;
+				$rectInSheet.x = $rectInSheet.right;
 			}
 			else
 			{

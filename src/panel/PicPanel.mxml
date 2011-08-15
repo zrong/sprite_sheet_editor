@@ -40,8 +40,8 @@
 		
 		private var _frameNum:int;				//当前正在处理的帧编号
 		private var _rectInSheet:Rectangle;	//正在处理的帧在整个Sheet上的rect位置
-		private var _sw:int;					//Sheet的宽度
-		private var _sh:int;					//Sheet的高度
+		private var _whRect:Rectangle;			//保存Sheet的宽高
+		private var _limitW:Boolean;
 		
 		//----------------------------------------
 		// getter/setter
@@ -104,9 +104,10 @@
 			//根据计算出的Sheet宽高重置bmd
 			Funs.resetSheet(null, new SpriteSheetMetadata());
 			_frameNum = 0;
-			_sw = 0;
-			_sh = 0;
 			_rectInSheet = null;
+			_whRect = null;
+			_rectInSheet = null;
+			_limitW = buildSetting.whDDL.selectedIndex == 0;
 			drawFrame();
 		}
 		
@@ -114,11 +115,10 @@
 		{
 			pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
 			//根据sheet的w和h建立一个大bitmapData
-			var __bmd:BitmapData = new BitmapData(_sw, _sh, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
+			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
 			Global.instance.sheet.drawSheet(__bmd);
 			//更新全局Sheet中保存的文件名
 			updateNames();
-
 			Funs.changeState(StateType.SS);
 		}
 		
@@ -168,89 +168,6 @@
 		}
 		
 		/**
-		 * 更新当前帧在Sheet上的位置
-		 * @param $frameRect 当前帧的独立大小
-		 */
-		private function updateRectOnSheet($frameRect:Rectangle):void
-		{
-			var __limitW:Boolean = buildSetting.whDDL.selectedIndex == 0;
-			trace('updateRectOnSheet:', $frameRect, _rectInSheet, __limitW);
-			//如果没有创建过_rectInSheet，且当前是第一帧捕获，就建立第一帧在sheet中的rect位置
-			if(!_rectInSheet && _frameNum==0)
-			{
-				_rectInSheet = new Rectangle(0,0,$frameRect.width,$frameRect.height);
-				//设置sheet的初始宽高
-				if(__limitW)
-				{
-					//若限制宽度小于帧的宽度，就扩大限制宽度
-					_sw = buildSetting.whNS.value;
-					if(_sw<$frameRect.width) _sw = $frameRect.width;
-					_sh = $frameRect.height;
-				}
-				else
-				{
-					_sh = buildSetting.whNS.value;
-					if(_sh<$frameRect.height) _sh = $frameRect.height;
-					_sw = $frameRect.width;
-				}
-			}
-			else
-			{
-				//限制宽度的计算
-				if(__limitW)
-				{
-					//若限制宽度小于帧的宽度，就扩大限制宽度
-					if(_sw < $frameRect.width)
-					{
-						_sw = $frameRect.width;
-						_rectInSheet.x = 0;
-						_rectInSheet.y = _rectInSheet.bottom;
-					}
-					//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
-					else if(_rectInSheet.right + $frameRect.width > _sw)
-					{
-						_rectInSheet.x = 0;
-						_rectInSheet.y = _rectInSheet.bottom;
-						
-					}
-					else
-					{
-						_rectInSheet.x += _rectInSheet.width;
-					}
-					//更新帧的宽高
-					_rectInSheet.width = $frameRect.width;
-					_rectInSheet.height = $frameRect.height;
-					_sh = _rectInSheet.bottom;
-				}
-					//限制高度的计算
-				else
-				{
-					if(_sh < $frameRect.height)
-					{
-						_sh = $frameRect.height;
-						_rectInSheet.y = 0;
-						_rectInSheet.x = _rectInSheet.right;
-					}
-					//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
-					else if(_rectInSheet.bottom + $frameRect.height > _sh)
-					{
-						_rectInSheet.y = 0;
-						_rectInSheet.x = _rectInSheet.right;
-					}
-					else
-					{
-						_rectInSheet.y += _rectInSheet.height;
-					}
-					//更新帧的宽高
-					_rectInSheet.width = $frameRect.width;
-					_rectInSheet.height = $frameRect.height;
-					_sw = _rectInSheet.right;
-				}
-			}
-			trace('updateRectOnSheet:', _rectInSheet, _sw, _sh);
-		}
-		
-		/**
 		 * 更新保存在全局变量中的sheet中的name值
 		 */
 		private function updateNames():void
@@ -290,9 +207,34 @@
 		private function handler_picLoadDone($evt:Event):void
 		{
 			var __rect:Rectangle = getCaptureFrameRect();
+			trace('handler_picLoadDone:', __rect, _rectInSheet, _whRect);
+			//如果没有创建过_rectInSheet，且当前是第一帧捕获，就建立第一帧在sheet中的rect位置
+			if(!_rectInSheet && _frameNum==0)
+			{
+				_rectInSheet = new Rectangle(0,0,__rect.width,__rect.height);
+				_whRect = new Rectangle();
+				//设置sheet的初始宽高
+				if(_limitW)
+				{
+					//若限制宽度小于帧的宽度，就扩大限制宽度
+					_whRect.width = buildSetting.whNS.value;
+					if(_whRect.width<__rect.width) _whRect.width = __rect.width;
+					_whRect.height = __rect.height;
+				}
+				else
+				{
+					_whRect.height = buildSetting.whNS.value;
+					if(_whRect.height<__rect.height) _whRect.height = __rect.height;
+					_whRect.width = __rect.width;
+				}
+			}
+			else
+			{
+				//计算并更新当前帧在整个Sheet中的位置
+				Funs.updateRectInSheet(_rectInSheet, _whRect, __rect, _limitW);
+			}
+			trace('handler_picLoadDone:', __rect, _rectInSheet, _whRect);
 			var __bmd:BitmapData =  drawBMD(__rect);
-			//计算并更新当前帧在整个Sheet中的位置
-			updateRectOnSheet(__rect);
 			//向Sheet中添加这个位图，同时添加当前帧在Sheet中的位置
 			Global.instance.sheet.addFrame(__bmd, _rectInSheet.clone());
 			//绘制下一帧
