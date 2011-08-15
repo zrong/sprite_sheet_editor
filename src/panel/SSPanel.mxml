@@ -15,7 +15,7 @@
 					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 				</s:layout>
 				<s:Label text="位图动画预览" fontWeight="bold"/>
-				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220" previewLoadComplete="handler_aniPreviewLoadComplete(event)"/>
+				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"/>
 				<s:HGroup width="100%" verticalAlign="middle">
 					<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
 					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
@@ -51,6 +51,8 @@
 		import org.zengrong.display.spritesheet.SpriteSheet;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetType;
+		import org.zengrong.utils.BitmapUtil;
+		import org.zengrong.utils.Vec2D;
 		
 		import type.StateType;
 		
@@ -67,7 +69,7 @@
 			{
 				//更新调整后的Sheet
 				Global.instance.adjustedSheet = Global.instance.sheet.clone();
-				sheet.viewer.source = Global.instance.adjustedSheet.bitmapData;
+				sheet.source = Global.instance.adjustedSheet.bitmapData;
 				//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
 				//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
 				saveSheetPanel.nameCB.visible = Global.instance.sheet.metadata.hasName;
@@ -133,6 +135,14 @@
 		 */
 		private function updateFrameDisplay():void
 		{
+			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
+			var __sizeRect:Rectangle = __sheet.metadata.frameSizeRect[_currentFrame];
+			var __trimRect:Rectangle = __sheet.metadata.frameTrimRect[_currentFrame];
+			var __name:String = '';
+			if(__sheet.metadata.hasName)
+				__name = '\nname:'+__sheet.metadata.names[_currentFrame-1];
+			frameInfo.text = 'size x:'+__sizeRect.x+',y:'+__sizeRect.y+',w:'+__sizeRect.width+',h:'+__sizeRect.height+
+				'\ntrim x:'+__trimRect.x+',y:'+__trimRect.y+',w:'+__trimRect.width+',h:'+__trimRect.height+__name;
 			ani.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
 			trace('载入第'+_currentFrame+'帧');
 		}
@@ -244,27 +254,111 @@
 			)
 		}
 		
-		protected function handler_aniPreviewLoadComplete(event:InfoEvent):void
-		{
-			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
-			var __rect:Rectangle = __sheet.metadata.frameSizeRect[_currentFrame-1];
-			var __name:String = '';
-			if(__sheet.metadata.hasName)
-				__name = ',name:'+__sheet.metadata.names[_currentFrame-1];
-			frameInfo.text = 'x:'+__rect.x+',y:'+__rect.y+',w:'+__rect.width+',h:'+__rect.height+__name;
-		}
-		
 		protected function handler_opt(event:InfoEvent):void
 		{
-			// TODO Auto-generated method stub
-			
+			var __bmds:Vector.<BitmapData> = new Vector.<BitmapData>;
+			var __sizeRects:Vector.<Rectangle> = new Vector.<Rectangle>;
+			var __trimRects:Vector.<Rectangle> = new Vector.<Rectangle>;
+			for (var i:int = 0; i < Global.instance.sheet.metadata.totalFrame; i++) 
+			{
+				var __trimObj:Object = BitmapUtil.trim(Global.instance.sheet.getBMDByIndex(i));
+				Global.instance.adjustedSheet.addFrameAt(i, __trimObj.bitmapData, 
+					Global.instance.sheet.metadata.frameSizeRect[i], 
+					__trimObj.rect);
+			}
+			//根据trim过的帧大小计算出最终Sheet的宽高
+			var __rect:Rectangle = getSheetWH(	optimization.whDDL.selectedIndex == 0,
+				optimization.whNS.value,
+				Global.instance.adjustedSheet.metadata.frameTrimRect
+			);
+			//绘制大Sheet位图
+			var __sheetBmd:BitmapData = new BitmapData(__rect.width, __rect.height, optimization.transparentCB.selected, optimization.bgColorPicker.selectedColor);
+			Global.instance.adjustedSheet.drawSheet(__sheetBmd);
+			sheet.source = Global.instance.adjustedSheet.bitmapData;
 		}
 		
-		private function trim():Rectangle
+
+		/**
+		 * 根据提供的Rectangle数组计算最终Sheet的宽高
+		 * @param $frameRect 当前帧的独立大小
+		 */
+		private function getSheetWH($limitW:Boolean, $wh:int, $rects:Vector.<Rectangle>):Rectangle
 		{
-			return null;
+			var __sw:int=0;
+			var __sh:int=0;
+			var __frameRect:Rectangle = $rects[0];
+			var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
+			//设置sheet的初始宽高
+			if($limitW)
+			{
+				//若限制宽度小于帧的宽度，就扩大限制宽度
+				__sw = $wh;
+				if(__sw<__frameRect.width) __sw = __frameRect.width;
+				__sh = __frameRect.height;
+			}
+			else
+			{
+				__sh = $wh;
+				if(__sh<__frameRect.height) __sh = __frameRect.height;
+				__sw = __frameRect.width;
+			}
+			
+			for (var i:int = 0; i < $rects.length; i++) 
+			{
+				__frameRect = $rects[i];
+				//限制宽度的计算
+				if($limitW)
+				{
+					//若限制宽度小于帧的宽度，就扩大限制宽度
+					if(__sw < __frameRect.width)
+					{
+						__sw = __frameRect.width;
+						__rectInSheet.x = 0;
+						__rectInSheet.y = __rectInSheet.bottom;
+					}
+						//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
+					else if(__rectInSheet.right + __frameRect.width > __sw)
+					{
+						__rectInSheet.x = 0;
+						__rectInSheet.y = __rectInSheet.bottom;
+						
+					}
+					else
+					{
+						__rectInSheet.x += __rectInSheet.width;
+					}
+					//更新帧的宽高
+					__rectInSheet.width = __frameRect.width;
+					__rectInSheet.height = __frameRect.height;
+					__sh = __rectInSheet.bottom;
+				}
+				//限制高度的计算
+				else
+				{
+					if(__sh < __frameRect.height)
+					{
+						__sh = __frameRect.height;
+						__rectInSheet.y = 0;
+						__rectInSheet.x = __rectInSheet.right;
+					}
+						//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
+					else if(__rectInSheet.bottom + __frameRect.height > __sh)
+					{
+						__rectInSheet.y = 0;
+						__rectInSheet.x = __rectInSheet.right;
+					}
+					else
+					{
+						__rectInSheet.y += __rectInSheet.height;
+					}
+					//更新帧的宽高
+					__rectInSheet.width = __frameRect.width;
+					__rectInSheet.height = __frameRect.height;
+					__sw = __rectInSheet.right;
+				}
+			}
+			return new Rectangle(0,0,__sw, __sh);
 		}
-		
 	]]>
 	</fx:Script>
 </s:HGroup>

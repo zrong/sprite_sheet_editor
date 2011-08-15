@@ -53,6 +53,9 @@
 		
 		private var _swfURL:String;				//保存选择的swf文件的路径
 		private var _frameNum:int;					//当前正在播放的帧的索引
+		private var _whRect:Rectangle;				//保存Sheet的宽高
+		private var _rectInSheet:Rectangle;		//保存当前帧在Sheet中的位置和大小
+		private var _frameRect:Rectangle;			//当前当前帧的位置
 		[Bindable] private var _state:String;		//当前的处理状态
 		
 		//----------------------------------------
@@ -101,20 +104,13 @@
 		{
 			trace('swf capture');
 			_state = StateType.PROCESSING;
-			var __dimension:Object = getSheetDimension(
-				buildSetting.whDDL.selectedIndex == 0, 
-				buildSetting.dimensionNS.value,
-				totalFrameNS.value);
-			trace(__dimension.w, __dimension.h, __dimension.rects);
-			//直接将计算好的Vector保存到metadata中
-			var __meta:SpriteSheetMetadata = new SpriteSheetMetadata();
-			__meta.frameSizeRect = __dimension.rects;
-			var __bmd:BitmapData = new BitmapData(__dimension.w, __dimension.h, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
-			//根据计算出的Sheet宽高重置SpriteSheet和bmd
-			Funs.resetSheet(__bmd, __meta);
+			this.addEventListener(Event.EXIT_FRAME, drawFrame);
+			Funs.resetSheet(null, new SpriteSheetMetadata());
 			//帧索引永远从0开始，无论正在播放的主时间轴有几帧（可能只有1帧，使用MC做动画），也可以实现多帧捕获
 			_frameNum = 0;
-			this.addEventListener(Event.EXIT_FRAME, drawFrame);
+			_whRect = null;
+			_rectInSheet = null;
+			_frameRect = null;
 			drawFrame();
 		}
 		
@@ -122,7 +118,8 @@
 		{
 			_state = StateType.LOAD_DONE;
 			this.removeEventListener(Event.EXIT_FRAME, drawFrame);
-			Global.instance.sheet.drawSheet();
+			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
+			Global.instance.sheet.drawSheet(__bmd);
 			Funs.changeState(StateType.SS);
 		}
 		
@@ -134,9 +131,34 @@
 			if (_frameNum++ >= firstFrameNS.value)
 			{
 				trace('drawing frame:', _frameNum-1)
-				var __bmd:BitmapData =  drawBMD();
+				var __limitW:Boolean = buildSetting.whDDL.selectedIndex == 0;
+				//如果没有设置_rectInSheet，应该是截取第一帧，这种情况下初始化rectInSheet、frameRect和whRect
+				if(!_rectInSheet)
+				{
+					_frameRect = new Rectangle(frameX.value,frameY.value,frameWidth, frameHeight);
+					_rectInSheet = _frameRect.clone();
+					var __w:int=0;
+					var __h:int=0;
+					if(__limitW)
+					{
+						__w = buildSetting.whNS.value;
+						__h = _frameRect.height;
+					}
+					else
+					{
+						__h = buildSetting.whNS.value;
+						__w = _frameRect.width;
+					}
+					_whRect = new Rectangle(0,0,__w, __h);
+				}
+				else
+				{
+					//不是第一帧，直接更新rect
+					Funs.updateRectInSheet(_rectInSheet, _whRect, _frameRect, __limitW);
+				}
+				var __bmd:BitmapData =  drawBMD(_frameRect);
 				//向Sheet中添加这个位图
-				Global.instance.sheet.addFrame(__bmd);
+				Global.instance.sheet.addFrame(__bmd, _rectInSheet.clone());
 			}
 			//所有帧捕获完毕后取消侦听
 			if (_frameNum - firstFrameNS.value >= totalFrameNS.value)
@@ -148,103 +170,18 @@
 		/**
 		 * 绘制当前帧，返回位图
 		 */
-		private function drawBMD():BitmapData
+		private function drawBMD($frameRect:Rectangle):BitmapData
 		{
-			var __bmd:BitmapData = new BitmapData(frameWidth, frameHeight, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
-			if(useOriginalSizeCB.selected)
-			{
-				__bmd.draw(swf.content, null, null, null, null, buildSetting.smoothCB.selected);
-			}
-			else
+			var __bmd:BitmapData = new BitmapData($frameRect.width, $frameRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
+			var __ma:Matrix = null;
+			if(!useOriginalSizeCB.selected)
 			{
 				//需要向“左上角”移动，将当前帧绘制成位图
-				var __ma:Matrix = new Matrix();
-				__ma.translate(-1*frameX.value, -1*frameY.value);
-				__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+				__ma = new Matrix();
+				__ma.translate(-1*$frameRect.x, -1*$frameRect.y);
 			}
+			__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			return __bmd;
-		}
-		
-		/**
-		 * 通过当前帧应该放置的位置
-		 * @param $limitW 是否限制宽度，若为否则是限制高度
-		 * @param $wh 被限制的宽度或者高度的最大值
-		 * @return 返回一个Object，其中的w代表sheet宽度，h代表sheet高度，rects代表sheet中每帧的位置和大小的Vector.<Rectangle>
-		 */
-		private function getSheetDimension($limitW:Boolean, $wh:int, $frameNum:int):Object
-		{
-			//frame的宽高
-			var __fw:int = frameWidth;
-			var __fh:int = frameHeight;
-			//sheet的宽高
-			var __sw:int = 0;
-			var __sh:int = 0;
-			//设置sheet的初始宽高
-			if($limitW)
-			{
-				__sw = $wh;
-				__sh = __fh;
-			}
-			else
-			{
-				__sh = $wh;
-				__sw = __fw;
-			}
-			
-			var __rect:Rectangle = new Rectangle(0,0,__fw,__fh);
-			//直接加入第一个尺寸，第一个不参与计算
-			var __rects:Vector.<Rectangle> = Vector.<Rectangle>([__rect.clone()]);
-			//由于第一个尺寸已经加入，循环从第二个元素开始(i=1)
-			for (var i:int = 1; i < $frameNum; i++) 
-			{
-				//限制宽度的计算
-				if($limitW)
-				{
-					
-					//若限制宽度小于帧的宽度，就扩大限制宽度
-					if(__sw < __fw)
-					{
-						__sw = __fw;
-						__rect.x = 0;
-						__rect.y += __fh;
-					}
-					//如果这一行的宽度已经不够放下当前的位图，就将其放在下一行的开头
-					else if(__rect.right + __fw > __sw)
-					{
-						__rect.x = 0;
-						__rect.y += __fh;
-					}
-					else
-					{
-						__rect.x += __rect.width;
-					}
-					__sh = __rect.bottom;
-				}
-				//限制高度的计算
-				else
-				{
-					if(__sh < __fh)
-					{
-						__sh = __fh;
-						__rect.y = 0;
-						__rect.x += __fw;
-					}
-					//如果这一列的高度已经放不下当前的位图，就将其放在下一列的开头
-					else if(__rect.bottom + __fh > __sh)
-					{
-						__rect.y = 0;
-						__rect.x += __fw;
-					}
-					else
-					{
-						__rect.y += __rect.height;
-					}
-					__sw = __rect.right;
-				}
-				//将计算出的位置加入Vector
-				__rects[i] = __rect.clone();
-			}
-			return {w:__sw,h:__sh,rects:__rects};
 		}
 		
 		//----------------------------------------

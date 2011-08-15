@@ -163,7 +163,7 @@
 				__ma = new Matrix();
 				__ma.translate(-1*$rect.x, -1*$rect.y);
 			}
-			__bmd.draw(pic.viewer.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+			__bmd.draw(pic.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			return __bmd;
 		}
 		
@@ -183,13 +183,13 @@
 				if(__limitW)
 				{
 					//若限制宽度小于帧的宽度，就扩大限制宽度
-					_sw = buildSetting.dimensionNS.value;
+					_sw = buildSetting.whNS.value;
 					if(_sw<$frameRect.width) _sw = $frameRect.width;
 					_sh = $frameRect.height;
 				}
 				else
 				{
-					_sh = buildSetting.dimensionNS.value;
+					_sh = buildSetting.whNS.value;
 					if(_sh<$frameRect.height) _sh = $frameRect.height;
 					_sw = $frameRect.width;
 				}
