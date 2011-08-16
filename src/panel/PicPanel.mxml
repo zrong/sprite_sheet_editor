@@ -21,7 +21,8 @@
 				<s:NumericStepper id="frameH" width="100%" value="@{pic.transf.height}" minimum="1" maximum="{pic.viewerHeight}"/>
 			</s:HGroup>
 		</s:BorderContainer>
-		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969" enabled="{fileM.fileList.length>0}" build="handler_buildClick(event)"/>
+		<comps:BuildSetting id="buildSetting" width="100%" height="90" backgroundColor="0x696969"
+							build="handler_buildClick(event)" enabled="{fileM.fileList.length&gt;0}"/>
 		<comps:FileManager id="fileM" width="100%" height="100%" selectionChange="handler_selectionChange(event)" selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
 	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>

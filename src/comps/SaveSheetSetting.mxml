@@ -15,7 +15,7 @@
 		[Event(name="saveMeta", type="events.InfoEvent")]
 		[Event(name="saveAll", type="events.InfoEvent")]
 	</fx:Metadata>
-	<s:Label text="保存SpriteSheet" fontWeight="bold"/>
+	<s:Label text="保存Sprite Sheet" fontWeight="bold"/>
 	<s:HGroup width="100%">
 		<s:VGroup width="50%">
 			<s:Label text="保存SpriteSheet" />

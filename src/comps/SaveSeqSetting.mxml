@@ -15,7 +15,7 @@
 		<s:State name="SSP"/>
 		<s:State name="SSJ"/>
 	</s:states>
-	<s:Label text="保存序列" fontWeight="bold"/>
+	<s:Label text="{title}" fontWeight="bold"/>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label text="序列前缀:"/>
 		<s:TextInput id="preTI" width="100%" change="preview()"/>
@@ -44,6 +44,7 @@
 		
 		private var _ten:Array=[0];	//编号位数中每一位的十进制最小值，例如10，1000，1000
 		[Bindable] private var _fileName:String;	//主文件名
+		[Bindable] public var title:String='保存序列';
 		
 		/**
 		 * 根据提供的文件数量返回符合命名规则的文件名数组

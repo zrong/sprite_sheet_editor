@@ -8,6 +8,9 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:comps="comps.*"
 				   implements="interf.IStateChanged">
+	<fx:Declarations>
+		<s:RadioButtonGroup id="frameDisplayRBG" change="updateFrameDisplay()"/>
+	</fx:Declarations>
 	<s:BorderContainer width="300" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
 			<s:BorderContainer width="100%" backgroundColor="0x696969">
@@ -21,17 +24,35 @@
 					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
 					<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
 				</s:HGroup>
-				<s:Label id="frameInfo" width="100%"/>
+				<s:HGroup verticalAlign="middle" width="100%">
+					<s:RadioButton id="disFrameRB" label="修剪" name="frameDisplayRBG" selected="true" toolTip="显示修剪空白后的帧的宽高"/>
+					<s:Label id="frameRectLabel"/>
+				</s:HGroup>
+				<s:HGroup verticalAlign="middle" width="100%">
+					<s:RadioButton id="disOriginRB" label="原始" name="frameDisplayRBG" toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
+					<s:Label id="originRectLabel"/>
+				</s:HGroup>
 			</s:BorderContainer>
 			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"
 								change="handler_labelSettingChange(event)"/>
-			<comps:BuildSetting id="optimization" width="100%" backgroundColor="0x696969" buildTitle="优化"
+			<s:BorderContainer width="100%" height="30" backgroundColor="0x696969">
+				<s:layout>
+					<s:HorizontalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" verticalAlign="middle"/>
+				</s:layout>
+				<s:CheckBox id="trimCB" label="修剪空白" toolTip="选中后，会以左上角的像素颜色为基准，裁切掉边缘的多余空白"/>
+				<s:CheckBox id="OptimizedCB" label="优化排列" toolTip="选中后，在排列Sheet的时候，会尽量利用空白区域" visible="false"/>
+				<s:CheckBox id="powerOf2CB" label="2的幂" toolTip="选中后，输出尺寸的宽高均为2的幂（如256,512）"/>
+				<s:CheckBox id="squareCB" label="正方形" toolTip="选中后，输出尺寸比例为正方形，宽高自动确定"/>
+			</s:BorderContainer>
+			<comps:BuildSetting id="optimization" width="100%" height="90" backgroundColor="0x696969" 
+								buildTitle="优化" title="优化Sprite Sheet"
 								build="handler_opt(event)"/>
 			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"
 									saveAll="handler_saveAll(event)"
 									saveMeta="handler_saveMeta(event)"
 									savePic="handler_savePic(event)"/>
 			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"
+								  title="{disFrameRB.selected?'保存序列(修剪尺寸)':'保存序列(原始尺寸)'}"
 								  saveSeq="handler_saveSeq(event)"/>
 		</s:VGroup>
 	</s:BorderContainer>
@@ -52,6 +73,7 @@
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		import org.zengrong.utils.BitmapUtil;
+		import org.zengrong.utils.MathUtil;
 		import org.zengrong.utils.Vec2D;
 		
 		import type.StateType;
@@ -121,10 +143,24 @@
 		private function getFrameLabelText():String
 		{
 			var __frames:String = '';
+			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
 			if(labelSetting.framesCount>1)
+			{
 				__frames = labelSetting.firstFrame+'-'+(labelSetting.firstFrame+labelSetting.framesCount-1)+'帧';
+				if(__sheet.metadata.hasName)
+				{
+					__frames+=' name:'
+					for (var i:int = 0; i < labelSetting.framesCount; i++) 
+					{
+						__frames += __sheet.metadata.names[labelSetting.firstFrame+i]+',';
+					}
+				}
+			}
 			else
-				__frames = '第'+labelSetting.firstFrame+'帧';
+			{
+				__frames = '第'+labelSetting.firstFrame+'帧';			
+				__frames += ' name:' + __sheet.metadata.names[labelSetting.firstFrame]
+			}
 			if(labelSetting.selectedLabel)
 				return 'Label:'+labelSetting.selectedLabel+' '+__frames;
 			return __frames;
@@ -139,11 +175,14 @@
 			var __sizeRect:Rectangle = __sheet.metadata.frameRects[_currentFrame];
 			var __trimRect:Rectangle = __sheet.metadata.originalFrameRects[_currentFrame];
 			var __name:String = '';
-			if(__sheet.metadata.hasName)
-				__name = '\nname:'+__sheet.metadata.names[_currentFrame];
-			frameInfo.text = 'size x:'+__sizeRect.x+',y:'+__sizeRect.y+',w:'+__sizeRect.width+',h:'+__sizeRect.height+
-				'\ntrim x:'+__trimRect.x+',y:'+__trimRect.y+',w:'+__trimRect.width+',h:'+__trimRect.height+__name;
-			ani.source = Global.instance.adjustedSheet.getBMDByIndex(_currentFrame);
+			frameRectLabel.text = 'x:'+__sizeRect.x+',y:'+__sizeRect.y+',w:'+__sizeRect.width+',h:'+__sizeRect.height;
+			originRectLabel.text = 'x:'+__trimRect.x+',y:'+__trimRect.y+',w:'+__trimRect.width+',h:'+__trimRect.height;
+			//根据选择显示原始的或者修剪过的Frame
+			var __frameBmd:BitmapData = disFrameRB.selected ? 
+				__sheet.getBMDByIndex(_currentFrame) : 
+				 Global.instance.sheet.getBMDByIndex(_currentFrame);
+			ani.source = __frameBmd;
+			dispatchEvent(new Event('frameOrLabelChange'));
 			trace('载入第'+_currentFrame+'帧');
 		}
 		
@@ -246,9 +285,12 @@
 		
 		protected function handler_saveSeq($event:InfoEvent):void
 		{
-			updateSheet();
+			//根据显示的帧类型来保存序列
+			var __bmds:Vector.<BitmapData> = disFrameRB.selected ? 
+				Global.instance.adjustedSheet.getAll():
+				Global.instance.sheet.getAll();
 			FileProcessor.instance.saveSeq(
-				Global.instance.adjustedSheet.getAll(),
+				__bmds,
 				saveSeqPanel.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
 				(saveSeqPanel.quality?saveSeqPanel.quality.value:0)
 			)
@@ -259,7 +301,7 @@
 			var __bmds:Vector.<BitmapData> = null;
 			var __frameRects:Vector.<Rectangle> = null;
 			var __originalRects:Vector.<Rectangle> = null; 
-			if(optimization.trimCB.selected)
+			if(trimCB.selected)
 			{
 				__bmds = new Vector.<BitmapData>;
 				__frameRects = new Vector.<Rectangle>;
@@ -284,13 +326,21 @@
 			var __whRect:Rectangle = new Rectangle();
 			var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
 			//重新计算出最终Sheet的宽高以及修改过的frameRect
-			optimizeSheet(__frameRects, __newFrameRects, __whRect,
-				optimization.whDDL.selectedIndex == 0, optimization.whNS.value);
+			optimizeSheet(__frameRects, 
+				__newFrameRects, 
+				__whRect,
+				optimization.whDDL.selectedIndex == 0, 
+				optimization.whNS.value,
+				powerOf2CB.selected,
+				squareCB.selected
+			);
 			Global.instance.adjustedSheet.setFrames(__bmds, __newFrameRects, __originalRects);
 			//绘制大Sheet位图
 			var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, optimization.transparentCB.selected, optimization.bgColorPicker.selectedColor);
 			Global.instance.adjustedSheet.drawSheet(__sheetBmd);
 			sheet.source = Global.instance.adjustedSheet.bitmapData;
+			//显示优化过的Frame
+			disFrameRB.selected = true;
 		}
 		
 
@@ -298,10 +348,14 @@
 		 * 根据提供的Rectangle数组计算最终Sheet的宽高
 		 * @param $frameRect 当前帧的独立大小
 		 */
-		private function optimizeSheet($trimRects:Vector.<Rectangle>, $newSizeRects:Vector.<Rectangle>, $whRect:Rectangle, $limitW:Boolean, $wh:int):void
+		private function optimizeSheet($trimRects:Vector.<Rectangle>, 
+										$newSizeRects:Vector.<Rectangle>,
+										$whRect:Rectangle, 
+										$limitW:Boolean, 
+										$wh:int,
+										$powOf2:Boolean=false,
+										$square:Boolean=false):void
 		{
-			var __sw:int=0;
-			var __sh:int=0;
 			var __frameRect:Rectangle = $trimRects[0];
 			$newSizeRects[0] = new Rectangle(0,0,__frameRect.width, __frameRect.height);
 			var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
@@ -311,12 +365,15 @@
 				//若限制宽度小于帧的宽度，就扩大限制宽度
 				$whRect.width = $wh;
 				if($whRect.width<__frameRect.width) $whRect.width = __frameRect.width;
+				//计算2的幂
+				if($powOf2) $whRect.width = MathUtil.nextPowerOf2($whRect.width);
 				$whRect.height = __frameRect.height;
 			}
 			else
 			{
 				$whRect.height = $wh;
 				if($whRect.height<__frameRect.height) $whRect.height = __frameRect.height;
+				if($powOf2) $whRect.height = MathUtil.nextPowerOf2($whRect.height);
 				$whRect.width = __frameRect.width;
 			}
 			for (var i:int = 1; i < $trimRects.length; i++) 
@@ -325,6 +382,32 @@
 				Funs.updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
 				trace('getSheetWH:', __rectInSheet, $whRect, __frameRect);
 				$newSizeRects[i] = __rectInSheet.clone();
+			}
+			if($square)
+			{
+				//计算正方形的尺寸
+				if($whRect.width!=$whRect.height)
+				{
+					//使用当前计算出的面积开方得到正方形的基准尺寸
+					var __newWH:int = Math.sqrt($whRect.width*$whRect.height);
+					//使用基准尺寸重新排列一次
+					optimizeSheet($trimRects,$newSizeRects,$whRect,$limitW,__newWH, $powOf2);
+					//trace('正方形计算1:', $whRect);
+					//如果基准尺寸无法实现正方形尺寸，就使用结果WH中比较大的那个尺寸作为正方形边长
+					if($whRect.width!=$whRect.height)
+					{
+						var __max:int = Math.max($whRect.width, $whRect.height);
+						$whRect.width = __max;
+						$whRect.height = __max;
+					}
+					//trace('正方形计算2:', $whRect);
+				}
+					
+			}
+			if($powOf2)
+			{
+				$whRect.width = MathUtil.nextPowerOf2($whRect.width);
+				$whRect.height = MathUtil.nextPowerOf2($whRect.height);
 			}
 		}
 	]]>

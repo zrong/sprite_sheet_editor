@@ -27,7 +27,7 @@
 				<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100%"/>
 			</s:HGroup>
 		</s:BorderContainer>
-		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
+		<comps:BuildSetting id="buildSetting" width="100%" height="90" backgroundColor="0x696969"
 						  enabled="{_state&amp;&amp;_state==StateType.LOAD_DONE}" 
 						  build="handler_buildClick(event)"/>
 	</s:BorderContainer>
