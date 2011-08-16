@@ -7,8 +7,10 @@
 package utils
 {
 import flash.display.BitmapData;
+import flash.errors.IOError;
 import flash.events.Event;
 import flash.events.FileListEvent;
+import flash.events.IOErrorEvent;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
@@ -19,6 +21,7 @@ import mx.graphics.codec.JPEGEncoder;
 import mx.graphics.codec.PNGEncoder;
 
 import org.zengrong.display.spritesheet.SpriteSheetType;
+import org.zengrong.net.SpriteSheetLoader;
 
 import type.StateType;
 
@@ -59,6 +62,9 @@ public class FileProcessor
 		
 		_allPicFilter = new FileFilter('全部支持图像', PNG_FILTER.extension+';'+JPG_FILTER.extension);
 		_allPicArr = [_allPicFilter, PNG_FILTER, JPG_FILTER];
+		_ssLoader = new SpriteSheetLoader();
+		_ssLoader.addEventListener(Event.COMPLETE, handler_ssLoadComplete);
+		_ssLoader.addEventListener(IOErrorEvent.IO_ERROR, handler_ssLoadError);
 	}
 	
 	private var _file:File;
@@ -68,6 +74,8 @@ public class FileProcessor
 	private var _selectedFiles:Array;	//选择的文件数组
 	private var _callBack:Function;
 	
+	private var _ssLoader:SpriteSheetLoader;	//用于载入现有的SpriteSheet
+	
 	private var _fileData:*;		//等待保存的数据
 	private var _fileName:*;		//要保存的文件名称或者其他代表文件名称的值
 	private var _quality:int;		//jpeg压缩的质量
@@ -76,6 +84,10 @@ public class FileProcessor
 	{
 		return _selectedFiles;
 	}
+	
+	//----------------------------------------
+	// 打开文件操作
+	//----------------------------------------
 	
 	public function openSwf():void
 	{
@@ -95,6 +107,10 @@ public class FileProcessor
 		_openState = StateType.SS;
 		_file.browseForOpen('选择一个SpriteSheet文件', _allPicArr);
 	}
+	
+	//----------------------------------------
+	// 保存文件操作
+	//----------------------------------------
 	
 	/**
 	 * 保存SpriteSheet图像
@@ -184,6 +200,10 @@ public class FileProcessor
 		}
 	}
 	
+	//----------------------------------------
+	// 内部方法
+	//----------------------------------------
+	
 	/**
 	 * 根据扩展名，制作一个新的File文件对象并返回
 	 */	
@@ -208,13 +228,20 @@ public class FileProcessor
 		return __jpg.encode($bmd);
 	}
 	
+	//----------------------------------------
+	// handler
+	//----------------------------------------
+	
 	private function handler_selectSingle($evt:Event):void
 	{
 		//如果发生选择事件的state是编辑器主状态，就执行状态切换
 		if(StateType.isMainState(_openState))
 		{
 			_selectedFiles = [_file.clone()];
-			Funs.changeState(_openState);
+			if(_openState != StateType.SS)
+				Funs.changeState(_openState);
+			else
+				_ssLoader.load(_file.url);
 		}
 		//否则执行保存
 		else
@@ -241,6 +268,19 @@ public class FileProcessor
 		_callBack = null;
 	}
 	
+	/**
+	 * 打开SS格式，载入SS完毕后调用
+	 */
+	private function handler_ssLoadComplete($evt:Event):void
+	{
+		Global.instance.sheet = _ssLoader.getSpriteSheet();
+		Funs.changeState(_openState);
+	}
+	
+	private function handler_ssLoadError($evt:IOErrorEvent):void
+	{
+		Funs.alert($evt.text);
+	}
 }
 }
 class Singlton{};

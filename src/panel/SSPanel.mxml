@@ -25,11 +25,11 @@
 					<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
 				</s:HGroup>
 				<s:HGroup verticalAlign="middle" width="100%">
-					<s:RadioButton id="disFrameRB" label="修剪" name="frameDisplayRBG" selected="true" toolTip="显示修剪空白后的帧的宽高"/>
+					<s:RadioButton id="disFrameRB" label="修剪" groupName="frameDisplayRBG" selected="true" toolTip="显示修剪空白后的帧的宽高"/>
 					<s:Label id="frameRectLabel"/>
 				</s:HGroup>
 				<s:HGroup verticalAlign="middle" width="100%">
-					<s:RadioButton id="disOriginRB" label="原始" name="frameDisplayRBG" toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
+					<s:RadioButton id="disOriginRB" label="原始" groupName="frameDisplayRBG" toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
 					<s:Label id="originRectLabel"/>
 				</s:HGroup>
 			</s:BorderContainer>
@@ -69,12 +69,15 @@
 		import mx.graphics.codec.JPEGEncoder;
 		import mx.graphics.codec.PNGEncoder;
 		
+		import org.zengrong.display.spritesheet.MaskType;
 		import org.zengrong.display.spritesheet.SpriteSheet;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		import org.zengrong.utils.BitmapUtil;
 		import org.zengrong.utils.MathUtil;
 		import org.zengrong.utils.Vec2D;
+		
+		import spark.globalization.supportClasses.GlobalizationBase;
 		
 		import type.StateType;
 		
@@ -91,6 +94,12 @@
 			{
 				//更新调整后的Sheet
 				Global.instance.adjustedSheet = Global.instance.sheet.clone();
+				if($old == StateType.START)
+				{
+					//如果是直接从START跳转过来，就将修剪空白版本的Frame赋值给adjustedSheet
+					//因为SpriteSheet可能是修剪过的
+					Global.instance.adjustedSheet.setFrames(Global.instance.sheet.createAll(false));
+				}
 				sheet.source = Global.instance.adjustedSheet.bitmapData;
 				//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
 				//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
@@ -263,7 +272,13 @@
 		protected function handler_saveAll($event:InfoEvent):void
 		{
 			updateSheet();
-			var __data:Object = {meta:getMetadata(), bitmapData:Global.instance.adjustedSheet.bitmapData};
+			var __bmd:BitmapData = getBitmapDataForSave(
+				Global.instance.adjustedSheet.bitmapData,
+				saveSheetPanel.maskDDL.selectedIndex,
+				optimization.transparentCB.selected,
+				optimization.bgColorPicker.selectedColor
+			);
+			var __data:Object = {meta:getMetadata(), bitmapData:__bmd};
 			FileProcessor.instance.saveAll(__data, [saveSheetPanel.picRBG.selectedValue.toString(),saveSheetPanel.metaRBG.selectedValue.toString()]);
 		}
 		
@@ -276,8 +291,14 @@
 		protected function handler_savePic($event:InfoEvent):void
 		{
 			updateSheet();
+			var __bmd:BitmapData = getBitmapDataForSave(
+				Global.instance.adjustedSheet.bitmapData,
+				saveSheetPanel.maskDDL.selectedIndex,
+				optimization.transparentCB.selected,
+				optimization.bgColorPicker.selectedColor
+			);
 			FileProcessor.instance.saveSS(
-				Global.instance.adjustedSheet.bitmapData, 
+				__bmd, 
 				saveSheetPanel.picRBG.selectedValue.toString(),
 				saveSheetPanel.quality.value
 			);
@@ -409,6 +430,44 @@
 				$whRect.width = MathUtil.nextPowerOf2($whRect.width);
 				$whRect.height = MathUtil.nextPowerOf2($whRect.height);
 			}
+		}
+		
+		/**
+		 * 绘制Mask，返回带有Mask的位图（如果有mask的话）
+		 */
+		private function getBitmapDataForSave($bitmapData:BitmapData, $maskType:int, $transparent:Boolean, $bgcolor:uint):BitmapData
+		{
+			if(MaskType.useMask($maskType))
+			{
+				var __sourceRect:Rectangle = new Rectangle(0, 0, $bitmapData.width, $bitmapData.height);
+				var __destRect:Rectangle = new Rectangle(0, 0, $bitmapData.width, $bitmapData.height);
+				var __point:Point = new Point(0,0);
+				//用于Alpha通道部分的背景色
+				var __alphaBG:uint = 0xFF000000;
+				//新建一个带有Mask大小的位图
+				var __saveBmd:BitmapData = null;
+				if($maskType == MaskType.HOR_MASK)
+				{
+					__saveBmd = new BitmapData($bitmapData.width*2, $bitmapData.height, $transparent, $bgcolor);
+					__destRect.x = $bitmapData.width;
+					__point.x = __destRect.x;
+				}
+				else if($maskType == MaskType.VER_MASK)
+				{
+					__saveBmd = new BitmapData($bitmapData.width, $bitmapData.height*2, $transparent, $bgcolor);
+					__destRect.y = $bitmapData.height;
+					__point.y = __destRect.y;
+				}
+				__saveBmd.copyPixels($bitmapData, __sourceRect, new Point(0,0), null, null, true);
+				//为mask填充一个背景色
+				__saveBmd.fillRect(__destRect, __alphaBG);
+				//分别填充红绿蓝通道，这样生成出的透明的部分才是白色
+				__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 1);
+				__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 2);
+				__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 4);
+				return __saveBmd;
+			}
+			return $bitmapData;
 		}
 	]]>
 	</fx:Script>

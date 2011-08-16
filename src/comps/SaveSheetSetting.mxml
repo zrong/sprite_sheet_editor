@@ -8,7 +8,6 @@
 	<fx:Declarations>
 		<s:RadioButtonGroup id="picRBG"/>
 		<s:RadioButtonGroup id="metaRBG"/>
-		<s:RadioButtonGroup id="maskRBG"/>
 	</fx:Declarations>
 	<fx:Metadata>
 		[Event(name="savePic", type="events.InfoEvent")]
