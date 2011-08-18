@@ -4,7 +4,7 @@
 		  xmlns:comps="comps.*"
 		  implements="interf.IStateChanged"
 		  xmlns:mx="library://ns.adobe.com/flex/mx">
-	<s:BorderContainer width="300" height="100%" borderColor="0x878787" backgroundAlpha="0">
+	<s:BorderContainer width="320" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<s:layout>
 			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 		</s:layout>

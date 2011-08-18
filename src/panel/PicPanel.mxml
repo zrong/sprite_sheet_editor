@@ -4,7 +4,7 @@
 		  xmlns:comps="comps.*"
 		  horizontalAlign="center"
 		  implements="interf.IStateChanged">
-	<s:BorderContainer width="300" height="100%"  borderColor="0x878787" backgroundAlpha="0">
+	<s:BorderContainer width="320" height="100%"  borderColor="0x878787" backgroundAlpha="0">
 		<s:layout>
 			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 		</s:layout>
@@ -141,7 +141,7 @@
 				}
 				catch($argument:ArgumentError)
 				{
-					Funs.alert('生成的位图尺寸超过了Flash Playe能够支持的大小？你可以找Adobe谈谈:D\n'+$argument.message);
+					Funs.alert('Flash Playe 10/AIR2支持的位图尺寸宽高必须都大于0且小于8191像素，同时总像素不超过16777215。\n'+$argument.message);
 				}
 				catch($err:Error)
 				{

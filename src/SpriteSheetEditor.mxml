@@ -4,7 +4,8 @@
 					   xmlns:panel="panel.*"
 					   backgroundColor="#4D4D4D" showStatusBar="false"
 					   currentState="{Global.instance.currentState}"
-					   windowComplete="handler_init(event)">
+					   windowComplete="handler_init(event)"
+					   closing="handler_closing(event)">
 	<fx:Style source="main.css"/>
 	<s:states>
 		<s:State name="start"/>
@@ -30,12 +31,14 @@
 		
 		import type.StateType;
 		
+		import utils.Funs;
 		import utils.Global;
 		
 		protected function handler_init(event:AIREvent):void
 		{
 			Global.instance.root = this;
 			ChangeWatcher.watch(Global.instance, 'currentState', fun_currentStateChange);
+			this.title = Funs.getDesc('name') +' v' + Funs.getDesc('versionNumber');
 		}
 		
 		private function fun_currentStateChange($evt:PropertyChangeEvent):void
@@ -48,6 +51,22 @@
 				(this.getElementAt(i) as IStateChanged).updateOnStateChanged(__old, __new);
 			}
 		}
+		
+		protected function handler_closing($event:Event):void
+		{
+			$event.preventDefault();
+			Funs.confirm('要关闭程序么？', 
+				function():void
+				{
+					var __openedWindow:Array = NativeApplication.nativeApplication.openedWindows;
+					for (var i:int = 0; i < __openedWindow.length; i++) 
+					{
+						NativeWindow(__openedWindow[i]).close();
+					}
+				}
+			)
+		}
+		
 	]]>
 	</fx:Script>
 </s:WindowedApplication>

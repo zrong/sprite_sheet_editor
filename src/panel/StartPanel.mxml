@@ -6,19 +6,31 @@
 	<s:layout>
 		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
 	</s:layout>
-	<s:Button id="openSWFBTN" width="120" label="打开SWF文件" click="handler_openSWFBTNClick(event)"/>
-	<s:Button id="openPicBTN" width="120" label="导入图像文件" click="handler_openPicBTNClick(event)"/>
+	<s:Button id="openSWFBTN" width="120" height="30." label="打开SWF文件"
+			  click="handler_openSWFBTNClick(event)"/>
+	<s:Button id="openPicBTN" width="120" height="30." label="导入图像文件"
+			  click="handler_openPicBTNClick(event)"/>
 	<s:Spacer width="100" height="10"/>
-	<s:Button id="openSSBTN" width="120" label="打开Sprite Sheet" click="handler_openSSBTNclick(event)"/>
-	<s:Button id="convertSSBTN" width="120" label="转换Sprite Sheet"/>
+	<s:Button id="openSSBTN" width="120" height="30." label="打开Sprite Sheet"
+			  click="handler_openSSBTNclick(event)"/>
+	<s:Button id="convertSSBTN" width="120" height="30." label="转换Sprite Sheet" enabled="false"/>
 	<s:Spacer width="100" height="30"/>
-	<s:Button id="aboutBTN" width="120" label="关于"/>
+	<s:Button id="newBTN" width="120" height="30." label="检查更新" 
+			  click="handler_newBTNclick(event)"/>
+	<s:Button id="aboutBTN" width="120" height="30." label="关于" 
+			  click="handler_aboutBTNclick(event)"/>
 	<fx:Script>
 	<![CDATA[
+		import comps.About;
+		
+		import flash.net.navigateToURL;
+		
 		import type.StateType;
 		
 		import utils.FileProcessor;
 		import utils.Global;
+		
+		private var _about:About;
 		
 		protected function handler_openSWFBTNClick(event:MouseEvent):void
 		{
@@ -37,6 +49,25 @@
 		
 		public function updateOnStateChanged($old:String, $new:String):void
 		{
+		}
+		
+		protected function handler_aboutBTNclick($event:MouseEvent):void
+		{
+			if(!_about)
+			{
+				_about = new About();
+				_about.open(true);
+			}
+			else
+			{
+				_about.visible = true;
+				_about.activate();
+			}
+		}
+		
+		protected function handler_newBTNclick($event:MouseEvent):void
+		{
+			navigateToURL(new URLRequest('http://www.zengrong.net/sprite_sheet_editor'));
 		}
 		
 	]]>

@@ -41,7 +41,6 @@
       <airSettings airCertificatePath="E:/material/zrong.p12" airTimestamp="true" version="1">
         <airExcludes>
           <pathEntry path="manifest.xml"/>
-          <pathEntry path="help.txt"/>
         </airExcludes>
       </airSettings>
       <actionScriptSettings version="1"/>

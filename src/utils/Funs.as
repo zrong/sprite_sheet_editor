@@ -2,6 +2,7 @@ package utils
 {
 import comps.Alert;
 
+import flash.desktop.NativeApplication;
 import flash.display.BitmapData;
 import flash.geom.Point;
 import flash.geom.Rectangle;
@@ -13,6 +14,12 @@ import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 
 public class Funs
 {
+	public static function getDesc($name:String):String
+	{
+		var __desc:XML = NativeApplication.nativeApplication.applicationDescriptor;
+		var __ns:Namespace = __desc.namespace();
+		return __desc.__ns::[$name];
+	}
 	/**
 	 * 修改当前的State
 	 * @param $state 要修改的状态的名称
@@ -124,13 +131,14 @@ public class Funs
 		__alert.move(__xy[0], __xy[1]);
 	}
 	
-	public static function confirm($text:String, $okHandler:Function, $title:String="请确认"):void
+	public static function confirm($text:String, $okHandler:Function, $cancelHandler:Function=null, $title:String="请确认"):void
 	{
 		var __alert:Alert = PopUpManager.createPopUp(Global.instance.root, Alert, true) as Alert;
 		__alert.currentState = 'confirm';
 		__alert.title = $title;
 		__alert.text = $text;
 		__alert.okHandler = $okHandler;
+		__alert.cancelHandler = $cancelHandler;
 		var __xy:Array = getAlertXY(__alert);
 		__alert.move(__xy[0], __xy[1]);
 	}

@@ -44,8 +44,11 @@
 		//----------------------------------------
 		public function set source($so:*):void
 		{
+			if(!$so && viewer.bitmapData)
+				viewer.bitmapData.dispose();
 			viewer.source = $so;
 		}
+		
 		public function get content():IBitmapDrawable
 		{
 			return viewer.bitmapData;

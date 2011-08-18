@@ -11,7 +11,7 @@
 	<fx:Declarations>
 		<s:RadioButtonGroup id="frameDisplayRBG" change="updateFrameDisplay()"/>
 	</fx:Declarations>
-	<s:BorderContainer width="300" height="100%" borderColor="0x878787" backgroundAlpha="0">
+	<s:BorderContainer width="320" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
 			<s:BorderContainer width="100%" backgroundColor="0x696969">
 				<s:layout>
@@ -20,38 +20,28 @@
 				<s:Label text="位图动画预览" fontWeight="bold"/>
 				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"/>
 				<s:HGroup width="100%" verticalAlign="middle">
-					<s:ToggleButton id="playBTN" label="{playBTN.selected?'||':'>'}" width="30"/>
-					<s:NumericStepper id="playFrameNS" width="50" value="{_currentFrame}" minimum="{labelSetting.firstFrame}" maximum="{labelSetting.firstFrame+labelSetting.framesCount-1}" change="handler_playFrameNSchange(event)"/>
-					<s:Label id="frameLabel" width="100%" text="{getFrameLabelText()}"/>
-				</s:HGroup>
-				<s:HGroup verticalAlign="middle" width="100%">
-					<s:RadioButton id="disFrameRB" label="修剪" groupName="frameDisplayRBG" selected="true" toolTip="显示修剪空白后的帧的宽高"/>
-					<s:Label id="frameRectLabel"/>
-				</s:HGroup>
-				<s:HGroup verticalAlign="middle" width="100%">
-					<s:RadioButton id="disOriginRB" label="原始" groupName="frameDisplayRBG" toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
-					<s:Label id="originRectLabel"/>
+					<s:Label id="frameLabel" width="50" text="{framesAndLabels.selectedFrameNum}"/>
+					<s:ToggleButton id="playBTN" label="{playBTN.selected?'暂停':'播放'}" width="100%"
+									enabled="{framesAndLabels.selectedFrameIndices&amp;&amp;framesAndLabels.selectedFrameIndices.length>1}"
+									click="handler_playBTNclick(event)"/>
+					<s:Spacer width="100%" height="20"/>
+					<s:RadioButton id="disFrameRB" width="100%" label="修剪"
+								   groupName="frameDisplayRBG" selected="true"
+								   toolTip="显示修剪空白后的帧的宽高"/>
+					<s:RadioButton id="disOriginRB" width="100%" label="原始"
+								   groupName="frameDisplayRBG"
+								   toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
 				</s:HGroup>
 			</s:BorderContainer>
-			<comps:LabelSetting id="labelSetting" width="100%" height="200" backgroundColor="0x696969"
-								change="handler_labelSettingChange(event)"/>
-			<s:BorderContainer width="100%" height="30" backgroundColor="0x696969">
-				<s:layout>
-					<s:HorizontalLayout paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" verticalAlign="middle"/>
-				</s:layout>
-				<s:CheckBox id="trimCB" label="修剪空白" toolTip="选中后，会以左上角的像素颜色为基准，裁切掉边缘的多余空白"/>
-				<s:CheckBox id="OptimizedCB" label="优化排列" toolTip="选中后，在排列Sheet的时候，会尽量利用空白区域" visible="false"/>
-				<s:CheckBox id="powerOf2CB" label="2的幂" toolTip="选中后，输出尺寸的宽高均为2的幂（如256,512）"/>
-				<s:CheckBox id="squareCB" label="正方形" toolTip="选中后，输出尺寸比例为正方形，宽高自动确定"/>
-			</s:BorderContainer>
-			<comps:BuildSetting id="optimization" width="100%" height="90" backgroundColor="0x696969" 
-								buildTitle="优化" title="优化Sprite Sheet"
-								build="handler_opt(event)"/>
-			<comps:SaveSheetSetting id="saveSheetPanel" width="100%" backgroundColor="0x696969"
+			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"
+								change="handler_framesAndLabelsChange(event)"/>
+			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" 
+								currentState="buildAndOpt" build="handler_opt(event)"/>
+			<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"
 									saveAll="handler_saveAll(event)"
 									saveMeta="handler_saveMeta(event)"
 									savePic="handler_savePic(event)"/>
-			<comps:SaveSeqSetting id="saveSeqPanel" width="100%" backgroundColor="0x696969"
+			<comps:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969"
 								  title="{disFrameRB.selected?'保存序列(修剪尺寸)':'保存序列(原始尺寸)'}"
 								  saveSeq="handler_saveSeq(event)"/>
 		</s:VGroup>
@@ -85,8 +75,7 @@
 		import utils.Funs;
 		import utils.Global;
 		
-		//正在播放的帧
-		[Bindable] private var _currentFrame:int=0;
+		import vo.FrameVO;
 		
 		public function updateOnStateChanged($old:String, $new:String):void
 		{
@@ -103,76 +92,21 @@
 				sheet.source = Global.instance.adjustedSheet.bitmapData;
 				//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
 				//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
-				saveSheetPanel.nameCB.visible = Global.instance.sheet.metadata.hasName;
-				saveSheetPanel.nameCB.selected =Global.instance.sheet.metadata.hasName; 
-				initLabelAndFrame();
+				saveSheet.nameCB.visible = Global.instance.sheet.metadata.hasName;
+				saveSheet.nameCB.selected =Global.instance.sheet.metadata.hasName;
+				//从SpriteSheet中初始化Label和Frame
+				framesAndLabels.init();
 				this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			}
 			else
 			{
-				labelSetting.destroy();
+				framesAndLabels.destroy();
 				sheet.viewer.bitmapData.dispose();
 				sheet.viewer.source = null;
 				Global.instance.adjustedSheet.destroy();
 				Global.instance.adjustedSheet = null;
-				_currentFrame = 0;
 				this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			}
-		}
-		
-		/**
-		 * 从SpriteSheet中初始化Label和Frame
-		 */
-		private function initLabelAndFrame():void
-		{
-			labelSetting.frameAC = new ArrayCollection();
-			labelSetting.firstFrame = 0;
-			labelSetting.framesCount = Global.instance.adjustedSheet.metadata.totalFrame;
-			for (var i:int = 0; i < Global.instance.adjustedSheet.metadata.totalFrame; i++) 
-			{
-				//默认情况下选择的帧就是所有帧
-				labelSetting.frameAC.addItem(i);
-			}
-			
-			labelSetting.labelCB.selected = Global.instance.sheet.metadata.hasLabel;
-			labelSetting.labelAL = new ArrayList();
-			if(Global.instance.sheet.metadata.hasLabel)
-			{
-				var __label:String = '';
-				for (var j:int = 0; j < Global.instance.sheet.metadata.labels.length; j++) 
-				{
-					__label = Global.instance.sheet.metadata.labels[j];
-					labelSetting.labelAL.addItem({label:__label, frame:Global.instance.sheet.metadata.labelsFrame[__label]});
-				}
-			}
-			dispatchEvent(new Event('frameOrLabelChange'));
-		}
-		
-		[Bindable(event='frameOrLabelChange')]
-		private function getFrameLabelText():String
-		{
-			var __frames:String = '';
-			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
-			if(labelSetting.framesCount>1)
-			{
-				__frames = labelSetting.firstFrame+'-'+(labelSetting.firstFrame+labelSetting.framesCount-1)+'帧';
-				if(__sheet.metadata.hasName)
-				{
-					__frames+=' name:'
-					for (var i:int = 0; i < labelSetting.framesCount; i++) 
-					{
-						__frames += __sheet.metadata.names[labelSetting.firstFrame+i]+',';
-					}
-				}
-			}
-			else
-			{
-				__frames = '第'+labelSetting.firstFrame+'帧';			
-				__frames += ' name:' + __sheet.metadata.names[labelSetting.firstFrame]
-			}
-			if(labelSetting.selectedLabel)
-				return 'Label:'+labelSetting.selectedLabel+' '+__frames;
-			return __frames;
 		}
 		
 		/**
@@ -180,28 +114,24 @@
 		 */
 		private function updateFrameDisplay():void
 		{
-			var __sheet:SpriteSheet = Global.instance.adjustedSheet;
-			var __sizeRect:Rectangle = __sheet.metadata.frameRects[_currentFrame];
-			var __trimRect:Rectangle = __sheet.metadata.originalFrameRects[_currentFrame];
-			var __name:String = '';
-			frameRectLabel.text = 'x:'+__sizeRect.x+',y:'+__sizeRect.y+',w:'+__sizeRect.width+',h:'+__sizeRect.height;
-			originRectLabel.text = 'x:'+__trimRect.x+',y:'+__trimRect.y+',w:'+__trimRect.width+',h:'+__trimRect.height;
-			//根据选择显示原始的或者修剪过的Frame
-			var __frameBmd:BitmapData = disFrameRB.selected ? 
-				__sheet.getBMDByIndex(_currentFrame) : 
-				 Global.instance.sheet.getBMDByIndex(_currentFrame);
+			var __frameBmd:BitmapData = null;
+			if(framesAndLabels.selectedFrameIndex > -1)
+			{
+				//根据选择显示原始的或者修剪过的Frame
+				__frameBmd = disFrameRB.selected ? 
+					Global.instance.adjustedSheet.getBMDByIndex(framesAndLabels.selectedFrameIndex) : 
+					Global.instance.sheet.getBMDByIndex(framesAndLabels.selectedFrameIndex);
+			}
 			ani.source = __frameBmd;
-			dispatchEvent(new Event('frameOrLabelChange'));
-			trace('载入第'+_currentFrame+'帧');
 		}
 		
 		private function getMetadata():String
 		{
-			if(saveSheetPanel.jsonRB.selected)
-				return JSON.encode(Global.instance.adjustedSheet.metadata.toObject(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected));
-			if(saveSheetPanel.xmlRB.selected)
-				return Global.instance.adjustedSheet.metadata.toXMLString(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
-			return Global.instance.adjustedSheet.metadata.toTXT(saveSheetPanel.simpleCB.selected, saveSheetPanel.nameCB.selected);
+			if(saveSheet.jsonRB.selected)
+				return JSON.encode(Global.instance.adjustedSheet.metadata.toObject(saveSheet.simpleCB.selected, saveSheet.nameCB.selected));
+			if(saveSheet.xmlRB.selected)
+				return Global.instance.adjustedSheet.metadata.toXMLString(saveSheet.simpleCB.selected, saveSheet.nameCB.selected);
+			return Global.instance.adjustedSheet.metadata.toTXT(saveSheet.simpleCB.selected, saveSheet.nameCB.selected);
 		}
 		
 		/**
@@ -212,23 +142,12 @@
 			//hasName, names, namesIndex, totalFrame, frameSizeRect 这几个变量
 			//是在生成Sheet的时候填充的，因此这里不需要更新
 			var __meta:SpriteSheetMetadata = Global.instance.adjustedSheet.metadata;
-			__meta.type = saveSheetPanel.sheetType;
-			__meta.hasLabel = labelSetting.labelCB.selected;
-			__meta.maskType = saveSheetPanel.maskDDL.selectedIndex;
-			if(__meta.hasLabel)
-			{
-				var __labels:Vector.<String> = new Vector.<String>(labelSetting.labelAL.length, true);
-				var __labelsFrame:Object = {};
-				var __labelItem:Object = null;
-				for (var i:int = 0; i < labelSetting.labelAL.length; i++) 
-				{
-					__labelItem = labelSetting.labelAL.getItemAt(i);
-					__labels[i] = __labelItem.label;
-					__labelsFrame[__labelItem.label] = __labelItem.frame;
-				}
-				__meta.labels = __labels;
-				__meta.labelsFrame = __labelsFrame;
-			}
+			__meta.type = saveSheet.sheetType;
+			__meta.maskType = saveSheet.maskDDL.selectedIndex;
+			var __labelMeta:Object = framesAndLabels.getLabels();
+			__meta.hasLabel = __labelMeta.hasLabel;
+			__meta.labels = __labelMeta.labels;
+			__meta.labelsFrame = __labelMeta.labelsFrame;
 		}
 		
 		//----------------------------------------
@@ -239,30 +158,17 @@
 		 */
 		private function handler_enterFrame($evt:Event):void
 		{
-			if(playBTN.selected)
+			if(framesAndLabels.playing)
 			{
-				//判断当前播放的帧不要超过总帧数索引范围
-				if(_currentFrame >= (labelSetting.firstFrame+labelSetting.framesCount))
-					_currentFrame = labelSetting.firstFrame;
-				updateFrameDisplay();
-				_currentFrame ++;
+				framesAndLabels.nextFrame();
 			}
 		}
 		
 		/**
 		 * Lable修改的时候更新动画预览
 		 */
-		protected function handler_labelSettingChange($event:Event):void
+		protected function handler_framesAndLabelsChange($event:Event):void
 		{
-			playBTN.selected = false;
-			_currentFrame = labelSetting.firstFrame;
-			updateFrameDisplay();
-			dispatchEvent(new Event('frameOrLabelChange'));
-		}
-		
-		protected function handler_playFrameNSchange($event:Event):void
-		{
-			_currentFrame = playFrameNS.value;
 			updateFrameDisplay();
 		}
 		
@@ -274,18 +180,18 @@
 			updateSheet();
 			var __bmd:BitmapData = getBitmapDataForSave(
 				Global.instance.adjustedSheet.bitmapData,
-				saveSheetPanel.maskDDL.selectedIndex,
-				optimization.transparentCB.selected,
-				optimization.bgColorPicker.selectedColor
+				saveSheet.maskDDL.selectedIndex,
+				optPanel.transparentCB.selected,
+				optPanel.bgColorPicker.selectedColor
 			);
 			var __data:Object = {meta:getMetadata(), bitmapData:__bmd};
-			FileProcessor.instance.saveAll(__data, [saveSheetPanel.picRBG.selectedValue.toString(),saveSheetPanel.metaRBG.selectedValue.toString()]);
+			FileProcessor.instance.saveAll(__data, [saveSheet.picRBG.selectedValue.toString(),saveSheet.metaRBG.selectedValue.toString()]);
 		}
 		
 		protected function handler_saveMeta($event:InfoEvent):void
 		{
 			updateSheet();
-			FileProcessor.instance.saveMeta(getMetadata(), saveSheetPanel.metaRBG.selectedValue.toString());
+			FileProcessor.instance.saveMeta(getMetadata(), saveSheet.metaRBG.selectedValue.toString());
 		}
 		
 		protected function handler_savePic($event:InfoEvent):void
@@ -293,14 +199,14 @@
 			updateSheet();
 			var __bmd:BitmapData = getBitmapDataForSave(
 				Global.instance.adjustedSheet.bitmapData,
-				saveSheetPanel.maskDDL.selectedIndex,
-				optimization.transparentCB.selected,
-				optimization.bgColorPicker.selectedColor
+				saveSheet.maskDDL.selectedIndex,
+				optPanel.transparentCB.selected,
+				optPanel.bgColorPicker.selectedColor
 			);
 			FileProcessor.instance.saveSS(
 				__bmd, 
-				saveSheetPanel.picRBG.selectedValue.toString(),
-				saveSheetPanel.quality.value
+				saveSheet.picRBG.selectedValue.toString(),
+				saveSheet.quality.value
 			);
 		}
 		
@@ -312,8 +218,8 @@
 				Global.instance.sheet.getAll();
 			FileProcessor.instance.saveSeq(
 				__bmds,
-				saveSeqPanel.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
-				(saveSeqPanel.quality?saveSeqPanel.quality.value:0)
+				saveSeq.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
+				(saveSeq.quality?saveSeq.quality.value:0)
 			)
 		}
 		
@@ -322,7 +228,7 @@
 			var __bmds:Vector.<BitmapData> = null;
 			var __frameRects:Vector.<Rectangle> = null;
 			var __originalRects:Vector.<Rectangle> = null; 
-			if(trimCB.selected)
+			if(optPanel.trimCB.selected)
 			{
 				__bmds = new Vector.<BitmapData>;
 				__frameRects = new Vector.<Rectangle>;
@@ -350,14 +256,14 @@
 			optimizeSheet(__frameRects, 
 				__newFrameRects, 
 				__whRect,
-				optimization.whDDL.selectedIndex == 0, 
-				optimization.whNS.value,
-				powerOf2CB.selected,
-				squareCB.selected
+				optPanel.whDDL.selectedIndex == 0, 
+				optPanel.whNS.value,
+				optPanel.powerOf2CB.selected,
+				optPanel.squareCB.selected
 			);
 			Global.instance.adjustedSheet.setFrames(__bmds, __newFrameRects, __originalRects);
 			//绘制大Sheet位图
-			var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, optimization.transparentCB.selected, optimization.bgColorPicker.selectedColor);
+			var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, optPanel.transparentCB.selected, optPanel.bgColorPicker.selectedColor);
 			Global.instance.adjustedSheet.drawSheet(__sheetBmd);
 			sheet.source = Global.instance.adjustedSheet.bitmapData;
 			//显示优化过的Frame
@@ -469,6 +375,16 @@
 			}
 			return $bitmapData;
 		}
+		
+		protected function handler_playBTNclick($event:MouseEvent):void
+		{
+			if(playBTN.selected)
+				framesAndLabels.play();
+			else
+				framesAndLabels.pause();
+			
+		}
+		
 	]]>
 	</fx:Script>
 </s:HGroup>
