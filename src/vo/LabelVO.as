@@ -22,5 +22,18 @@ public class LabelVO
 	
 	public var  name:String;
 	public var  frames:ArrayList;
+	
+	/**
+	 * 返回frames中保存的所有帧的帧号
+	 */
+	public function getFramesIndex():Array
+	{
+		var __framesIndex:Array = [];
+		for (var i:int = 0; i < frames.length; i++) 
+		{
+			__framesIndex[i] = (frames.getItemAt(i) as FrameVO).frameNum;
+		}
+		return __framesIndex;
+	}
 }
 }

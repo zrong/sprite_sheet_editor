@@ -9,6 +9,10 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
+	<fx:Metadata>
+		[Event(name="deleteFrame", type="events.InfoEvent")]
+		[Event(name="change", type="flash.events.Event")]
+	</fx:Metadata>
 	<s:states>
 		<s:State name="frame"/>
 		<s:State name="frameAndLabel"/>
@@ -22,7 +26,7 @@
 				  click="nextFrame();"/>
 		<s:Button id="delBTN" label="删除" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
 				  click="handler_delBTNclick(event)"
-				  toolTip="从帧列表中删除一帧。删除后必须行优化才能看到Sheet的更新。"/>
+				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
 		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
@@ -58,13 +62,10 @@
 	</s:HGroup>
 	<s:List id="labelList" width="100%" height="80" dataProvider="{labelAL}"
 			valueCommit="handler_labelListvalueComit(event)" labelField="name" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
-	<fx:Metadata>
-		//[Event(name="labelChange", type="events.InfoEvent")]
-		//[Event(name="frameChange", type="events.InfoEvent")]
-		[Event(name="change", type="flash.events.Event")]
-	</fx:Metadata>
 	<fx:Script>
 	<![CDATA[
+		import events.InfoEvent;
+		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
@@ -156,10 +157,14 @@
 		
 		public function destroy():void
 		{
+			trace('FrameAndLabels.destroy');
+			labelAL.removeAll();
 			labelAL = null;
+			frameAC.removeAll();
 			frameAC = null;
-			selectedFrameIndices = null;
+			_framesNotInLabels.removeAll();
 			_framesNotInLabels = null;
+			selectedFrameIndices = null;
 			pause();
 		}
 		
@@ -212,18 +217,50 @@
 			{
 				var __labels:Vector.<String> = new Vector.<String>(labelAL.length, true);
 				var __labelsFrame:Object = {};
-				var __labelItem:Object = null;
+				var __labelItem:LabelVO = null;
 				for (var i:int = 0; i < labelAL.length; i++) 
 				{
-					__labelItem = labelAL.getItemAt(i);
-					__labels[i] = __labelItem.label;
-					__labelsFrame[__labelItem.label] = __labelItem.frame;
+					__labelItem = labelAL.getItemAt(i) as LabelVO;
+					__labels[i] = __labelItem.name;
+					__labelsFrame[__labelItem.name] = __labelItem.getFramesIndex();
 				}
 				return {hasLabel:__hasLabel, labels:__labels, labelsFrame:__labelsFrame};
 			}
 			return {hasLabel:__hasLabel};
 		}
 		
+		/**
+		 * 修改选择的帧的初始大小，同时直接重新绘制该帧的bitmapData
+		 */
+		public function resizeFrames($rect:Rectangle):void
+		{
+			if(selectedFrameIndices)
+			{
+				var __frame:FrameVO = null;
+				var __bmd:BitmapData = null;
+				var __point:Point = new Point(0,0);
+				var __frameNum:int = 0;
+				for (var i:int = 0; i < selectedFrameIndices.length; i++) 
+				{
+					__bmd = new BitmapData($rect.width, $rect.height, true, 0x00000000);
+					__frame = frameAC.getItemAt(selectedFrameIndices[i]) as FrameVO;
+					//设置frameVO中保存的两个rect的值，frameVO中的两个rect是从adjustedSheet获取而来，而且使用的是引用，因此同时修改了Global中的adjustedSheet的值
+					__frame.frameRect.width = $rect.width;
+					__frame.frameRect.height = $rect.height;
+					__frame.originRect.x = 0;
+					__frame.originRect.y = 0;
+					__frame.originRect.width = $rect.width;
+					__frame.originRect.height = $rect.height;
+					//根据调整的大小重新绘制当前帧的bmd
+					__bmd.copyPixels(Global.instance.sheet.getBMDByIndex(__frame.frameNum), $rect, __point, null, null, true);
+					//设置adjustedSheet中的bmd，由于已经修改了两个rect的值，这里就不需要再重置rect
+					Global.instance.adjustedSheet.addFrameAt(__frame.frameNum, __bmd);
+					//设置sheet中的bmd，同时设置两个rect
+					Global.instance.sheet.addFrameAt(__frame.frameNum,__bmd.clone(), __frame.frameRect.clone(), __frame.originRect.clone());
+					frameAC.refresh();
+				}
+			}
+		}
 		//----------------------------------------
 		// 内部方法
 		//----------------------------------------
@@ -233,6 +270,7 @@
 		 */
 		private function refreshFrameNum($list:IList, $frameNum:int):void
 		{
+			trace('refreshFrameNum:', $list.length, $frameNum);
 			//删除了1帧，就要将帧信息中保存的大于此帧索引的帧的索引减1
 			for (var i:int = 0; i < $list.length; i++) 
 			{
@@ -258,15 +296,24 @@
 			}
 			_framesNotInLabels.refresh();
 			frameAC = new ArrayCollection();
+			//若选择的是label，就显示该Label中的所有帧
 			if(labelCB.selected && labelList.selectedIndex != -1)
 			{
-				frameAC.addAll(LabelVO(labelList.selectedItem).frames);
+				var __framesInLabel:ArrayList = LabelVO(labelList.selectedItem).frames;
+				frameAC.addAll(__framesInLabel);
+				var __indices:Vector.<int> = new Vector.<int>;
+				for (var j:int = 0; j < __framesInLabel.length; j++) 
+				{
+					__indices[j] = j;
+				}
+				frameDG.selectedIndices = __indices;
 			}
+			//否则显示不在Label中的所有帧
 			else
 			{
 				frameAC.addAll(_framesNotInLabels);
+				frameDG.selectedIndex = -1;
 			}
-			frameDG.selectedIndex = -1;
 		}
 		//----------------------------------------
 		// handler
@@ -310,7 +357,11 @@
 				}
 			}
 			var __framesInLabel:Vector.<FrameVO> =  Vector.<FrameVO>(frameDG.selectedItems.concat());
-			__framesInLabel.sort(Array.NUMERIC);
+			__framesInLabel.sort(function($a:FrameVO, $b:FrameVO):int
+				{
+					return $a.frameNum - $b.frameNum;
+				}
+			);
 			var __al:ArrayList = new ArrayList();
 			while(__framesInLabel.length>0)
 			{
@@ -349,31 +400,45 @@
 		{
 			nextBTN.enabled = false;
 			prevBTN.enabled = false;
+			if(!frameDG.selectedItem)
+			{
+				//spark的组件怎么这么多绑定bug TNND……
+				Funs.alert('请先选择要删除的帧。');
+				delBTN.enabled = false;
+				return;
+			}
 			while(selectedFrameIndices.length>0)
 			{
 				var __delItem:FrameVO = frameAC.getItemAt(selectedFrameIndices.pop()) as FrameVO;
 				Global.instance.sheet.removeFrameAt(__delItem.frameNum);
 				Global.instance.adjustedSheet.removeFrameAt(__delItem.frameNum);
+				trace('删除Sheet与adjustedSheet中的帧，删除后：', Global.instance.sheet.metadata.totalFrame, Global.instance.adjustedSheet.metadata.totalFrame);
 				//若选择了Label，在labelVO中删除
 				if(labelCB.selected && labelList.selectedIndex!=-1)
 				{
-					for(var i:int=0;i<labelAL.length;i++)
-					{
-						var __labelItem:LabelVO = labelAL.getItemAt(i) as LabelVO;
-						refreshFrameNum(__labelItem.frames, __delItem.frameNum);
-					}
+					//删除labelVO中的当前帧
+					LabelVO(labelList.selectedItem).frames.removeItem(__delItem);
 				}
 				//如果没有选择label，就在_frameNotInLabels中删除
 				else
 				{
 					var __index:int = _framesNotInLabels.getItemIndex(__delItem);
 					_framesNotInLabels.removeItemAt(__index);
-					refreshFrameNum(_framesNotInLabels, __delItem.frameNum);
 				}
+				//修改所有label中的帧的编号
+				for(var i:int=0;i<labelAL.length;i++)
+				{
+					var __labelItem:LabelVO = labelAL.getItemAt(i) as LabelVO;
+					refreshFrameNum(__labelItem.frames, __delItem.frameNum);
+				}
+				//修改不在label中的帧的编号
+				refreshFrameNum(_framesNotInLabels, __delItem.frameNum);
 			}
 			selectedFrameIndices = null;
 			//刷新frameDG的显示
 			refreshFrameDG();
+			//通知SSPanel已经删除了帧，SSPanel根据需求重新生成
+			this.dispatchEvent(new InfoEvent(InfoEvent.DELETE_FRAME));
 		}
 		
 		protected function handler_allBTNclick($event:MouseEvent):void

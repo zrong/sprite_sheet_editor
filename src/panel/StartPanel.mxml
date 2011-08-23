@@ -47,8 +47,14 @@
 			FileProcessor.instance.openSS();
 		}
 		
-		public function updateOnStateChanged($old:String, $new:String):void
+		public function enterState($old:String, $new:String):void
 		{
+			trace('StartPanel,updateOnStateChanged:', $old, $new);
+		}
+		
+		public function exitState():void
+		{
+			
 		}
 		
 		protected function handler_aboutBTNclick($event:MouseEvent):void

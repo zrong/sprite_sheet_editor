@@ -2,22 +2,23 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:panel="panel.*"
-					   backgroundColor="#4D4D4D" showStatusBar="false"
+					   backgroundColor="#4D4D4D"
+					   showStatusBar="false"
 					   currentState="{Global.instance.currentState}"
 					   windowComplete="handler_init(event)"
 					   closing="handler_closing(event)">
 	<fx:Style source="main.css"/>
 	<s:states>
-		<s:State name="start"/>
-		<s:State name="pic"/>
-		<s:State name="swf"/>
-		<s:State name="ss"/>
+		<s:State name="start" exitState="handler_exitState(event)"/>
+		<s:State name="pic" exitState="handler_exitState(event)"/>
+		<s:State name="swf" exitState="handler_exitState(event)"/>
+		<s:State name="ss" exitState="handler_exitState(event)"/>
 	</s:states>
 	<s:layout>
 		<s:VerticalLayout paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"/>
 	</s:layout>
 	<panel:TopPanel id="top" borderColor="0x878787" backgroundAlpha="0" width="100%" height="40"/>
-	<panel:StartPanel id="btnGroup" borderColor="0x878787" backgroundAlpha="0" width="100%" height="100%" includeIn="start" itemCreationPolicy="immediate"/>
+	<panel:StartPanel id="start" borderColor="0x878787" backgroundAlpha="0" width="100%" height="100%" includeIn="start" itemCreationPolicy="immediate"/>
 	<panel:SwfPanel id="swf" includeIn="swf" width="100%" height="100%" itemCreationPolicy="immediate"/>
 	<panel:PicPanel id="pic" includeIn="pic" width="100%" height="100%" itemCreationPolicy="immediate"/>
 	<panel:SSPanel id="ss" includeIn="ss" width="100%" height="100%" itemCreationPolicy="immediate"/>
@@ -27,7 +28,9 @@
 		
 		import mx.binding.utils.ChangeWatcher;
 		import mx.events.AIREvent;
+		import mx.events.FlexEvent;
 		import mx.events.PropertyChangeEvent;
+		import mx.states.State;
 		
 		import type.StateType;
 		
@@ -48,7 +51,9 @@
 			trace('状态改变:', __old, __new);
 			for (var i:int = 0; i < this.numElements; i++) 
 			{
-				(this.getElementAt(i) as IStateChanged).updateOnStateChanged(__old, __new);
+				var __state:IStateChanged = this.getElementAt(i) as IStateChanged;
+				__state.enterState(__old, __new);
+				//trace('循环通知状态:', i, __state);
 			}
 		}
 		
@@ -65,6 +70,17 @@
 					}
 				}
 			)
+		}
+		
+		protected function handler_exitState($event:FlexEvent):void
+		{
+			trace('退出状态', currentState);
+			for (var i:int = 0; i < this.numElements; i++) 
+			{
+				var __state:IStateChanged = this.getElementAt(i) as IStateChanged;
+				__state.exitState();
+				trace('循环通知状态:', i, __state);
+			}
 		}
 		
 	]]>

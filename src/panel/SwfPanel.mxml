@@ -76,25 +76,23 @@
 		// public
 		//----------------------------------------
 		
-		public function updateOnStateChanged($old:String, $new:String):void
+		public function enterState($old:String, $new:String):void
 		{
-			trace('swfPanel updateOnStateChanged:', $new);
-			if($new == StateType.SWF)
-			{
-				//如果是从START状态跳转过来的，就更新一次swfURL的值
-				if($old == StateType.START)
-					_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
-				trace('swfPanel.load:', _swfURL);
-				swf.addEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
-				swf.source = _swfURL;
-				swf.transf.init();
-			}
-			else
-			{
-				swf.removeEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
-				swf.source = null;
-				swf.transf.destroy();
-			}
+			trace('swfPanel.updateOnStateChanged:', $old, $new);
+			//如果是从START状态跳转过来的，就更新一次swfURL的值
+			if($old == StateType.START)
+				_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
+			trace('swfPanel.load:', _swfURL);
+			swf.addEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+			swf.source = _swfURL;
+			swf.transf.init();
+		}
+		
+		public function exitState():void
+		{
+			swf.removeEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+			swf.source = null;
+			swf.transf.destroy();
 		}
 		
 		//----------------------------------

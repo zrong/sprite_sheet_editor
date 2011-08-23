@@ -13,6 +13,8 @@
 		import flashx.textLayout.conversion.ConversionType;
 		import flashx.textLayout.conversion.TextConverter;
 		import flashx.textLayout.elements.TextFlow;
+		import flashx.textLayout.events.FlowElementMouseEvent;
+		import flashx.textLayout.events.FlowOperationEvent;
 		
 		import mx.events.FlexEvent;
 		
@@ -30,7 +32,7 @@
 		{
 			_tf = TextConverter.importToFlow(new TXT().toString(), TextConverter.TEXT_FIELD_HTML_FORMAT);
 			var __str:String =  '<p align="center"><b>' + Funs.getDesc('name') + ' v'+Funs.getDesc('versionNumber') +'</b></p>'
-				+'<p>Author: zrong(zrongzrong@gmail.com)<br>Blog:　http://www.zengrong.net</p>';
+				+'<p>Author: zrong(<a href="mailto:zrongzrong@gmail.com">zrongzrong@gmail.com</a>)<br>Blog:　<a href="http://www.zengrong.net">http://www.zengrong.net</a></p>';
 			infoLabel.textFlow = TextConverter.importToFlow(__str, TextConverter.TEXT_FIELD_HTML_FORMAT);
 		}
 		

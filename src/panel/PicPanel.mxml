@@ -74,21 +74,19 @@
 		// public
 		//----------------------------------------
 		
-		public function updateOnStateChanged($old:String, $new:String):void
+		public function enterState($old:String, $new:String):void
 		{
-			trace('picPanel updateOnStateChanged:', $new);
-			if($new == StateType.PIC)
-			{
-				//如果是从START状态跳转过来的，就更新一次fileList的值
-				if($old == StateType.START)
-					fileM.setFileList(FileProcessor.instance.selectedFiles);
-				pic.transf.init();
-			}
-			else
-			{
-				pic.viewer.source = null;
-				pic.transf.destroy();
-			}
+			trace('picPanel.updateOnStateChanged:', $old, $new);
+			//如果是从START状态跳转过来的，就更新一次fileList的值
+			if($old == StateType.START)
+				fileM.setFileList(FileProcessor.instance.selectedFiles);
+			pic.transf.init();
+		}
+		
+		public function exitState():void
+		{
+			pic.viewer.source = null;
+			pic.transf.destroy();
 		}
 		
 		//----------------------------------

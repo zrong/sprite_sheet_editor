@@ -274,6 +274,7 @@ public class FileProcessor
 	private function handler_ssLoadComplete($evt:Event):void
 	{
 		Global.instance.sheet = _ssLoader.getSpriteSheet();
+		Global.instance.sheet.parseSheet();
 		Funs.changeState(_openState);
 	}
 	

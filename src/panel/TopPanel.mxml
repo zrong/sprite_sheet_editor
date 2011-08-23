@@ -26,12 +26,7 @@
 		[Bindable] private var _prevState:String;
 		[Bindable] public var stateName:String = '开始';
 		
-		protected function handler_prievBTNClick(event:MouseEvent):void
-		{
-			Funs.changeState(_prevState);
-		}
-		
-		public function updateOnStateChanged($old:String, $new:String):void
+		public function enterState($old:String, $new:String):void
 		{
 			_oldState = $old;
 			_newState = $new;
@@ -47,6 +42,16 @@
 				(_oldState != StateType.START) )
 					_prevState = StateType.START;
 			
+		}
+		
+		public function exitState():void
+		{
+			
+		}
+		
+		protected function handler_prievBTNClick(event:MouseEvent):void
+		{
+			Funs.changeState(_prevState);
 		}
 		
 		protected function handler_fpsNSChange(event:Event):void

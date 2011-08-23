@@ -11,14 +11,15 @@
 	<fx:Declarations>
 		<s:RadioButtonGroup id="frameDisplayRBG" change="updateFrameDisplay()"/>
 	</fx:Declarations>
-	<s:BorderContainer width="320" height="100%" borderColor="0x878787" backgroundAlpha="0">
+	<s:BorderContainer width="320" height="100%" borderColor="0x878787" backgroundAlpha="0" enabled="{_enabled}">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
 			<s:BorderContainer width="100%" backgroundColor="0x696969">
 				<s:layout>
 					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 				</s:layout>
 				<s:Label text="位图动画预览" fontWeight="bold"/>
-				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"/>
+				<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"
+								  showTransformTool="{resizeOriginCB.selected}"/>
 				<s:HGroup width="100%" verticalAlign="middle">
 					<s:Label id="frameLabel" width="50" text="{framesAndLabels.selectedFrameNum}"/>
 					<s:ToggleButton id="playBTN" label="{playBTN.selected?'暂停':'播放'}" width="100%"
@@ -32,11 +33,27 @@
 								   groupName="frameDisplayRBG"
 								   toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
 				</s:HGroup>
+				<s:HGroup horizontalAlign="center" width="100%">
+					<s:CheckBox id="resizeOriginCB" label="调整帧原始大小(x,y,w,h)" enabled="{!ani.scaleContent}"
+								toolTip="选择后，会缩小帧的原始大小。但你依然可以在缩小后的原始大小基础上再次执行“修剪空白”的优化。"/>
+					<s:Spacer width="100%" height="20"/>
+					<s:Button id="saveResizeBTN" label="保存调整"
+							  toolTip="根据调整的原始大小重新计算帧大小，并立即执行优化。&#13;此操作会直接修改原始帧的大小。"
+							  enabled="{resizeOriginCB.selected&amp;&amp;framesAndLabels.selectedFrameIndices&amp;&amp;framesAndLabels.selectedFrameIndices.length>0}"
+							  click="handler_saveResizeBTNclick(event)"/>
+				</s:HGroup>
+				<s:HGroup width="100%" enabled="{resizeOriginCB.selected}">
+					<s:NumericStepper id="frameX" width="100%" value="@{ani.transf.x}" minimum="0" maximum="{ani.sourceWidth-1}"/>
+					<s:NumericStepper id="frameY" width="100%" value="@{ani.transf.y}" minimum="0" maximum="{ani.sourceHeight-1}"/>
+					<s:NumericStepper id="frameW" width="100%" value="@{ani.transf.width}" minimum="1" maximum="{ani.sourceWidth}"/>
+					<s:NumericStepper id="frameH" width="100%" value="@{ani.transf.height}" minimum="1" maximum="{ani.sourceHeight}"/>
+				</s:HGroup>
 			</s:BorderContainer>
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"
-								change="handler_framesAndLabelsChange(event)"/>
+								change="handler_framesAndLabelsChange(event)"
+								deleteFrame="optimizeSheet()"/>
 			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" 
-								currentState="buildAndOpt" build="handler_opt(event)"/>
+								currentState="buildAndOpt" build="optimizeSheet();"/>
 			<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"
 									saveAll="handler_saveAll(event)"
 									saveMeta="handler_saveMeta(event)"
@@ -77,36 +94,45 @@
 		
 		import vo.FrameVO;
 		
-		public function updateOnStateChanged($old:String, $new:String):void
+		[Bindable] private var _enabled:Boolean;
+		
+		public function enterState($old:String, $new:String):void
 		{
-			if($new == StateType.SS)
+			trace('SSPanel,updateOnStateChanged:', $old, $new);
+			//更新调整后的Sheet
+			Global.instance.adjustedSheet = Global.instance.sheet.clone();
+			if($old == StateType.START)
 			{
-				//更新调整后的Sheet
-				Global.instance.adjustedSheet = Global.instance.sheet.clone();
-				if($old == StateType.START)
-				{
-					//如果是直接从START跳转过来，就将修剪空白版本的Frame赋值给adjustedSheet
-					//因为SpriteSheet可能是修剪过的
-					Global.instance.adjustedSheet.setFrames(Global.instance.sheet.createAll(false));
-				}
-				sheet.source = Global.instance.adjustedSheet.bitmapData;
-				//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
-				//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
-				saveSheet.nameCB.visible = Global.instance.sheet.metadata.hasName;
-				saveSheet.nameCB.selected =Global.instance.sheet.metadata.hasName;
-				//从SpriteSheet中初始化Label和Frame
-				framesAndLabels.init();
-				this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
+				//如果是直接从START跳转过来，就将修剪空白版本的Frame赋值给adjustedSheet
+				//因为解析出来的SpriteSheet可能是修剪过的
+				Global.instance.adjustedSheet.setFrames(Global.instance.sheet.createAll(false));
 			}
-			else
-			{
-				framesAndLabels.destroy();
-				sheet.viewer.bitmapData.dispose();
-				sheet.viewer.source = null;
-				Global.instance.adjustedSheet.destroy();
-				Global.instance.adjustedSheet = null;
-				this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
-			}
+			sheet.source = Global.instance.adjustedSheet.bitmapData;
+			//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
+			//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
+			saveSheet.nameCB.visible = Global.instance.sheet.metadata.hasName;
+			saveSheet.nameCB.selected =Global.instance.sheet.metadata.hasName;
+			//使用当前Sheet的宽高重置WH的相关值
+			optPanel.whDDL.selectedIndex = 0;
+			optPanel.whNS.value = Global.instance.adjustedSheet.bitmapData.width;
+			//从SpriteSheet中初始化Label和Frame
+			framesAndLabels.init();
+			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			ani.transf.init();
+			_enabled = true;
+		}
+		
+		public function exitState():void
+		{
+			framesAndLabels.destroy();
+			sheet.destroy();
+			ani.destroy();
+			Global.instance.sheet.destroy();
+			Global.instance.sheet = null;
+			Global.instance.adjustedSheet.destroy();
+			Global.instance.adjustedSheet = null;
+			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			ani.transf.destroy();
 		}
 		
 		/**
@@ -135,11 +161,11 @@
 		}
 		
 		/**
-		 * 更新spriteSheet的值
+		 * 更新spriteSheet的metadata。在生成新的SpriteSheet前调用。
 		 */
-		private function updateSheet():void
+		private function updateMetadata():void
 		{
-			//hasName, names, namesIndex, totalFrame, frameSizeRect 这几个变量
+			//hasName, names, namesIndex, totalFrame, frameRects, originalFrameRects 这几个变量
 			//是在生成Sheet的时候填充的，因此这里不需要更新
 			var __meta:SpriteSheetMetadata = Global.instance.adjustedSheet.metadata;
 			__meta.type = saveSheet.sheetType;
@@ -172,12 +198,21 @@
 			updateFrameDisplay();
 		}
 		
+		protected function handler_playBTNclick($event:MouseEvent):void
+		{
+			if(playBTN.selected)
+				framesAndLabels.play();
+			else
+				framesAndLabels.pause();
+			
+		}
+		
 		/**
 		 * 保存metadata和位图
 		 */
 		protected function handler_saveAll($event:InfoEvent):void
 		{
-			updateSheet();
+			updateMetadata();
 			var __bmd:BitmapData = getBitmapDataForSave(
 				Global.instance.adjustedSheet.bitmapData,
 				saveSheet.maskDDL.selectedIndex,
@@ -190,13 +225,13 @@
 		
 		protected function handler_saveMeta($event:InfoEvent):void
 		{
-			updateSheet();
+			updateMetadata();
 			FileProcessor.instance.saveMeta(getMetadata(), saveSheet.metaRBG.selectedValue.toString());
 		}
 		
 		protected function handler_savePic($event:InfoEvent):void
 		{
-			updateSheet();
+			updateMetadata();
 			var __bmd:BitmapData = getBitmapDataForSave(
 				Global.instance.adjustedSheet.bitmapData,
 				saveSheet.maskDDL.selectedIndex,
@@ -223,8 +258,29 @@
 			)
 		}
 		
-		protected function handler_opt(event:InfoEvent):void
+		protected function handler_saveResizeBTNclick($event:MouseEvent):void
 		{
+			framesAndLabels.resizeFrames(new Rectangle(frameX.value, frameY.value,frameW.value,frameH.value));
+			optimizeSheet();
+			//ani.destroy();
+		}
+		//----------------------------------------
+		// 内部方法
+		//----------------------------------------
+		/**
+		 * 根据当前的选择优化Sheet
+		 */
+		private function optimizeSheet():void
+		{
+			ani.destroy();
+			sheet.destroy();
+			if(Global.instance.sheet.metadata.totalFrame==0 || Global.instance.adjustedSheet.metadata.totalFrame==0)
+			{
+				Funs.alert('没有帧的信息，不能生成Sheet。');
+				_enabled = false;
+				return;
+			}
+			trace('优化帧数：', Global.instance.sheet.metadata.totalFrame, Global.instance.adjustedSheet.metadata.totalFrame);
 			var __bmds:Vector.<BitmapData> = null;
 			var __frameRects:Vector.<Rectangle> = null;
 			var __originalRects:Vector.<Rectangle> = null; 
@@ -235,13 +291,21 @@
 				__originalRects = new Vector.<Rectangle>; 
 				var __sizeRect:Rectangle = null;
 				var i:int=0;
+				//用于保存执行trim方法后的结果
+				var __trimObj:Object = null;
 				for (i = 0; i < Global.instance.sheet.metadata.totalFrame; i++) 
 				{
-					var __trimObj:Object = BitmapUtil.trim(Global.instance.sheet.getBMDByIndex(i));
+					__trimObj = BitmapUtil.trim(Global.instance.sheet.getBMDByIndex(i));
 					__sizeRect = Global.instance.sheet.metadata.frameRects[i];
 					__frameRects[i] = __trimObj.rect;
 					__bmds[i] = __trimObj.bitmapData;
-					__originalRects[i] = new Rectangle(0-__trimObj.rect.x,0-__trimObj.rect.y,__sizeRect.width, __sizeRect.height);
+					//如果重设帧的尺寸，就使用trim过后的帧的宽高建立一个新的Rect尺寸
+					if(optPanel.resetRectCB.selected)
+						__originalRects[i] = new Rectangle(0,0,__trimObj.rect.width,__trimObj.rect.height);
+						//如果不重设帧的尺寸，就使用原始大小的宽高。同时计算trim后的xy的偏移。
+						//因为获得xy的偏移是基于与原始帧大小的正数，要将其转换为基于trim后的帧的偏移，用0减
+					else
+						__originalRects[i] = new Rectangle(0-__trimObj.rect.x,0-__trimObj.rect.y,__sizeRect.width, __sizeRect.height);
 				}
 			}
 			else
@@ -250,10 +314,13 @@
 				__frameRects = Global.instance.sheet.metadata.frameRects.concat();
 				__originalRects = Global.instance.sheet.metadata.originalFrameRects.concat();
 			}
+			trace('新生成的：', __bmds, __frameRects, __originalRects)
+			//保存新计算出的WH
 			var __whRect:Rectangle = new Rectangle();
+			//保存新计算出的每个帧在大Sheet中放置的位置
 			var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
 			//重新计算出最终Sheet的宽高以及修改过的frameRect
-			optimizeSheet(__frameRects, 
+			calculateSize(__frameRects, 
 				__newFrameRects, 
 				__whRect,
 				optPanel.whDDL.selectedIndex == 0, 
@@ -269,13 +336,12 @@
 			//显示优化过的Frame
 			disFrameRB.selected = true;
 		}
-		
 
 		/**
-		 * 根据提供的Rectangle数组计算最终Sheet的宽高
+		 * 根据提供的Rectangle数组计算最终Sheet的宽高以及每帧在Sheet中的位置
 		 * @param $frameRect 当前帧的独立大小
 		 */
-		private function optimizeSheet($trimRects:Vector.<Rectangle>, 
+		private function calculateSize($trimRects:Vector.<Rectangle>, 
 										$newSizeRects:Vector.<Rectangle>,
 										$whRect:Rectangle, 
 										$limitW:Boolean, 
@@ -283,6 +349,7 @@
 										$powOf2:Boolean=false,
 										$square:Boolean=false):void
 		{
+			if($trimRects.length==0) return;
 			var __frameRect:Rectangle = $trimRects[0];
 			$newSizeRects[0] = new Rectangle(0,0,__frameRect.width, __frameRect.height);
 			var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
@@ -318,7 +385,7 @@
 					//使用当前计算出的面积开方得到正方形的基准尺寸
 					var __newWH:int = Math.sqrt($whRect.width*$whRect.height);
 					//使用基准尺寸重新排列一次
-					optimizeSheet($trimRects,$newSizeRects,$whRect,$limitW,__newWH, $powOf2);
+					calculateSize($trimRects,$newSizeRects,$whRect,$limitW,__newWH, $powOf2);
 					//trace('正方形计算1:', $whRect);
 					//如果基准尺寸无法实现正方形尺寸，就使用结果WH中比较大的那个尺寸作为正方形边长
 					if($whRect.width!=$whRect.height)
@@ -329,7 +396,6 @@
 					}
 					//trace('正方形计算2:', $whRect);
 				}
-					
 			}
 			if($powOf2)
 			{
@@ -374,15 +440,6 @@
 				return __saveBmd;
 			}
 			return $bitmapData;
-		}
-		
-		protected function handler_playBTNclick($event:MouseEvent):void
-		{
-			if(playBTN.selected)
-				framesAndLabels.play();
-			else
-				framesAndLabels.pause();
-			
 		}
 		
 	]]>

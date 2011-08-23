@@ -10,8 +10,7 @@ import flash.events.Event;
 
 public class InfoEvent extends Event
 {
-	public static const FRAME_CHANGE:String = 'frameChange';
-	public static const LABEL_CHANGE:String = 'labelChange';
+	public static const DELETE_FRAME:String = 'deleteFrame';
 	
 	public static const SAVE_PIC:String = 'savePic';
 	public static const SAVE_META:String = 'saveMeta';

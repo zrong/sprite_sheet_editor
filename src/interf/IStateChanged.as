@@ -2,6 +2,7 @@ package interf
 {
 public interface IStateChanged
 {
-	function updateOnStateChanged($old:String, $new:String):void;
+	function enterState($old:String, $new:String):void;
+	function exitState():void;
 }
 }
