@@ -7,11 +7,14 @@
 		<s:VerticalLayout verticalAlign="middle" horizontalAlign="center"/>
 	</s:layout>
 	<s:Button id="openSWFBTN" width="120" height="30." label="打开SWF文件"
+			  toolTip="将一个SWF文件按照帧的播放顺序转换成Sprite Sheet"
 			  click="handler_openSWFBTNClick(event)"/>
 	<s:Button id="openPicBTN" width="120" height="30." label="导入图像文件"
+			  toolTip="将一组图像文件转换成Sprite Sheet"
 			  click="handler_openPicBTNClick(event)"/>
 	<s:Spacer width="100" height="10"/>
 	<s:Button id="openSSBTN" width="120" height="30." label="打开Sprite Sheet"
+			  toolTip="打开已有的Sprite Sheet进行编辑和优化"
 			  click="handler_openSSBTNclick(event)"/>
 	<s:Button id="convertSSBTN" width="120" height="30." label="转换Sprite Sheet" enabled="false"/>
 	<s:Spacer width="100" height="30"/>

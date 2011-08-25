@@ -11,7 +11,7 @@
 	</s:layout>
 	<fx:Metadata>
 		[Event(name="deleteFrame", type="events.InfoEvent")]
-		[Event(name="change", type="flash.events.Event")]
+		[Event(name="frameAndLabelChange", type="events.InfoEvent")]
 	</fx:Metadata>
 	<s:states>
 		<s:State name="frame"/>
@@ -330,7 +330,7 @@
 			}
 			selectedFrameNum = frameDG.selectedIndex==-1?-1:FrameVO(frameDG.selectedItem).frameNum;
 			trace('dgValueCommit:', selectedFrameNum, addLabelBTN);
-			dispatchEvent(new Event(Event.CHANGE));
+			dispatchEvent(new InfoEvent(InfoEvent.FRAME_AND_LABEL_CHANGE));
 		}
 		
 		protected function handler_labelListvalueComit($event:FlexEvent):void

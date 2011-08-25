@@ -6,6 +6,7 @@
 					   showStatusBar="false"
 					   currentState="{Global.instance.currentState}"
 					   windowComplete="handler_init(event)"
+					   uncaughtError="handler_unCaughtError(event)"
 					   closing="handler_closing(event)">
 	<fx:Style source="main.css"/>
 	<s:states>
@@ -81,6 +82,16 @@
 				__state.exitState();
 				trace('循环通知状态:', i, __state);
 			}
+		}
+		
+		protected function handler_unCaughtError($event:UncaughtErrorEvent):void
+		{
+			var __str:String = '';
+			if($event.error is Error)
+				__str = Error($event.error).message;
+			else
+				__str = ErrorEvent($event.error).text;
+			Funs.alert(__str);
 		}
 		
 	]]>

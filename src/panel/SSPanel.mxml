@@ -39,7 +39,7 @@
 					<s:Spacer width="100%" height="20"/>
 					<s:Button id="saveResizeBTN" label="保存调整"
 							  toolTip="根据调整的原始大小重新计算帧大小，并立即执行优化。&#13;此操作会直接修改原始帧的大小。"
-							  enabled="{resizeOriginCB.selected&amp;&amp;framesAndLabels.selectedFrameIndices&amp;&amp;framesAndLabels.selectedFrameIndices.length>0}"
+							  enabled="{!framesAndLabels.playing&amp;&amp;resizeOriginCB.selected&amp;&amp;framesAndLabels.selectedFrameIndices&amp;&amp;framesAndLabels.selectedFrameIndices.length>0}"
 							  click="handler_saveResizeBTNclick(event)"/>
 				</s:HGroup>
 				<s:HGroup width="100%" enabled="{resizeOriginCB.selected}">
@@ -50,7 +50,7 @@
 				</s:HGroup>
 			</s:BorderContainer>
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"
-								change="handler_framesAndLabelsChange(event)"
+								frameAndLabelChange="handler_framesAndLabelsChange(event)"
 								deleteFrame="optimizeSheet()"/>
 			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" 
 								currentState="buildAndOpt" build="optimizeSheet();"/>
@@ -156,8 +156,8 @@
 			if(saveSheet.jsonRB.selected)
 				return JSON.encode(Global.instance.adjustedSheet.metadata.toObject(saveSheet.simpleCB.selected, saveSheet.nameCB.selected));
 			if(saveSheet.xmlRB.selected)
-				return Global.instance.adjustedSheet.metadata.toXMLString(saveSheet.simpleCB.selected, saveSheet.nameCB.selected);
-			return Global.instance.adjustedSheet.metadata.toTXT(saveSheet.simpleCB.selected, saveSheet.nameCB.selected);
+				return Global.instance.adjustedSheet.metadata.toXMLString(saveSheet.simpleCB.selected, saveSheet.nameCB.selected, File.lineEnding);
+			return Global.instance.adjustedSheet.metadata.toTXT(saveSheet.simpleCB.selected, saveSheet.nameCB.selected, File.lineEnding);
 		}
 		
 		/**
