@@ -158,11 +158,11 @@
 		public function destroy():void
 		{
 			trace('FrameAndLabels.destroy');
-			labelAL.removeAll();
+			if(labelAL)	labelAL.removeAll();
 			labelAL = null;
-			frameAC.removeAll();
+			if(frameAC)	frameAC.removeAll();
 			frameAC = null;
-			_framesNotInLabels.removeAll();
+			if(_framesNotInLabels) _framesNotInLabels.removeAll();
 			_framesNotInLabels = null;
 			selectedFrameIndices = null;
 			pause();

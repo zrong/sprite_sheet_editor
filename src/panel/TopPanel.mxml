@@ -16,6 +16,8 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
+		import org.zengrong.utils.SOUtil;
+		
 		import type.StateType;
 		
 		import utils.Funs;
@@ -28,6 +30,12 @@
 		
 		public function enterState($old:String, $new:String):void
 		{
+			var __frameRate:int = int(SOUtil.get('frameRate'));
+			if(__frameRate > 0)
+			{
+				fpsNS.value = __frameRate;
+				this.stage.frameRate = fpsNS.value;
+			}
 			_oldState = $old;
 			_newState = $new;
 			stateName = StateType.toMainStateName(_newState);
@@ -57,6 +65,7 @@
 		protected function handler_fpsNSChange(event:Event):void
 		{
 			this.stage.frameRate = fpsNS.value;
+			SOUtil.save(fpsNS.value, 'frameRate');
 		}
 		
 	]]>
