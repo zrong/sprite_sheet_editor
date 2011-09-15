@@ -4,6 +4,8 @@ import org.zengrong.display.spritesheet.SpriteSheet;
 
 public class Global
 {
+	[Embed(source="/checks.png")]
+	[Bindable] public var bmp_checks:Class;
 	/**
 	 * 当前编辑器的状态
 	 */

@@ -15,7 +15,7 @@
 	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
 		<s:viewport>
 			<s:Group id="scrollerView" width="100%" height="100%">
-				<s:BitmapImage id="chessboard" source="@Embed('checks.png')" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
+				<s:BitmapImage id="chessboard" source="{Global.instance.bmp_checks}" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
 				<s:SWFLoader id="viewer" scaleContent="{scaleContent}" showBusyCursor="true" 
 							 complete="handler_swfcomplete(event)" />
 				<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
@@ -27,6 +27,8 @@
 	<fx:Script>
 	<![CDATA[
 		import events.InfoEvent;
+		
+		import utils.Global;
 		
 		[Bindable] public var showTransformTool:Boolean;
 		[Bindable] public var scaleContent:Boolean;
