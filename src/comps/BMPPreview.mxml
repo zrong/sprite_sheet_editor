@@ -3,20 +3,15 @@
 <!-- 创建者:zrong(zrongzrong@gmail.com) -->
 <!-- 创建时间：2011-8-5 -->
 <!-- 显示BitmapData格式的预览 -->
-<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<comps:Preview xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark"
-				   implements="interf.IPreview"
-				   xmlns:comps="comps.*" 
-				   creationComplete="init()">
-	<fx:Metadata>
-		[Event(name="previewLoadComplete", type="events.InfoEvent")]
-	</fx:Metadata>
+				   xmlns:comps="comps.*" >
 	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
 		<s:viewport>
 			<s:Group id="scrollerView" width="100%" height="100%">
 				<s:BitmapImage id="chessboard" source="{Global.instance.bmp_checks}" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
 				<s:BitmapImage id="viewer" clearOnLoad="true" scaleMode="letterbox" horizontalAlign="left" verticalAlign="top"
-							   ready="handler_viewerReady(event)"/>
+							   ready="handler_loadComplete(event)"/>
 				<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
 									 visible="{showTransformTool&amp;&amp;!scaleContent}"/>
 			</s:Group>
@@ -27,96 +22,41 @@
 	<![CDATA[
 		import events.InfoEvent;
 		
-		import mx.events.FlexEvent;
-		
 		import utils.Global;
-		
-		public static const MENU_SHOW_ALL:String = '显示全部';
-		public static const MENU_CHECK:String = '方格背景';
-		public static const MENU_WHITE:String = '白色背景';
-		public static const MENU_BLACK:String = '黑色背景';
-		
-		[Bindable] public var showTransformTool:Boolean;
-		[Bindable] public var scaleContent:Boolean;
-		[Bindable] public var sourceWidth:int;
-		[Bindable] public var sourceHeight:int;
-		[Bindable] public var viewerWidth:int;
-		[Bindable] public var viewerHeight:int;
-		[Bindable] public var sourceInfo:String;
-		
-		private var _bgMenuLabels:Vector.<String>;
-		private var _showAllCMI:ContextMenuItem;
-		private var _showCheckBGCMI:ContextMenuItem;
-		private var _showWhiteBGCMI:ContextMenuItem;
-		private var _showBlackBGCMI:ContextMenuItem;
-		
-		private function init():void
-		{
-			_showAllCMI = new ContextMenuItem(MENU_SHOW_ALL);
-			_showCheckBGCMI = new ContextMenuItem(MENU_CHECK, true);
-			_showCheckBGCMI.checked = true;
-			_showWhiteBGCMI = new ContextMenuItem(MENU_WHITE);
-			_showBlackBGCMI = new ContextMenuItem(MENU_BLACK);
-			var __menu:ContextMenu = new ContextMenu();
-			__menu.addEventListener(Event.SELECT, handler_menuSelect);
-			__menu.customItems = [_showAllCMI,_showCheckBGCMI,_showWhiteBGCMI, _showBlackBGCMI];
-			this.contextMenu = __menu;
-		}
 		
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
-		public function set source($so:*):void
+		override public function set source($so:*):void
 		{
 			if(!$so && viewer.bitmapData)
 				viewer.bitmapData.dispose();
 			viewer.source = $so;
 		}
 		
-		public function get content():IBitmapDrawable
+		override public function get content():IBitmapDrawable
 		{
 			return viewer.bitmapData;
+		}
+		
+		override protected function get bg():*
+		{
+			return chessboard;
 		}
 		//----------------------------------------
 		// public
 		//----------------------------------------
-		public function destroy():void
+		override public function destroy():void
 		{
 			source = null;
 			sourceWidth = 0;
 			sourceHeight = 0;
 			viewerWidth = 0;
 			viewerHeight = 0;
+			sourceInfo = '';
 		}
 		
-		private function handler_menuSelect($evt:Event):void
-		{
-			var __menuItem:ContextMenuItem = $evt.target as ContextMenuItem;
-			if(__menuItem == _showAllCMI)
-			{
-				__menuItem.checked = !__menuItem.checked;
-				scaleContent = __menuItem.checked;
-				handler_viewerReady(null);
-			}
-			else
-			{
-				if(__menuItem.checked) return;
-				_showCheckBGCMI.checked = false;
-				_showBlackBGCMI.checked = false;
-				_showWhiteBGCMI.checked = false;
-				__menuItem.checked = true;
-				var __source:* = null;
-				if(__menuItem == _showCheckBGCMI)
-					__source = Global.instance.bmp_checks;
-				else if(__menuItem == _showWhiteBGCMI)
-					__source = new BitmapData(5,5,false,0xFFFFFF);
-				else
-					__source = new BitmapData(5,5,false,0x000000);
-				chessboard.source = __source;
-			}
-		}
-		
-		protected function handler_viewerReady($event:FlexEvent):void
+		override protected function handler_loadComplete($event:Event):void
 		{
 			trace('BMPPreview:', viewer.width, viewer.height);
 			sourceWidth = viewer.sourceWidth;
@@ -139,7 +79,6 @@
 			this.dispatchEvent(new InfoEvent(InfoEvent.PREVIEW_LOAD_COMPLETE));
 			trace('BMPPreview:', viewerWidth, viewerHeight, sourceWidth, sourceHeight);
 		}
-		
 	]]>
 	</fx:Script>
-</s:BorderContainer>
+</comps:Preview>

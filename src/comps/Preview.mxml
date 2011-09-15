@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   implements="interf.IPreview"
+				   xmlns:comps="comps.*" 
+				   creationComplete="init()">
+	<fx:Metadata>
+		[Event(name="previewLoadComplete", type="events.InfoEvent")]
+	</fx:Metadata>
+	<fx:Script>
+	<![CDATA[
+		import utils.Global;
+		
+		public static const MENU_SHOW_ALL:String = '显示全部';
+		public static const MENU_CHECK:String = '方格背景';
+		public static const MENU_WHITE:String = '白色背景';
+		public static const MENU_BLACK:String = '黑色背景';
+		
+		[Bindable] public var showTransformTool:Boolean;
+		[Bindable] public var scaleContent:Boolean;
+		/**
+		 * 被载入的显示对象的实际宽度。例如，对于swf来说，就是swf文件的宽度。
+		 */
+		[Bindable] public var sourceWidth:int=100;
+		/**
+		 * 被载入的显示对象的实际高度。
+		 */
+		[Bindable] public var sourceHeight:int=100;
+		
+		/**
+		 * viewer的显示宽度。当scaleContent为false的时候，它与sourceWidth相等。
+		 */
+		[Bindable] public var viewerWidth:int=100;
+		/**
+		 * viewer的显示高度。当scaleContent为false的时候，它与sourceWidth相等。
+		 */
+		[Bindable] public var viewerHeight:int=100;
+		
+		[Bindable] public var sourceInfo:String;
+		
+		protected var _showAllCMI:ContextMenuItem;
+		protected var _showCheckBGCMI:ContextMenuItem;
+		protected var _showWhiteBGCMI:ContextMenuItem;
+		protected var _showBlackBGCMI:ContextMenuItem;
+		
+		protected function init():void
+		{
+			_showAllCMI = new ContextMenuItem(MENU_SHOW_ALL);
+			_showCheckBGCMI = new ContextMenuItem(MENU_CHECK, true);
+			_showCheckBGCMI.checked = true;
+			_showWhiteBGCMI = new ContextMenuItem(MENU_WHITE);
+			_showBlackBGCMI = new ContextMenuItem(MENU_BLACK);
+			var __menu:ContextMenu = new ContextMenu();
+			__menu.addEventListener(Event.SELECT, handler_menuSelect);
+			__menu.customItems = [_showAllCMI,_showCheckBGCMI,_showWhiteBGCMI, _showBlackBGCMI];
+			this.contextMenu = __menu;
+		}
+		
+		protected function get bg():*
+		{
+			return null;
+		}
+		
+		private function handler_menuSelect($evt:Event):void
+		{
+			var __menuItem:ContextMenuItem = $evt.target as ContextMenuItem;
+			if(__menuItem == _showAllCMI)
+			{
+				__menuItem.checked = !__menuItem.checked;
+				scaleContent = __menuItem.checked;
+				handler_loadComplete(null);
+			}
+			else
+			{
+				if(__menuItem.checked) return;
+				_showCheckBGCMI.checked = false;
+				_showBlackBGCMI.checked = false;
+				_showWhiteBGCMI.checked = false;
+				__menuItem.checked = true;
+				var __source:* = null;
+				if(__menuItem == _showCheckBGCMI)
+					__source = Global.instance.bmp_checks;
+				else if(__menuItem == _showWhiteBGCMI)
+					__source = new BitmapData(5,5,false,0xFFFFFF);
+				else
+					__source = new BitmapData(5,5,false,0x000000);
+				bg.source = __source;
+			}
+		}
+		
+		protected function handler_loadComplete($event:Event):void
+		{
+		}
+		
+		public function destroy():void
+		{
+		}
+		
+		public function set source($so:*):void
+		{
+			
+		}
+		
+		public function get content():IBitmapDrawable
+		{
+			return null;
+		}
+	]]>
+	</fx:Script>
+</s:BorderContainer>
