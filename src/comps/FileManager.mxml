@@ -8,7 +8,7 @@
 	</fx:Metadata>
 	<s:Label top="0" fontWeight="bold" horizontalCenter="0" text="文件列表"/>
 	<s:DataGrid id="fileDG" left="0" right="0" top="45" bottom="0" 
-				dataProvider="{fileList}" selectionChange="selectionChange()"
+				dataProvider="{fileList}" selectionChange="selectionChange()" selectionMode="multipleRows"
 				selectionChanging="selectionChanging()">
 		<s:columns>
 			<s:ArrayList>
@@ -20,8 +20,10 @@
 	<s:HGroup right="0" top="20" width="100%" verticalAlign="middle">
 		<s:Button id="addFile" width="100%" label="+" toolTip="添加多个文件。如果列表中有选择项，添加的文件会出现在选择项的上方。" click="handler_addFileclick(event)"/>
 		<s:Button id="delFile" width="100%" label="x" toolTip="从列表中删除选择的文件" enabled="{fileDG.selectedItem}" click="handler_delFileclick(event)"/>
-		<s:Button id="upFile" width="100%" label="↑" toolTip="将选择的文件上移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex>0}" click="handler_upFileclick(event)"/>
-		<s:Button id="downFile" width="100%" label="↓" toolTip="将选择的文件下移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex&lt;(fileList.length-1)}" click="handler_downFileclick(event)"/>
+		<s:Button id="topFile" width="100%" label="┬" toolTip="移动到顶部" enabled="{upFile.enabled}" click="handler_topAndBottomFileClick(event)"/>
+		<s:Button id="bottomFile" width="100%" label="┴" toolTip="移动到底部" enabled="{downFile.enabled}" click="handler_topAndBottomFileClick(event)"/>
+		<s:Button id="upFile" width="100%" label="↑" toolTip="将选择的文件上移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex>0}" click="handler_upAndDownFileclick(event)"/>
+		<s:Button id="downFile" width="100%" label="↓" toolTip="将选择的文件下移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex&lt;(fileList.length-1)}" click="handler_upAndDownFileclick(event)"/>
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
@@ -32,6 +34,16 @@
 		import utils.FileProcessor;
 		
 		[Bindable] public var fileList:ArrayCollection;
+		
+		public function init():void
+		{
+			fileDG.selectedItem = null;
+			delFile.enabled = false;
+			topFile.enabled = false;
+			bottomFile.enabled = false;
+			upFile.enabled = false;
+			downFile.enabled = false;
+		}
 		
 		public function setFileList($files:Array):void
 		{
@@ -44,33 +56,37 @@
 		
 		private function selectionChange():void
 		{
+			//选择的行数大于1，不发给上层
+			if(fileDG.selectionLength>1) return;
 			this.dispatchEvent(new InfoEvent(InfoEvent.FILE_MANAGER_SELECTION_CHANGE));
 		}
 		
 		private function selectionChanging():void
 		{
+			//选择的行数大于1，不发给上层
+			if(fileDG.selectionLength>1) return;
 			this.dispatchEvent(new InfoEvent(InfoEvent.FILE_MANAGER_SELECTION_CHANGING));
 		}
 		
-		protected function handler_upFileclick($event:MouseEvent):void
+		protected function handler_topAndBottomFileClick($event:MouseEvent):void
 		{
-			var __index:int = fileDG.selectedIndex;
-			var __item:Object = fileList.removeItemAt(__index);
-			fileList.addItemAt(__item, __index-1);
-			fileDG.selectedIndex = __index-1;
+			var __indexAdjust:int = ($event.currentTarget == topFile) ? -100 : 100;
+			moveItem(__indexAdjust);
 		}
 		
-		protected function handler_downFileclick($event:MouseEvent):void
+		protected function handler_upAndDownFileclick($event:MouseEvent):void
 		{
-			var __index:int = fileDG.selectedIndex;
-			var __item:Object = fileList.removeItemAt(__index);
-			fileList.addItemAt(__item, __index+1);
-			fileDG.selectedIndex = __index+1;
+			var __indexAdjust:int = ($event.currentTarget == upFile) ? -1 : 1;
+			moveItem(__indexAdjust);
 		}
 		
 		protected function handler_delFileclick($event:MouseEvent):void
 		{
-			fileList.removeItemAt(fileDG.selectedIndex);
+			var __indices:Vector.<int> = fileDG.selectedIndices;
+			for(var i:int=__indices.length-1;i>=0;i--)
+			{
+				fileList.removeItemAt(__indices[i]);
+			}
 			delFile.enabled = false;
 			upFile.enabled = false;
 			downFile.enabled = false;
@@ -91,6 +107,55 @@
 			{
 				fileList.addItemAt({file:__selectedFiles[i]}, __index+i);
 			}
+		}
+		
+		private function moveItem($indexAdjust:int):void
+		{
+			//向上还是向下调整
+			var __indices:Vector.<int> = fileDG.selectedIndices;
+			var __selectedList:ArrayList = new ArrayList();
+			
+			var i:int=0;
+			//先删除后面的，避免影响列表的索引
+			for(i=__indices.length-1;i>=0;i--)
+			{
+				__selectedList.addItemAt(fileList.removeItemAt(__indices[i]), 0);
+			}
+			//要插入的位置索引
+			var __insertIndex:int = 0;
+			//如果移动的范围大于1，就是顶部或底部移动
+			if($indexAdjust<-1)
+			{
+				__insertIndex = 0;
+			}
+			else if($indexAdjust>1)
+			{
+				__insertIndex = fileList.length;
+			}
+			//否则就是上一项和下一项移动
+			else
+			{
+				//要插入的位置索引就是最高一个项目的索引-1，或者最低的一个项目的索引+1
+				__insertIndex = __indices[0] + $indexAdjust;
+				//超出范围，就使用极值
+				if($indexAdjust<0 && __insertIndex < 0)
+				{
+					__insertIndex = 0;
+				}
+				else if($indexAdjust>0 && __insertIndex > fileList.length) 
+				{
+					__insertIndex = fileList.length;
+				}
+			}
+			
+			fileList.addAllAt(__selectedList, __insertIndex);
+			//还原调整顺序之后的选择项目
+			var __indicesNew:Vector.<int> = new Vector.<int>;
+			for(i=0;i<__selectedList.length;i++)
+			{
+				__indicesNew[i] = fileList.getItemIndex(__selectedList.getItemAt(i)); 
+			}
+			fileDG.selectedIndices = __indicesNew;
 		}
 	]]>
 	</fx:Script>

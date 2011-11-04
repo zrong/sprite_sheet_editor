@@ -16,7 +16,6 @@
 	<s:Button id="openSSBTN" width="120" height="30." label="打开Sprite Sheet"
 			  toolTip="打开已有的Sprite Sheet进行编辑和优化"
 			  click="handler_openSSBTNclick(event)"/>
-	<s:Button id="convertSSBTN" width="120" height="30." label="转换Sprite Sheet" enabled="false"/>
 	<s:Spacer width="100" height="30"/>
 	<s:Button id="newBTN" width="120" height="30." label="检查更新" 
 			  click="handler_newBTNclick(event)"/>

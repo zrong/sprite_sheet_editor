@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-9 -->
+<!-- 更新时间：2011-11-04 -->
+<!-- 选择要拼合成SS文件的图像 -->
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:comps="comps.*"
@@ -81,6 +86,7 @@
 			if($old == StateType.START)
 				fileM.setFileList(FileProcessor.instance.selectedFiles);
 			pic.transf.init();
+			fileM.init();
 		}
 		
 		public function exitState():void
