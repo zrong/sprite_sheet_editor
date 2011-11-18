@@ -20,15 +20,23 @@
 	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧'):'所有可用帧'}"/>
 	<s:HGroup verticalAlign="middle" width="100%">
 		<s:Label width="50" text="帧数:{frameAC.length}"/>
-		<s:Button id="prevBTN" label="上帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
+		<s:Spacer width="100%" height="10"/>
+		<s:Button id="prevBTN" label="上帧" width="60" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
 				  click="prevFrame();"/>
-		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameAC.length-1}" 
+		<s:Button id="nextBTN" label="下帧" width="60" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameAC.length-1}" 
 				  click="nextFrame();"/>
-		<s:Button id="delBTN" label="删除" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
+		<s:Button id="allBTN" width="60" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
+				  click="handler_allBTNclick(event)"/>
+	</s:HGroup>
+	<s:HGroup verticalAlign="middle" width="100%">
+		<s:Button id="addBTN" width="100%" label="+" toolTip="添加多个文件。如果列表中有选择项，添加的文件会出现在选择项的上方。"/>
+		<s:Button id="delBTN" label="x" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
 				  click="handler_delBTNclick(event)"
 				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
-		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
-				  click="handler_allBTNclick(event)"/>
+		<s:Button id="topBTN" width="100%" label="┬" toolTip="移动到顶部"/>
+		<s:Button id="bottomBTN" width="100%" label="┴" toolTip="移动到底部"/>
+		<s:Button id="upBTN" width="100%" label="↑" toolTip="将选择的文件上移"/>
+		<s:Button id="downBTN" width="100%" label="↓" toolTip="将选择的文件下移"/>
 	</s:HGroup>
 	<s:DataGrid id="frameDG" width="100%" height="150" selectionMode="multipleRows" dataProvider="{frameAC}"
 				sortableColumns="false" valueCommit="handler_frameDGValueCommit(event)">
