@@ -17,26 +17,20 @@
 		<s:State name="frame"/>
 		<s:State name="frameAndLabel"/>
 	</s:states>
-	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧'):'所有可用帧'}"/>
+	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧:'+frameAC.length):'所有可用帧:'+frameAC.length}"/>
 	<s:HGroup verticalAlign="middle" width="100%">
-		<s:Label width="50" text="帧数:{frameAC.length}"/>
-		<s:Spacer width="100%" height="10"/>
-		<s:Button id="prevBTN" label="上帧" width="60" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
-				  click="prevFrame();"/>
-		<s:Button id="nextBTN" label="下帧" width="60" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameAC.length-1}" 
-				  click="nextFrame();"/>
-		<s:Button id="allBTN" width="60" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
-				  click="handler_allBTNclick(event)"/>
-	</s:HGroup>
-	<s:HGroup verticalAlign="middle" width="100%">
-		<s:Button id="addBTN" width="100%" label="+" toolTip="添加多个文件。如果列表中有选择项，添加的文件会出现在选择项的上方。"/>
-		<s:Button id="delBTN" label="x" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
+		<s:Button id="addBTN" width="100%" label="加帧"
+				  click="handler_addClick(event)"
+				  toolTip="添加多个图像文件。每个图像作为一帧增加到当前Sheet的末尾。"/>
+		<s:Button id="delBTN" label="删帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
 				  click="handler_delBTNclick(event)"
 				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
-		<s:Button id="topBTN" width="100%" label="┬" toolTip="移动到顶部"/>
-		<s:Button id="bottomBTN" width="100%" label="┴" toolTip="移动到底部"/>
-		<s:Button id="upBTN" width="100%" label="↑" toolTip="将选择的文件上移"/>
-		<s:Button id="downBTN" width="100%" label="↓" toolTip="将选择的文件下移"/>
+		<s:Button id="prevBTN" label="上帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
+				  click="prevFrame();"/>
+		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameAC.length-1}" 
+				  click="nextFrame();"/>
+		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
+				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
 	<s:DataGrid id="frameDG" width="100%" height="150" selectionMode="multipleRows" dataProvider="{frameAC}"
 				sortableColumns="false" valueCommit="handler_frameDGValueCommit(event)">
@@ -85,6 +79,7 @@
 		import spark.collections.SortField;
 		import spark.events.IndexChangeEvent;
 		
+		import utils.FileProcessor;
 		import utils.Funs;
 		import utils.Global;
 		
@@ -98,8 +93,10 @@
 		[Bindable] public var selectedFrameIndices:Vector.<int>;	//frameDG中选择的索引
 		[Bindable] public var playing:Boolean;	//是否正在播放动画。如果是播放动画状态，那么valueCommit的时候，就不更新selectedFrameIndices的值
 		
-		private var _framesNotInLabels:ArrayCollection;	//保存不在Label中的所有帧
-		private var _currentIndex:int=-1;					//当前正在播放的帧在selectedFrameIndices中的索引
+		//保存不在Label中的所有帧
+		private var _framesNotInLabels:ArrayCollection;
+		//当前正在播放的帧在selectedFrameIndices中的索引
+		private var _currentIndex:int=-1;
 		
 		public function get selectedFrameIndex():int
 		{
@@ -323,6 +320,32 @@
 				frameDG.selectedIndex = -1;
 			}
 		}
+		
+		/**
+		 * 选择加入的图像文件后，调用的方法
+		 */
+		private function fun_addToSS():void
+		{
+			frameAC = new ArrayCollection();
+			//若选择的是label，就显示该Label中的所有帧
+			if(labelCB.selected && labelList.selectedIndex != -1)
+			{
+				var __framesInLabel:ArrayList = LabelVO(labelList.selectedItem).frames;
+				frameAC.addAll(__framesInLabel);
+				var __indices:Vector.<int> = new Vector.<int>;
+				for (var j:int = 0; j < __framesInLabel.length; j++) 
+				{
+					__indices[j] = j;
+				}
+				frameDG.selectedIndices = __indices;
+			}
+				//否则显示不在Label中的所有帧
+			else
+			{
+				frameAC.addAll(_framesNotInLabels);
+				frameDG.selectedIndex = -1;
+			}
+		}
 		//----------------------------------------
 		// handler
 		//----------------------------------------
@@ -459,6 +482,10 @@
 			frameDG.selectedIndices = __indics;
 		}
 		
+		protected function handler_addClick($evt:MouseEvent):void
+		{
+			FileProcessor.instance.addToSS(fun_addToSS);
+		}
 	]]>
 	</fx:Script>
 </s:BorderContainer>

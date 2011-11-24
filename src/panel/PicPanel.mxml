@@ -47,7 +47,7 @@
 		private var _frameNum:int;				//当前正在处理的帧编号
 		private var _rectInSheet:Rectangle;	//正在处理的帧在整个Sheet上的rect位置
 		private var _whRect:Rectangle;			//保存Sheet的宽高
-		private var _limitW:Boolean;
+		private var _limitW:Boolean;			//限制宽度还是限制高度
 		
 		//----------------------------------------
 		// getter/setter
@@ -120,7 +120,7 @@
 		{
 			pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
 			//根据sheet的w和h建立一个大bitmapData
-			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
+			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
 			Global.instance.sheet.drawSheet(__bmd);
 			//更新全局Sheet中保存的文件名
 			updateNames();

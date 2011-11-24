@@ -108,6 +108,13 @@ public class FileProcessor
 		_file.browseForOpen('选择一个SpriteSheet文件', _allPicArr);
 	}
 	
+	public function addToSS($callBack:Function=null):void
+	{
+		_openState = StateType.ADD_TO_SS;
+		_file.browseForOpenMultiple('选择图像文件', _allPicArr);
+		_callBack = $callBack;
+	}
+	
 	//----------------------------------------
 	// 保存文件操作
 	//----------------------------------------
@@ -254,11 +261,18 @@ public class FileProcessor
 	private function handler_selectMulti($evt:FileListEvent):void
 	{
 		_selectedFiles = $evt.files;
-		Funs.changeState(_openState);
-		if(_callBack is Function)
+		if(StateType.isMainState(_openState))
 		{
-			_callBack.call();
-			_callBack = null;
+			Funs.changeState(_openState);
+		}
+		if(_openState == StateType.PIC ||
+			_openState == StateType.ADD_TO_SS)
+		{
+			if(_callBack is Function)
+			{
+				_callBack.call();
+				_callBack = null;
+			}
 		}
 		//trace('multi:', _file.nativePath, $evt.files, _openState);
 	}

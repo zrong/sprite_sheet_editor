@@ -84,8 +84,6 @@
 		import org.zengrong.utils.MathUtil;
 		import org.zengrong.utils.Vec2D;
 		
-		import spark.globalization.supportClasses.GlobalizationBase;
-		
 		import type.StateType;
 		
 		import utils.FileProcessor;

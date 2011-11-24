@@ -106,5 +106,10 @@ public class StateType
 	 * 载入完成的状态
 	 */
 	public static const LOAD_DONE:String = 'loadDone';
+	
+	/**
+	 * 将内容加入到spritesheet中的状态
+	 */	
+	public static const ADD_TO_SS:String = 'addToSS';
 }
 }
