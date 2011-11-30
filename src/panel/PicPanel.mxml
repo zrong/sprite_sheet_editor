@@ -33,7 +33,7 @@
 	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.utils.Vec2D;
@@ -204,7 +204,7 @@
 		// handler
 		//----------------------------------------
 		
-		protected function handler_buildClick($event:InfoEvent):void
+		protected function handler_buildClick($event:SSEvent):void
 		{
 			capture();
 		}
@@ -250,7 +250,7 @@
 		/**
 		 * 在切换选择的文件之前，将选择的帧rect信息保存在该item中
 		 */
-		protected function handler_selectionChanging($event:InfoEvent):void
+		protected function handler_selectionChanging($event:SSEvent):void
 		{
 			var __item:Object = fileM.fileDG.selectedItem;
 			if(__item)
@@ -261,7 +261,7 @@
 			}
 		}
 		
-		protected function handler_selectionChange($event:InfoEvent):void
+		protected function handler_selectionChange($event:SSEvent):void
 		{
 			var __item:Object = fileM.fileDG.selectedItem;
 			if(__item)

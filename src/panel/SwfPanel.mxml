@@ -35,7 +35,7 @@
 						showTransformTool="{!useOriginalSizeCB.selected}"/>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import flash.utils.setTimeout;
 		
@@ -83,14 +83,14 @@
 			if($old == StateType.START)
 				_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
 			trace('swfPanel.load:', _swfURL);
-			swf.addEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+			swf.addEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 			swf.source = _swfURL;
 			swf.transf.init();
 		}
 		
 		public function exitState():void
 		{
-			swf.removeEventListener(InfoEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+			swf.removeEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 			swf.source = null;
 			swf.transf.destroy();
 		}
@@ -186,7 +186,7 @@
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		private function handler_swfLoadDone(event:InfoEvent) : void
+		private function handler_swfLoadDone(event:SSEvent) : void
 		{
 			//若当前处于等待载入状态，则开始建立sheet
 			if(_state == StateType.WAIT_LOADED)
@@ -200,7 +200,7 @@
 			}
 		}
 		
-		private function handler_buildClick($evt:InfoEvent):void
+		private function handler_buildClick($evt:SSEvent):void
 		{
 			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
 			_state = StateType.WAIT_LOADED;

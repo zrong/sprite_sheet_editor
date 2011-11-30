@@ -7,7 +7,7 @@
 		<s:VerticalLayout horizontalAlign="center" verticalAlign="middle" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
 	<fx:Metadata>
-		[Event(name="build", type="events.InfoEvent")]
+		[Event(name="build", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:states>
 		<s:State name="build"/>
@@ -37,10 +37,10 @@
 		<s:CheckBox id="powerOf2CB" label="2的幂" toolTip="选中后，输出尺寸的宽高均为2的幂（如256,512）"/>
 		<s:CheckBox id="squareCB" label="正方形" toolTip="选中后，输出尺寸比例为正方形，宽高自动确定"/>
 	</s:HGroup>
-	<s:Button id="buildBTN" label.build="生成" label.buildAndOpt="优化" height="30" width="80" click="this.dispatchEvent(new InfoEvent(InfoEvent.BUILD))"/>
+	<s:Button id="buildBTN" label.build="生成" label.buildAndOpt="优化" height="30" width="80" click="this.dispatchEvent(new SSEvent(SSEvent.BUILD))"/>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 	]]>
 	</fx:Script>
 </s:BorderContainer>

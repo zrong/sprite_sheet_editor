@@ -20,7 +20,7 @@
 	<s:Label right="0" bottom="0" text="{sourceInfo}"/>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import utils.Global;
 		
@@ -85,7 +85,7 @@
 				viewerHeight = sourceHeight;
 			}
 			sourceInfo = 'W:'+sourceWidth+',H:'+sourceHeight;
-			this.dispatchEvent(new InfoEvent(InfoEvent.PREVIEW_LOAD_COMPLETE));
+			this.dispatchEvent(new SSEvent(SSEvent.PREVIEW_LOAD_COMPLETE));
 			trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, sourceWidth, sourceHeight);
 		}
 	]]>

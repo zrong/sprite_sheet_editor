@@ -6,7 +6,7 @@
 				   xmlns:comps="comps.*" 
 				   creationComplete="init()">
 	<fx:Metadata>
-		[Event(name="previewLoadComplete", type="events.InfoEvent")]
+		[Event(name="previewLoadComplete", type="events.SSEvent")]
 	</fx:Metadata>
 	<fx:Script>
 	<![CDATA[

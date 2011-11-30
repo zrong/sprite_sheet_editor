@@ -10,9 +10,9 @@
 		<s:RadioButtonGroup id="metaRBG"/>
 	</fx:Declarations>
 	<fx:Metadata>
-		[Event(name="savePic", type="events.InfoEvent")]
-		[Event(name="saveMeta", type="events.InfoEvent")]
-		[Event(name="saveAll", type="events.InfoEvent")]
+		[Event(name="savePic", type="events.SSEvent")]
+		[Event(name="saveMeta", type="events.SSEvent")]
+		[Event(name="saveAll", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:Label text="保存Sprite Sheet" fontWeight="bold"/>
 	<s:HGroup width="100%">
@@ -48,7 +48,7 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
@@ -61,15 +61,15 @@
 		
 		protected function handler_savePicBTNClick(event:MouseEvent):void
 		{
-			dispatchEvent(new InfoEvent(InfoEvent.SAVE_PIC));
+			dispatchEvent(new SSEvent(SSEvent.SAVE_PIC));
 		}
 		protected function handler_saveMetaBTNClick(event:MouseEvent):void
 		{
-			dispatchEvent(new InfoEvent(InfoEvent.SAVE_META));
+			dispatchEvent(new SSEvent(SSEvent.SAVE_META));
 		}
 		protected function handler_saveAllBTNClick(event:MouseEvent):void
 		{
-			dispatchEvent(new InfoEvent(InfoEvent.SAVE_ALL));
+			dispatchEvent(new SSEvent(SSEvent.SAVE_ALL));
 		}
 	]]>
 	</fx:Script>

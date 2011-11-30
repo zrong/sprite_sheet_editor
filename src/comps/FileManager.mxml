@@ -3,8 +3,8 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx">
 	<fx:Metadata>
-		[Event(name="selectionChange", type="events.InfoEvent")]
-		[Event(name="selectionChanging", type="events.InfoEvent")]
+		[Event(name="selectionChange", type="events.SSEvent")]
+		[Event(name="selectionChanging", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:Label top="0" fontWeight="bold" horizontalCenter="0" text="文件列表"/>
 	<s:DataGrid id="fileDG" left="0" right="0" top="45" bottom="0" 
@@ -27,7 +27,7 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import mx.collections.ArrayCollection;
 		
@@ -58,14 +58,14 @@
 		{
 			//选择的行数大于1，不发给上层
 			if(fileDG.selectionLength>1) return;
-			this.dispatchEvent(new InfoEvent(InfoEvent.FILE_MANAGER_SELECTION_CHANGE));
+			this.dispatchEvent(new SSEvent(SSEvent.FILE_MANAGER_SELECTION_CHANGE));
 		}
 		
 		private function selectionChanging():void
 		{
 			//选择的行数大于1，不发给上层
 			if(fileDG.selectionLength>1) return;
-			this.dispatchEvent(new InfoEvent(InfoEvent.FILE_MANAGER_SELECTION_CHANGING));
+			this.dispatchEvent(new SSEvent(SSEvent.FILE_MANAGER_SELECTION_CHANGING));
 		}
 		
 		protected function handler_topAndBottomFileClick($event:MouseEvent):void

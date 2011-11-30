@@ -51,7 +51,8 @@
 			</s:BorderContainer>
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"
 								frameAndLabelChange="handler_framesAndLabelsChange(event)"
-								deleteFrame="optimizeSheet()"/>
+								deleteFrame="optimizeSheet()"
+								addFrame="handler_addFrame(event)"/>
 			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" 
 								currentState="buildAndOpt" build="optimizeSheet();"/>
 			<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"
@@ -69,7 +70,7 @@
 	<![CDATA[
 		import com.adobe.serialization.json.JSON;
 		
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
@@ -93,6 +94,7 @@
 		import vo.FrameVO;
 		
 		[Bindable] private var _enabled:Boolean;
+		
 		
 		public function enterState($old:String, $new:String):void
 		{
@@ -208,7 +210,7 @@
 		/**
 		 * 保存metadata和位图
 		 */
-		protected function handler_saveAll($event:InfoEvent):void
+		protected function handler_saveAll($event:SSEvent):void
 		{
 			updateMetadata();
 			var __bmd:BitmapData = getBitmapDataForSave(
@@ -221,13 +223,13 @@
 			FileProcessor.instance.saveAll(__data, [saveSheet.picRBG.selectedValue.toString(),saveSheet.metaRBG.selectedValue.toString()]);
 		}
 		
-		protected function handler_saveMeta($event:InfoEvent):void
+		protected function handler_saveMeta($event:SSEvent):void
 		{
 			updateMetadata();
 			FileProcessor.instance.saveMeta(getMetadata(), saveSheet.metaRBG.selectedValue.toString());
 		}
 		
-		protected function handler_savePic($event:InfoEvent):void
+		protected function handler_savePic($event:SSEvent):void
 		{
 			updateMetadata();
 			var __bmd:BitmapData = getBitmapDataForSave(
@@ -243,7 +245,7 @@
 			);
 		}
 		
-		protected function handler_saveSeq($event:InfoEvent):void
+		protected function handler_saveSeq($event:SSEvent):void
 		{
 			//根据显示的帧类型来保存序列
 			var __bmds:Vector.<BitmapData> = disFrameRB.selected ? 
@@ -262,6 +264,12 @@
 			optimizeSheet();
 			//ani.destroy();
 		}
+		
+		protected function handler_addFrame($event:SSEvent):void
+		{
+			optimizeSheet();
+		}
+		
 		//----------------------------------------
 		// 内部方法
 		//----------------------------------------

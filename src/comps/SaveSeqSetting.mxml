@@ -9,7 +9,7 @@
 		<s:RadioButtonGroup id="formatRBG"/>
 	</fx:Declarations>
 	<fx:Metadata>
-		[Event(name="saveSeq", type="events.InfoEvent")]
+		[Event(name="saveSeq", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:states>
 		<s:State name="SSP"/>
@@ -38,7 +38,7 @@
 	<s:Button id="saveSeqBTN" click="handler_saveSeqBTNClick(event)" label="保存" height="30" width="80"/>
 	<fx:Script>
 	<![CDATA[
-		import events.InfoEvent;
+		import events.SSEvent;
 		
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
@@ -81,7 +81,7 @@
 		
 		protected function handler_saveSeqBTNClick(event:MouseEvent):void
 		{
-			dispatchEvent(new InfoEvent(InfoEvent.SAVE_SEQ));
+			dispatchEvent(new SSEvent(SSEvent.SAVE_SEQ));
 		}
 		
 		protected function fillTen():void

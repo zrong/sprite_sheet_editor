@@ -8,10 +8,11 @@ package events
 {
 import flash.events.Event;
 
-public class InfoEvent extends Event
+public class SSEvent extends Event
 {
 	public static const DELETE_FRAME:String = 'deleteFrame';
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
+	public static const ADD_FRAME:String = 'addFrame';
 	
 	public static const SAVE_PIC:String = 'savePic';
 	public static const SAVE_META:String = 'saveMeta';
@@ -30,7 +31,7 @@ public class InfoEvent extends Event
 	
 	public var info:*;
 	
-	public function InfoEvent($type:String, $info:*=null, $bubbles:Boolean=false, $cancelable:Boolean=false)
+	public function SSEvent($type:String, $info:*=null, $bubbles:Boolean=false, $cancelable:Boolean=false)
 	{
 		super($type, $bubbles, $cancelable);
 		info = $info;
@@ -38,7 +39,7 @@ public class InfoEvent extends Event
 	
 	override public function clone():Event
 	{
-		return new InfoEvent(type, info, bubbles, cancelable);
+		return new SSEvent(type, info, bubbles, cancelable);
 	}		
 }
 }
