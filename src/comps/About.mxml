@@ -3,8 +3,8 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  xmlns:mx="library://ns.adobe.com/flex/mx"
 		  title="关于"
-		  width="400" height="250" resizable="false"
-		  showStatusBar="false" type="utility"
+		  width="500" height="300" resizable="true"
+		  showStatusBar="false" minimizable="false"
 		  closing="handler_closing(event)"
 		  backgroundColor="0x696969"
 		  creationComplete="handler_create(event)">

@@ -14,12 +14,8 @@ import flash.geom.Rectangle;
 [Bindable]
 public class FrameVO
 {
-	public function FrameVO($frameNum:int, $frameName:String, $frameRect:Rectangle, $originRect:Rectangle)
+	public function FrameVO()
 	{
-		frameNum = $frameNum;
-		frameName = $frameName;
-		frameRect = $frameRect;
-		originRect = $originRect;
 	}
 	
 	public var  frameNum:int;

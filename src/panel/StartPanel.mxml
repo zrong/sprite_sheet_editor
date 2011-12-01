@@ -19,8 +19,11 @@
 	<s:Spacer width="100" height="30"/>
 	<s:Button id="newBTN" width="120" height="30." label="检查更新" 
 			  click="handler_newBTNclick(event)"/>
-	<s:Button id="aboutBTN" width="120" height="30." label="关于" 
+	<s:Button id="aboutBTN" width="120" height="30" label="关于" 
 			  click="handler_aboutBTNclick(event)"/>
+	<s:Button id="visitBTN" width="120" height="30" label="访问作者博客"
+			  toolTip="访问 www.zengrong.net"
+			  click="handler_visitBTNclick(event)"/>
 	<fx:Script>
 	<![CDATA[
 		import comps.About;
@@ -76,6 +79,11 @@
 		protected function handler_newBTNclick($event:MouseEvent):void
 		{
 			navigateToURL(new URLRequest('http://www.zengrong.net/sprite_sheet_editor'));
+		}
+		
+		protected function handler_visitBTNclick($event:MouseEvent):void
+		{
+			navigateToURL(new URLRequest('http://www.zengrong.net/'));
 		}
 		
 	]]>
