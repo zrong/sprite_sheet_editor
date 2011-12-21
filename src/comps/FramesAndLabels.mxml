@@ -38,8 +38,9 @@
 		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
-	<s:DataGrid id="frameDG" width="100%" height="150" selectionMode="multipleRows" dataProvider="{frameAC}"
-				sortableColumns="false" valueCommit="handler_frameDGValueCommit(event)">
+	<s:DataGrid id="frameDG" width="100%" height="200" dataProvider="{frameAC}"
+				selectionMode="multipleRows" sortableColumns="false"
+				valueCommit="handler_frameDGValueCommit(event)">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
@@ -412,6 +413,7 @@
 			var __origRect:Rectangle = null;
 			var __bmd:BitmapData = null;
 			var __frame:FrameVO = null;
+			var __name:String = null;
 			//所有帧的信息数组，保存起来，后面方便处理Label
 			var __frameVOs:Vector.<FrameVO> = new Vector.<FrameVO>;
 			for(var i:int=0;i<__addSheetTotal;i++)
@@ -421,28 +423,21 @@
 				__rect.y += __lastFrameRect.bottom;
 				__origRect = __ss.metadata.originalFrameRects[i].clone();
 				__bmd = __ss.getBMDByIndex(i);
-				Global.instance.sheet.addFrame(__bmd, __rect, __origRect);
 				
 				__frame = new FrameVO();
 				__frame.frameNum = __sheetTotal + i;
 				__frame.frameRect = __rect;
 				__frame.originRect = __origRect;
 				
-				//如果当前Sheet需要name，则处理新加入的Sheet的name
-				if(Global.instance.adjustedSheet.metadata.hasName)
-				{
-					//如果新加入的sheet有name，就直接使用
-					if(__ss.metadata.hasName)
-					{
-						__frame.frameName = __ss.metadata.names[i]; 
-					}
-					//否则就自动根据资源名称和当前索引生成name
-					else
-					{
-						__frame.frameName = $vo.name + '_' + i;
-					}
-				}
+				//如果新加入的sheet有name，就直接使用。这里不必判断Sheet是否使用name，先加进来，最后用不用是保存时候的事情。
+				if(__ss.metadata.hasName)
+					__frame.frameName = __ss.metadata.names[i];
+				//否则就自动根据资源名称和当前索引生成name
+				else
+					__frame.frameName = $vo.name + '_' + i;
+				__name = __frame.frameName;
 				__frameVOs[i] = __frame;
+				Global.instance.sheet.addFrame(__bmd, __rect, __origRect, __name);
 			}
 			//如果加入的Sheet包含Label，就使用它
 			if(__ss.metadata.hasLabel)
@@ -482,7 +477,7 @@
 			for(var l:int=0;l<__frameVOs.length;l++)
 			{
 				__frame = __frameVOs[l];
-				if(__frame != null) 	_framesNotInLabels.addItem(__frame);
+				if(__frame != null) _framesNotInLabels.addItem(__frame);
 			}
 		}
 		
@@ -500,14 +495,14 @@
 			__rect.height = __bmd.height;
 			//原始的rect，不裁切
 			var __origRect:Rectangle = new Rectangle(0,0,__bmd.width, __bmd.height);
-			Global.instance.sheet.addFrame(__bmd, __rect, __origRect);
 			//加入帧列表
 			var __frame:FrameVO = new FrameVO();
 			__frame.frameNum = __total;
-			__frame.frameName = Global.instance.adjustedSheet.metadata.hasName?$vo.name:null;
+			__frame.frameName = $vo.name;
 			__frame.frameRect = __rect;
 			__frame.originRect = __origRect;
 			_framesNotInLabels.addItem(__frame);
+			Global.instance.sheet.addFrame(__bmd, __rect, __origRect, __frame.frameName);
 		}
 		//----------------------------------------
 		// handler

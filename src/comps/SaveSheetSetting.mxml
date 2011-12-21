@@ -38,7 +38,8 @@
 			<s:RadioButton id="jsonRB" groupName="metaRBG" label="JSON格式" value=".json"/>
 			<s:RadioButton id="txtRB" groupName="metaRBG" label="TXT格式" value=".txt"/>
 			<s:CheckBox id="simpleCB" label="使用简单元数据" toolTip="选中后仅保存每帧的坐标和宽高"/>
-			<s:CheckBox id="nameCB" label="包含文件名称" toolTip="选中后将图像文件的主文件与帧索引的关系保存到meta文件中。在使用的时候，就能通过主文件名获取对应的帧。"/>
+			<s:CheckBox id="nameCB" label="包含文件名称" toolTip="选中后将图像文件的主文件与帧索引的关系保存到meta文件中。在使用的时候，就能通过主文件名获取对应的帧。"
+						change="handler_nameCBChange(event)"/>
 		</s:VGroup>
 	</s:HGroup>
 	<s:HGroup width="100%" horizontalAlign="center">
@@ -51,6 +52,8 @@
 		import events.SSEvent;
 		
 		import org.zengrong.display.spritesheet.SpriteSheetType;
+		
+		import utils.Global;
 		
 		public function get sheetType():String
 		{
@@ -71,6 +74,12 @@
 		{
 			dispatchEvent(new SSEvent(SSEvent.SAVE_ALL));
 		}
+		
+		protected function handler_nameCBChange(event:Event):void
+		{
+			Global.instance.adjustedSheet.metadata.hasName = nameCB.selected;			
+		}
+		
 	]]>
 	</fx:Script>
 </s:BorderContainer>
