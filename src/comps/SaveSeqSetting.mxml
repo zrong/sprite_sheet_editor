@@ -27,8 +27,8 @@
 		<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%" change="fillTen()"/>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
-		<s:RadioButton id="pngRB" groupName="formatRBG" label="PNG序列" value="SSP" change="preview()" selected="true"/>
-		<s:RadioButton id="jpgRB" groupName="formatRBG" label="JPEG序列" value="SSJ" change="preview()"/>
+		<s:RadioButton id="pngRB" groupName="formatRBG" label="PNG序列" value="SSPI" change="preview()" selected="true"/>
+		<s:RadioButton id="jpgRB" groupName="formatRBG" label="JPEG序列" value="SSJI" change="preview()"/>
 		<comps:JPEGQuelity id="quality" includeIn="SSJ"/>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle">
@@ -40,6 +40,7 @@
 	<![CDATA[
 		import events.SSEvent;
 		
+		import org.zengrong.assets.AssetsType;
 		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
 		private var _ten:Array=[0];	//编号位数中每一位的十进制最小值，例如10，1000，1000
@@ -76,7 +77,7 @@
 				if($num<_ten[i])
 					__str += '0';
 			}
-			return __str + String($num) + (formatRBG.selectedValue.toString() == SpriteSheetType.JPG ? '.jpg' : '.png');
+			return __str + String($num) + (formatRBG.selectedValue.toString() == SpriteSheetType.JPG_IMAGE ? '.jpg' : '.png');
 		}
 		
 		protected function handler_saveSeqBTNClick(event:MouseEvent):void

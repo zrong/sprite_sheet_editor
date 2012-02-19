@@ -58,8 +58,8 @@
 		public function get sheetType():String
 		{
 			if(picRBG.selectedValue.toString() == '.png')
-				return SpriteSheetType.PNG;
-			return SpriteSheetType.JPG;
+				return SpriteSheetType.PNG_IMAGE;
+			return SpriteSheetType.JPG_IMAGE;
 		}
 		
 		protected function handler_savePicBTNClick(event:MouseEvent):void

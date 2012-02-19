@@ -23,15 +23,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>[source path] ZRONG</name>
+			<name>[source path] ZRONG_AS3</name>
 			<type>2</type>
-			<locationURI>ZRONG</locationURI>
+			<locationURI>ZRONG_AS3</locationURI>
 		</link>
 	</linkedResources>
-	<variableList>
-		<variable>
-			<name>ZRONG</name>
-			<value>file:/E:/works/zrong.as3.git/src</value>
-		</variable>
-	</variableList>
 </projectDescription>

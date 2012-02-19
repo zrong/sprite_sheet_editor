@@ -2,7 +2,7 @@
 <actionScriptProperties analytics="false" mainApplicationPath="SpriteSheetEditor.mxml" projectUUID="89e81d29-4dd0-4cc7-8b9f-d88dce5a6fc2" version="10">
   <compiler additionalCompilerArguments="-locale zh_CN -swf-version=13" autoRSLOrdering="true" copyDependentFiles="true" flex3CompatMode="false" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
-      <compilerSourcePathEntry kind="1" linkType="1" path="${ZRONG}"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="${ZRONG_AS3}"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">
