@@ -143,10 +143,6 @@
 				{
 					captureDone();
 				}
-				catch($argument:ArgumentError)
-				{
-					Funs.alert('Flash Playe 10/AIR2支持的位图尺寸宽高必须都大于0且小于8191像素，同时总像素不超过16777215。\n'+$argument.message);
-				}
 				catch($err:Error)
 				{
 					Funs.alert($err.message);

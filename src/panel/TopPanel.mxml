@@ -25,12 +25,21 @@
 		
 		private var _oldState:String;
 		private var _newState:String;
+		
+		private var _so:SOUtil;
 		[Bindable] private var _prevState:String;
 		[Bindable] public var stateName:String = '开始';
 		
+		override protected function createChildren():void
+		{
+			super.createChildren();
+			_so = SOUtil.getSOUtil('sprite_sheet_editor');
+		}
+		
 		public function enterState($old:String, $new:String):void
 		{
-			var __frameRate:int = int(SOUtil.get('frameRate'));
+			
+			var __frameRate:int = int(_so.get('frameRate'));
 			if(__frameRate > 0)
 			{
 				fpsNS.value = __frameRate;
@@ -65,7 +74,7 @@
 		protected function handler_fpsNSChange(event:Event):void
 		{
 			this.stage.frameRate = fpsNS.value;
-			SOUtil.save(fpsNS.value, 'frameRate');
+			_so.save(fpsNS.value, 'frameRate');
 		}
 		
 	]]>

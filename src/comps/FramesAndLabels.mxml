@@ -81,6 +81,7 @@
 		import mx.events.FlexEvent;
 		
 		import org.zengrong.assets.Assets;
+		import org.zengrong.assets.AssetsEvent;
 		import org.zengrong.assets.AssetsProgressVO;
 		import org.zengrong.assets.AssetsType;
 		import org.zengrong.display.spritesheet.SpriteSheet;
@@ -201,8 +202,8 @@
 			if(!_assets)
 			{
 				_assets = new Assets();
-				_assets.addEventListener(Assets.PROGRESS, handler_assetsProgress);
-				_assets.addEventListener(Assets.COMPLETE, handler_assetsComp);
+				_assets.addEventListener(AssetsEvent.COMPLETE, handler_assetsComp);
+				_assets.addEventListener(AssetsEvent.PROGRESS, handler_assetsProgress);
 			}
 		}
 		
@@ -219,8 +220,8 @@
 			pause();
 			if(_assets)
 			{
-				_assets.removeEventListener(Assets.PROGRESS, handler_assetsProgress);
-				_assets.removeEventListener(Assets.COMPLETE, handler_assetsComp);
+				_assets.removeEventListener(AssetsEvent.PROGRESS, handler_assetsProgress);
+				_assets.removeEventListener(AssetsEvent.COMPLETE, handler_assetsComp);
 				_assets = null;
 			}
 		}

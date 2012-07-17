@@ -33,8 +33,6 @@
 		import mx.events.PropertyChangeEvent;
 		import mx.states.State;
 		
-		import org.zengrong.utils.SOUtil;
-		
 		import type.StateType;
 		
 		import utils.Funs;
@@ -44,7 +42,6 @@
 		{
 			Global.instance.root = this;
 			ChangeWatcher.watch(Global.instance, 'currentState', fun_currentStateChange);
-			SOUtil.name = 'sprite_sheet_editor';
 			this.title = Funs.getDesc('name') +' v' + Funs.getDesc('versionNumber');
 		}
 		
