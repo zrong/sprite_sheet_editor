@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-8-9 -->
+<!-- 更新时间：2011-11-04 -->
+<!-- 选择要拼合成SS文件的图像 -->
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:comps="comps.*"
+		  horizontalAlign="center"
+		  xmlns:comps1="view.comps.*">
+	<s:BorderContainer width="320" height="100%"  borderColor="0x878787" backgroundAlpha="0">
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+		</s:layout>
+		<s:BorderContainer width="100%" backgroundColor="0x696969" height="80">
+			<s:layout>
+				<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+			</s:layout>
+			<s:Label text="帧设置(x,y,w,h)" fontWeight="bold"/>
+			<s:CheckBox id="useOriginalSizeCB" label="使用帧的原始大小"/>
+			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
+				<s:NumericStepper id="frameX" width="100%" value="@{pic.transf.x}" minimum="0" maximum="{pic.viewerWidth-1}"/>
+				<s:NumericStepper id="frameY" width="100%" value="@{pic.transf.y}" minimum="0" maximum="{pic.viewerHeight-1}"/>
+				<s:NumericStepper id="frameW" width="100%" value="@{pic.transf.width}" minimum="1" maximum="{pic.viewerWidth}"/>
+				<s:NumericStepper id="frameH" width="100%" value="@{pic.transf.height}" minimum="1" maximum="{pic.viewerHeight}"/>
+			</s:HGroup>
+		</s:BorderContainer>
+		<comps1:BuildSetting id="buildSetting" width="100%" height="90" backgroundColor="0x696969"
+							build="handler_buildClick(event)" enabled="{fileM.fileList.length&gt;0}"/>
+		<comps1:FileManager id="fileM" width="100%" height="100%" selectionChange="handler_selectionChange(event)" selectionChanging="handler_selectionChanging(event)"/>
+	</s:BorderContainer>
+	<comps1:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
+	<fx:Script>
+	<![CDATA[
+		import events.SSEvent;
+		
+		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+		import org.zengrong.utils.Vec2D;
+		
+		import type.StateType;
+		
+		import utils.FileProcessor;
+		import utils.Funs;
+		import utils.Global;
+		
+		private var _frameNum:int;				//当前正在处理的帧编号
+		private var _rectInSheet:Rectangle;	//正在处理的帧在整个Sheet上的rect位置
+		private var _whRect:Rectangle;			//保存Sheet的宽高
+		private var _limitW:Boolean;			//限制宽度还是限制高度
+		
+		//----------------------------------------
+		// getter/setter
+		//----------------------------------------
+		
+		/**
+		 * 从当前界面控件的值中新建Rect
+		 */
+		public function getFrameRect():Rectangle
+		{
+			if(useOriginalSizeCB.selected)
+				return new Rectangle(0,0,pic.sourceWidth, pic.sourceHeight);
+			return new Rectangle(frameX.value,frameY.value,frameW.value,frameH.value);
+		}
+		
+		/**
+		 * 获取当前正在获取的帧的Rect
+		 */
+		private function getCaptureFrameRect():Rectangle
+		{
+			//若使用自定义的Rect，且设置过Rect，就使用保存的Rect
+			if(!useOriginalSizeCB.selected && fileM.fileList.getItemAt(_frameNum).rect)
+				return Rectangle(fileM.fileList.getItemAt(_frameNum).rect);
+			//否则从当前界面新建
+			return getFrameRect();
+		}
+		
+		//----------------------------------------
+		// public
+		//----------------------------------------
+
+		
+		//----------------------------------
+		//  绘制相关方法
+		//----------------------------------
+		
+		private function capture():void
+		{
+			trace('pic capture');
+			//保存当前选择的文件的rect
+			handler_selectionChanging(null);
+			pic.viewer.source = null;
+			pic.viewer.addEventListener(Event.COMPLETE, handler_picLoadDone);
+			//根据计算出的Sheet宽高重置bmd
+			Funs.resetSheet(null, new SpriteSheetMetadata());
+			_frameNum = 0;
+			_rectInSheet = null;
+			_whRect = null;
+			_rectInSheet = null;
+			_limitW = buildSetting.whDDL.selectedIndex == 0;
+			drawFrame();
+		}
+		
+		private function captureDone():void
+		{
+			pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
+			//根据sheet的w和h建立一个大bitmapData
+			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
+			Global.instance.sheet.drawSheet(__bmd);
+			//更新全局Sheet中保存的文件名
+			updateNames();
+			Funs.changeState(StateType.SS);
+		}
+		
+		/**
+		 * 绘制一帧，并开始载入下一帧的图片
+		 */
+		private function drawFrame():void
+		{
+			if (_frameNum < fileM.fileList.length)
+			{
+				trace('drawing frame:', _frameNum, fileM.fileList.length);
+				pic.viewer.source = File(fileM.fileList.getItemAt(_frameNum).file).url;
+			}
+			else
+			{
+				try
+				{
+					captureDone();
+				}
+				catch($err:Error)
+				{
+					Funs.alert($err.message);
+				}
+			}
+		}
+		
+		/**
+		 * 绘制当前帧，返回位图
+		 * @param $rect 位图的大小和偏移
+		 */
+		private function drawBMD($rect:Rectangle):BitmapData
+		{
+			var __bmd:BitmapData = new BitmapData($rect.width, $rect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
+			var __ma:Matrix = null;
+			if(!useOriginalSizeCB.selected)
+			{
+				//需要向“左上角”移动，将当前帧绘制成位图
+				__ma = new Matrix();
+				__ma.translate(-1*$rect.x, -1*$rect.y);
+			}
+			__bmd.draw(pic.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+			return __bmd;
+		}
+		
+		/**
+		 * 更新保存在全局变量中的sheet中的name值
+		 */
+		private function updateNames():void
+		{
+			if(fileM.fileList.length>0)
+			{
+				var __names:Vector.<String> = new Vector.<String>(fileM.fileList.length, true);
+				var __namesIndex:Object = {};
+				var __dotIndex:int = 0;
+				var __name:String = '';
+				var __main:String = '';
+				for(var i:int=0;i<fileM.fileList.length;i++)
+				{
+					//提取主文件名
+					__name = File(fileM.fileList.getItemAt(i).file).name;
+					__dotIndex = __name.lastIndexOf('.');
+					if(__dotIndex == -1)
+						__dotIndex = __name.length;
+					__main = __name.slice(0, __dotIndex);
+					__namesIndex[__main] = i;
+					__names[i] = __main;
+				}
+				Global.instance.sheet.metadata.hasName = true;
+				Global.instance.sheet.metadata.names = __names;
+				Global.instance.sheet.metadata.namesIndex = __namesIndex;
+			}
+		}
+		//----------------------------------------
+		// handler
+		//----------------------------------------
+		
+		protected function handler_buildClick($event:SSEvent):void
+		{
+			capture();
+		}
+		
+		private function handler_picLoadDone($evt:Event):void
+		{
+			var __rect:Rectangle = getCaptureFrameRect();
+			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
+			//如果没有创建过_rectInSheet，且当前是第一帧捕获，就建立第一帧在sheet中的rect位置
+			if(!_rectInSheet && _frameNum==0)
+			{
+				_rectInSheet = new Rectangle(0,0,__rect.width,__rect.height);
+				_whRect = new Rectangle();
+				//设置sheet的初始宽高
+				if(_limitW)
+				{
+					//若限制宽度小于帧的宽度，就扩大限制宽度
+					_whRect.width = buildSetting.whNS.value;
+					if(_whRect.width<__rect.width) _whRect.width = __rect.width;
+					_whRect.height = __rect.height;
+				}
+				else
+				{
+					_whRect.height = buildSetting.whNS.value;
+					if(_whRect.height<__rect.height) _whRect.height = __rect.height;
+					_whRect.width = __rect.width;
+				}
+			}
+			else
+			{
+				//计算并更新当前帧在整个Sheet中的位置
+				Funs.updateRectInSheet(_rectInSheet, _whRect, __rect, _limitW);
+			}
+			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
+			var __bmd:BitmapData =  drawBMD(__rect);
+			//向Sheet中添加这个位图，同时添加当前帧在Sheet中的位置
+			Global.instance.sheet.addFrame(__bmd, _rectInSheet.clone());
+			//绘制下一帧
+			_frameNum ++;
+			drawFrame();
+		}
+		
+		/**
+		 * 在切换选择的文件之前，将选择的帧rect信息保存在该item中
+		 */
+		protected function handler_selectionChanging($event:SSEvent):void
+		{
+			var __item:Object = fileM.fileDG.selectedItem;
+			if(__item)
+			{
+				//在选择的项目被修改之前，将这个项目的Rect进行保存
+				__item.rect = getFrameRect();
+				trace(__item.rect);
+			}
+		}
+		
+		protected function handler_selectionChange($event:SSEvent):void
+		{
+			var __item:Object = fileM.fileDG.selectedItem;
+			if(__item)
+			{
+				pic.viewer.source = __item.file.url;
+				//若为这个文件记录了rect，则改变当前rect的显示
+				if(__item.rect)
+					pic.transf.transformFromRect(__item.rect);
+			}
+			else
+			{
+				pic.viewer.source = null;
+			}
+		}
+		
+	]]>
+	</fx:Script>
+</s:HGroup>

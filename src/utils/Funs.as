@@ -1,6 +1,6 @@
 package utils
 {
-import comps.Alert;
+import view.comps.Alert;
 
 import flash.desktop.NativeApplication;
 import flash.display.BitmapData;
@@ -14,12 +14,6 @@ import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 
 public class Funs
 {
-	public static function getDesc($name:String):String
-	{
-		var __desc:XML = NativeApplication.nativeApplication.applicationDescriptor;
-		var __ns:Namespace = __desc.namespace();
-		return __desc.__ns::[$name];
-	}
 	/**
 	 * 修改当前的State
 	 * @param $state 要修改的状态的名称

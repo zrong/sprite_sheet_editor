@@ -10,6 +10,9 @@ import flash.events.Event;
 
 public class SSEvent extends Event
 {
+	public static const ENTER_STATE:String = 'enterState';
+	public static const EXIT_STATE:String = 'exitState';
+	
 	public static const DELETE_FRAME:String = 'deleteFrame';
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	public static const ADD_FRAME:String = 'addFrame';

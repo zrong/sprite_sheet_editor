@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:utils="com.youxi.utils.*" xmlns:comps="view.comps.*">
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5"  paddingTop="5"/>
+	</s:layout>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="picRBG"/>
+		<s:RadioButtonGroup id="metaRBG"/>
+	</fx:Declarations>
+	<fx:Metadata>
+		[Event(name="savePic", type="events.SSEvent")]
+		[Event(name="saveMeta", type="events.SSEvent")]
+		[Event(name="saveAll", type="events.SSEvent")]
+	</fx:Metadata>
+	<s:Label text="保存Sprite Sheet" fontWeight="bold"/>
+	<s:HGroup width="100%">
+		<s:VGroup width="50%">
+			<s:Label text="保存SpriteSheet" />
+			<s:RadioButton id="pngRB" groupName="picRBG" label="PNG格式" value=".png" selected="true"/>
+			<s:RadioButton id="jpgRB" groupName="picRBG" label="JPEG格式" value=".jpg"/>
+			<comps:JPEGQuelity id="quality" visible="{jpgRB.selected}" width="120"/>
+			<s:HGroup width="120" verticalAlign="middle">
+				<s:Label text="蒙版:"/>
+				<s:DropDownList id="maskDDL" width="100%" requireSelection="true">
+					<s:ArrayList>
+						<fx:String>不用蒙版</fx:String>
+						<fx:String>横向蒙版</fx:String>
+						<fx:String>纵向蒙版</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>	
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup width="50%">
+			<s:Label text="保存元数据"/>
+			<s:RadioButton id="xmlRB" groupName="metaRBG" label="XML格式" value=".xml" selected="true"/>
+			<s:RadioButton id="jsonRB" groupName="metaRBG" label="JSON格式" value=".json"/>
+			<s:RadioButton id="txtRB" groupName="metaRBG" label="TXT格式" value=".txt"/>
+			<s:CheckBox id="simpleCB" label="使用简单元数据" toolTip="选中后仅保存每帧的坐标和宽高"/>
+			<s:CheckBox id="nameCB" label="包含文件名称" toolTip="选中后将图像文件的主文件与帧索引的关系保存到meta文件中。在使用的时候，就能通过主文件名获取对应的帧。"
+						change="handler_nameCBChange(event)"/>
+		</s:VGroup>
+	</s:HGroup>
+	<s:HGroup width="100%" horizontalAlign="center">
+		<s:Button id="savePicBTN" click="handler_savePicBTNClick(event)" label="保存图像" height="30" width="80"/>
+		<s:Button id="saveAllBTN" click="handler_saveAllBTNClick(event)" label="同时保存" height="30" width="80"/>
+		<s:Button id="saveMetaBTN" click="handler_saveMetaBTNClick(event)" label="保存元数据" height="30" width="80"/>
+	</s:HGroup>
+	<fx:Script>
+	<![CDATA[
+		import events.SSEvent;
+		
+		import org.zengrong.display.spritesheet.SpriteSheetType;
+		
+		import utils.Global;
+		
+		public function get sheetType():String
+		{
+			if(picRBG.selectedValue.toString() == '.png')
+				return SpriteSheetType.PNG_IMAGE;
+			return SpriteSheetType.JPG_IMAGE;
+		}
+		
+		protected function handler_savePicBTNClick(event:MouseEvent):void
+		{
+			dispatchEvent(new SSEvent(SSEvent.SAVE_PIC));
+		}
+		protected function handler_saveMetaBTNClick(event:MouseEvent):void
+		{
+			dispatchEvent(new SSEvent(SSEvent.SAVE_META));
+		}
+		protected function handler_saveAllBTNClick(event:MouseEvent):void
+		{
+			dispatchEvent(new SSEvent(SSEvent.SAVE_ALL));
+		}
+		
+		protected function handler_nameCBChange(event:Event):void
+		{
+			Global.instance.adjustedSheet.metadata.hasName = nameCB.selected;			
+		}
+		
+	]]>
+	</fx:Script>
+</s:BorderContainer>

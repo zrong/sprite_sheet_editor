@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- zengrong.net -->
+<!-- 创建者:zrong(zrongzrong@gmail.com) -->
+<!-- 创建时间：2011-09-15 -->
+<!-- 显示载入的SWF动画或者图像 -->
+<comps:Preview xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:comps="view.comps.*">
+	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
+		<s:viewport>
+			<s:Group id="scrollerView" width="100%" height="100%">
+				<s:BitmapImage id="chessboard" source="{Global.instance.bmp_checks}" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
+				<s:SWFLoader id="viewer" mouseChildren="false" mouseEnabled="false" scaleContent="{scaleContent}" showBusyCursor="true" 
+							 complete="handler_loadComplete(event)" />
+				<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
+									 visible="{showTransformTool&amp;&amp;!scaleContent}"/>
+			</s:Group>
+		</s:viewport>
+	</s:Scroller>
+	<s:Label right="0" bottom="0" text="{sourceInfo}"/>
+	<fx:Script>
+	<![CDATA[
+		import events.SSEvent;
+		
+		import utils.Global;
+		
+		//----------------------------------------
+		// public
+		//----------------------------------------
+		override public function destroy():void
+		{
+			viewer.unloadAndStop(true);
+//			sourceWidth = 0;
+//			sourceHeight = 0;
+//			viewerWidth = 0;
+//			viewerHeight = 0;
+		}
+		
+		//----------------------------------------
+		// getter/setter
+		//----------------------------------------
+		override public function set source($so:*):void
+		{
+			viewer.unloadAndStop(true);
+			viewer.load($so);
+		}
+		
+		override public function get content():IBitmapDrawable
+		{
+			return viewer.content;
+		}
+		
+		override protected function get bg():*
+		{
+			return chessboard;
+		}
+		
+		//----------------------------------------
+		// handler
+		//----------------------------------------
+		
+		protected function handler_viewerSecurityError($event:SecurityErrorEvent):void
+		{
+			trace('载入安全错误：', $event.text);
+		}
+		
+		override protected function handler_loadComplete($event:Event):void
+		{
+			trace('ImagePreview载入成功:', viewer.source);
+			//重设viewer和transf
+			sourceWidth = viewer.content.loaderInfo.width;
+			sourceHeight = viewer.content.loaderInfo.height;
+			if(scaleContent)
+			{
+				viewer.width = viewScroller.viewport.width;
+				viewer.height = viewScroller.viewport.height;
+				viewerWidth = viewScroller.viewport.width;
+				viewerHeight = viewScroller.viewport.height;
+			}
+			else
+			{
+				viewer.width = sourceWidth;
+				viewer.height = sourceHeight;
+				viewerWidth = sourceWidth;
+				viewerHeight = sourceHeight;
+			}
+			sourceInfo = 'W:'+sourceWidth+',H:'+sourceHeight;
+			this.dispatchEvent(new SSEvent(SSEvent.PREVIEW_LOAD_COMPLETE));
+			trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, sourceWidth, sourceHeight);
+		}
+	]]>
+	</fx:Script>
+</comps:Preview>
