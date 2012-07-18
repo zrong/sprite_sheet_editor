@@ -4,7 +4,6 @@
 					   xmlns:panel="view.panel.*"
 					   backgroundColor="#4D4D4D"
 					   showStatusBar="false"
-					   currentState="{Global.instance.currentState}"
 					   windowComplete="handler_init(event)"
 					   uncaughtError="handler_unCaughtError(event)"
 					   closing="handler_closing(event)" xmlns:local="*">
@@ -43,7 +42,6 @@
 		
 		protected function handler_init(event:AIREvent):void
 		{
-			Global.instance.root = this;
 			this.title = getDesc('name') +' v' + getDesc('versionNumber');
 		}
 		

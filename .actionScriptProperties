@@ -25,6 +25,7 @@
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
     </libraryPath>
     <sourceAttachmentPath>
+      <sourceAttachmentPathEntry kind="3" linkType="1" path="D:/works/tools/sprite_sheet_editor/libs/robotlegs-framework-v1.5.2.swc" sourcepath="${CLASSES}" useDefaultLinkType="false"/>
       <sourceAttachmentPathEntry kind="3" linkType="1" path="D:/works/tools/sprite_sheet_editor/libs/zrong_as3code.swc" sourcepath="${ZRONG_AS3}" useDefaultLinkType="false"/>
     </sourceAttachmentPath>
   </compiler>

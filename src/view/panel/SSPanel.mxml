@@ -55,13 +55,9 @@
 								addFrame="handler_addFrame(event)"/>
 			<comps1:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" 
 								currentState="buildAndOpt" build="optimizeSheet();"/>
-			<comps1:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"
-									saveAll="handler_saveAll(event)"
-									saveMeta="handler_saveMeta(event)"
-									savePic="handler_savePic(event)"/>
+			<comps1:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"/>
 			<comps1:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969"
-								  title="{disFrameRB.selected?'保存序列(修剪尺寸)':'保存序列(原始尺寸)'}"
-								  saveSeq="handler_saveSeq(event)"/>
+								  title="{disFrameRB.selected?'保存序列(修剪尺寸)':'保存序列(原始尺寸)'}" />
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
@@ -70,6 +66,8 @@
 	<![CDATA[
 		
 		import events.SSEvent;
+		
+		import model.FileProcessor;
 		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
@@ -86,7 +84,6 @@
 		
 		import type.StateType;
 		
-		import utils.FileProcessor;
 		import utils.Funs;
 		import utils.Global;
 		
@@ -203,10 +200,11 @@
 			
 		}
 		
+		
 		/**
-		 * 保存metadata和位图
+		 * 获取要保存的metadata和位图
 		 */
-		protected function handler_saveAll($event:SSEvent):void
+		public function getAllData():Object
 		{
 			updateMetadata();
 			var __bmd:BitmapData = getBitmapDataForSave(
@@ -215,17 +213,18 @@
 				optPanel.transparentCB.selected,
 				optPanel.bgColorPicker.selectedColor
 			);
-			var __data:Object = {meta:getMetadata(), bitmapData:__bmd};
-			FileProcessor.instance.saveAll(__data, [saveSheet.picRBG.selectedValue.toString(),saveSheet.metaRBG.selectedValue.toString()]);
+			return { data:{meta:getMetadata(), bitmapData:__bmd},
+				ext:[saveSheet.picRBG.selectedValue.toString(),saveSheet.metaRBG.selectedValue.toString()] };
 		}
 		
-		protected function handler_saveMeta($event:SSEvent):void
+		public function getMeta():Object
 		{
 			updateMetadata();
-			FileProcessor.instance.saveMeta(getMetadata(), saveSheet.metaRBG.selectedValue.toString());
+			return { meta:getMetadata(),
+			type:saveSheet.metaRBG.selectedValue.toString() }
 		}
 		
-		protected function handler_savePic($event:SSEvent):void
+		public function getPicData():Object
 		{
 			updateMetadata();
 			var __bmd:BitmapData = getBitmapDataForSave(
@@ -234,24 +233,22 @@
 				optPanel.transparentCB.selected,
 				optPanel.bgColorPicker.selectedColor
 			);
-			FileProcessor.instance.saveSS(
-				__bmd, 
-				saveSheet.picRBG.selectedValue.toString(),
-				saveSheet.quality.value
-			);
+			return { bmd:__bmd,
+				type:saveSheet.picRBG.selectedValue.toString(),
+				quality:saveSheet.quality.value }
 		}
 		
-		protected function handler_saveSeq($event:SSEvent):void
+		public function getSeqData():Object
 		{
 			//根据显示的帧类型来保存序列
 			var __bmds:Vector.<BitmapData> = disFrameRB.selected ? 
 				Global.instance.adjustedSheet.getAll():
 				Global.instance.sheet.getAll();
-			FileProcessor.instance.saveSeq(
-				__bmds,
-				saveSeq.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
-				(saveSeq.quality?saveSeq.quality.value:0)
-			)
+			return {
+				bmds:__bmds,
+				names:saveSeq.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
+				quality:(saveSeq.quality?saveSeq.quality.value:0)
+			}
 		}
 		
 		protected function handler_saveResizeBTNclick($event:MouseEvent):void

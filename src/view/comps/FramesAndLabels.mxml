@@ -13,6 +13,7 @@
 		[Event(name="deleteFrame", type="events.SSEvent")]
 		[Event(name="frameAndLabelChange", type="events.SSEvent")]
 		[Event(name="addFrame", type="events.SSEvent")]
+		[Event(name="select", type="flash.events.Event")]
 	</fx:Metadata>
 	<s:states>
 		<s:State name="frame"/>
@@ -75,6 +76,8 @@
 	<![CDATA[
 		import events.SSEvent;
 		
+		import model.FileProcessor;
+		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
@@ -93,7 +96,6 @@
 		import spark.collections.SortField;
 		import spark.events.IndexChangeEvent;
 		
-		import utils.FileProcessor;
 		import utils.Funs;
 		import utils.Global;
 		
@@ -377,9 +379,9 @@
 		/**
 		 * 选择加入的图像文件后，调用的方法
 		 */
-		private function fun_addToSS():void
+		public function fun_addToSS($filelist:Array):void
 		{
-			var __fileList:Array = FileProcessor.instance.selectedFiles;
+			var __fileList:Array = $filelist;
 			var __file:File = null;
 			var __urls:Array = [];
 			var __urlobj:Object = null;
@@ -511,7 +513,7 @@
 		protected function handler_addClick($evt:MouseEvent):void
 		{
 			_isAddSSFrame = ($evt.currentTarget == addSSBTN);
-			FileProcessor.instance.addToSS(fun_addToSS);
+			this.dispatchEvent(new Event(Event.SELECT));
 		}
 		
 		/**

@@ -4,7 +4,7 @@
 //  创建时间：2011-8-3
 ////////////////////////////////////////////////////////////////////////////////
 
-package utils
+package model
 {
 import flash.display.BitmapData;
 import flash.errors.IOError;
@@ -20,17 +20,22 @@ import flash.utils.ByteArray;
 import mx.graphics.codec.JPEGEncoder;
 import mx.graphics.codec.PNGEncoder;
 
+import org.robotlegs.mvcs.Actor;
 import org.zengrong.display.spritesheet.SpriteSheetType;
 import org.zengrong.net.SpriteSheetLoader;
 
 import type.StateType;
 
+import utils.Funs;
+import utils.Global;
+
 /**
  * 专门负责对文件的处理，包括打开、保存等等操作。
  * @author zrong
  */
-public class FileProcessor
+public class FileProcessor extends Actor
 {
+	[Inject] public var stateModel:StateModel;
 	/**
 	 * 图像文件扩展名数组
 	 */	
@@ -43,18 +48,8 @@ public class FileProcessor
 	public static const JPG_FILTER:FileFilter = new FileFilter('JPG图像', '*.jpg;*.jpeg');
 	public static const SWF_FILTER:FileFilter = new FileFilter('SWF动画', '*.swf');
 	
-	private static var _instance:FileProcessor;
-	
-	public static function get instance():FileProcessor
+	public function FileProcessor()
 	{
-		if(!_instance)
-			_instance = new FileProcessor(new Singlton);
-		return _instance;
-	}
-	
-	public function FileProcessor($sig:Singlton)
-	{
-		if(!$sig) throw new TypeError('请使用FileProcessor.instance获取单例！');
 		_file = File.desktopDirectory;
 		_file.addEventListener(FileListEvent.SELECT_MULTIPLE, handler_selectMulti);
 		_file.addEventListener(Event.SELECT, handler_selectSingle);
@@ -246,7 +241,7 @@ public class FileProcessor
 		{
 			_selectedFiles = [_file.clone()];
 			if(_openState != StateType.SS)
-				Funs.changeState(_openState);
+				stateModel.state = _openState;
 			else
 				_ssLoader.load(_file.url);
 		}
@@ -263,14 +258,14 @@ public class FileProcessor
 		_selectedFiles = $evt.files;
 		if(StateType.isMainState(_openState))
 		{
-			Funs.changeState(_openState);
+			stateModel.state = _openState;
 		}
 		if(_openState == StateType.PIC ||
 			_openState == StateType.ADD_TO_SS)
 		{
 			if(_callBack is Function)
 			{
-				_callBack.call();
+				_callBack.call(null, _selectedFiles);
 				_callBack = null;
 			}
 		}
@@ -289,7 +284,7 @@ public class FileProcessor
 	{
 		Global.instance.sheet = _ssLoader.getSpriteSheet();
 		Global.instance.sheet.parseSheet();
-		Funs.changeState(_openState);
+		stateModel.state = _openState;
 	}
 	
 	private function handler_ssLoadError($evt:IOErrorEvent):void
@@ -298,4 +293,3 @@ public class FileProcessor
 	}
 }
 }
-class Singlton{};

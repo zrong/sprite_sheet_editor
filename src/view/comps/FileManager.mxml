@@ -5,6 +5,7 @@
 	<fx:Metadata>
 		[Event(name="selectionChange", type="events.SSEvent")]
 		[Event(name="selectionChanging", type="events.SSEvent")]
+		[Event(name="select", type="flash.events.Event")]
 	</fx:Metadata>
 	<s:Label top="0" fontWeight="bold" horizontalCenter="0" text="文件列表"/>
 	<s:DataGrid id="fileDG" left="0" right="0" top="45" bottom="0" 
@@ -29,9 +30,9 @@
 	<![CDATA[
 		import events.SSEvent;
 		
-		import mx.collections.ArrayCollection;
+		import model.FileProcessor;
 		
-		import utils.FileProcessor;
+		import mx.collections.ArrayCollection;
 		
 		[Bindable] public var fileList:ArrayCollection;
 		
@@ -95,12 +96,12 @@
 		
 		protected function handler_addFileclick($event:MouseEvent):void
 		{
-			FileProcessor.instance.openPics(fun_addFile);
+			this.dispatchEvent(new Event(Event.SELECT));
 		}
 		
-		private function fun_addFile():void
+		public function fun_addFile($filelist:Array):void
 		{
-			var __selectedFiles:Array = FileProcessor.instance.selectedFiles;
+			var __selectedFiles:Array = $filelist;
 			var __index:int = fileDG.selectedIndex>-1?fileDG.selectedIndex:fileList.length;
 			trace(__selectedFiles, __index);
 			for (var i:int = 0; i < __selectedFiles.length; i++) 

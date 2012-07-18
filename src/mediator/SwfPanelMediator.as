@@ -2,13 +2,15 @@ package mediator
 {
 import events.SSEvent;
 
+import flash.events.Event;
 import flash.filesystem.File;
+
+import model.FileProcessor;
+import model.StateModel;
 
 import org.robotlegs.mvcs.Mediator;
 
 import type.StateType;
-
-import utils.FileProcessor;
 
 import view.panel.SwfPanel;
 
@@ -20,14 +22,23 @@ public class SwfPanelMediator extends Mediator
 {
 	[Inject] public var v:SwfPanel;
 	
+	[Inject] public var stateModel:StateModel;
+	
+	[Inject] public var file:FileProcessor;
+	
 	private var _swfURL:String;
 	
 	override public function onRegister():void
 	{
-		
+		addViewListener(Event.COMPLETE, handler_captureDone);
 		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_buildClick);
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		eventMap.mapListener(eventDispatcher, SSEvent.EXIT_STATE, handler_exitState);
+	}
+	
+	private function handler_captureDone($evt:Event):void
+	{
+		stateModel.state = StateType.SS;
 	}
 	
 	private function handler_enterState($evt:SSEvent):void
@@ -35,7 +46,7 @@ public class SwfPanelMediator extends Mediator
 		trace('swfPanel.updateOnStateChanged:', $evt.info.oldState, $evt.info.newState);
 		//如果是从START状态跳转过来的，就更新一次swfURL的值
 		if($evt.info.oldState == StateType.START)
-			_swfURL = File(FileProcessor.instance.selectedFiles[0]).url;
+			_swfURL = File(file.selectedFiles[0]).url;
 		trace('swfPanel.load:', _swfURL);
 		v.swf.addEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 		v.swf.source = _swfURL;

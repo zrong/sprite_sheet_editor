@@ -5,6 +5,8 @@ import events.SSEvent;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import model.StateModel;
+
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.utils.SOUtil;
 
@@ -17,6 +19,8 @@ import view.panel.TopPanel;
 public class TopPanelMediator extends Mediator
 {
 	[Inject] public var v:TopPanel;
+	
+	[Inject] public var stateModel:StateModel;
 	
 	private var _prevState:String;
 	
@@ -33,6 +37,12 @@ public class TopPanelMediator extends Mediator
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		
 		_so = SOUtil.getSOUtil('sprite_sheet_editor');
+		showFPS();
+	}
+	
+	private function showFPS():void
+	{
+		v.fpsGRP.visible = (stateModel.state != StateType.START);
 	}
 	
 	private function handler_enterState($evt:SSEvent):void
@@ -56,7 +66,8 @@ public class TopPanelMediator extends Mediator
 		if( (_newState == StateType.PIC || _newState == StateType.SWF) &&
 			(_oldState != StateType.START) )
 			_prevState = StateType.START;
-		v.prevBTN.enabled = (_prevState !=null)
+		v.prevBTN.enabled = (_prevState !=null);
+		showFPS();
 	}
 	
 	protected function handler_fpsNSChange(event:Event):void
@@ -67,7 +78,7 @@ public class TopPanelMediator extends Mediator
 	
 	protected function handler_prievBTNClick(event:MouseEvent):void
 	{
-		Funs.changeState(_prevState);
+		stateModel.state = _prevState;
 	}
 }
 }

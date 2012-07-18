@@ -15,16 +15,6 @@ import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 public class Funs
 {
 	/**
-	 * 修改当前的State
-	 * @param $state 要修改的状态的名称
-	 * @see type.StateType
-	 */	
-	public static function changeState($state:String):void
-	{
-		Global.instance.currentState = $state;
-	}
-	
-	/**
 	 * 更新在Sheet中帧的Rect的位置，根据Rect位置计算出大Sheet的WH
 	 * 会直接修改$rectInSheet和$whRect参数的值。
 	 * @param $rectInSheet	当前处理的帧在整个Sheet中的位置和大小，会修改此参数的值

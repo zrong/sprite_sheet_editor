@@ -27,13 +27,12 @@ public class SSEContext extends Context
 	private function init():void
 	{
 		Global.instance.root = contextView as SpriteSheetEditor;
-		
 	}
 	
 	override public function startup():void
 	{
 		init();
-		injector.mapSingleton(FileModel);
+		injector.mapSingleton(FileProcessor);
 		injector.mapSingleton(StateModel);
 		
 		mediatorMap.mapView(SpriteSheetEditor, AppMediator);

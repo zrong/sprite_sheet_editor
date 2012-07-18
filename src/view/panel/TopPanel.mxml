@@ -7,7 +7,7 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" >
 	<s:Button id="prevBTN" left="5" label="返回上一步" verticalCenter="0"/>
 	<s:Label horizontalCenter="0" text="{stateName}" verticalCenter="0"/>
-	<s:HGroup visible="{Global.instance.currentState!='start'}" right="5" verticalAlign="middle"
+	<s:HGroup id="fpsGRP" right="5" verticalAlign="middle"
 			  verticalCenter="0">
 		<s:Label text="FPS:"/>
 		<s:NumericStepper id="fpsNS" maximum="60" minimum="1" value="30"/>

@@ -6,10 +6,6 @@ public class Global
 {
 	[Embed(source="/checks.png")]
 	[Bindable] public var bmp_checks:Class;
-	/**
-	 * 当前编辑器的状态
-	 */
-	[Bindable] public var currentState:String="start";
 	
 	/**
 	 * 保存root对象
