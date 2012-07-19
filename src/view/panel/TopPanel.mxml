@@ -6,7 +6,7 @@
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark" >
 	<s:Button id="prevBTN" left="5" label="返回上一步" verticalCenter="0"/>
-	<s:Label horizontalCenter="0" text="{stateName}" verticalCenter="0"/>
+	<s:Label id="stateNameLabel" horizontalCenter="0" verticalCenter="0" text="开始"/>
 	<s:HGroup id="fpsGRP" right="5" verticalAlign="middle"
 			  verticalCenter="0">
 		<s:Label text="FPS:"/>
@@ -14,9 +14,6 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
-		import utils.Global;
-		
-		[Bindable] public var stateName:String = '开始';
 	]]>
 	</fx:Script>
 </s:BorderContainer>

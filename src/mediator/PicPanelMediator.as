@@ -28,6 +28,10 @@ public class PicPanelMediator extends Mediator
 		
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		eventMap.mapListener(eventDispatcher, SSEvent.EXIT_STATE, handler_exitState);
+		if(stateModel.state == StateType.PIC)
+		{
+			enterState(stateModel.oldState, stateModel.state);
+		}
 	}
 	
 	private function handler_select($evt:Event):void
@@ -40,14 +44,19 @@ public class PicPanelMediator extends Mediator
 		stateModel.state = StateType.SS;
 	}
 	
-	public function handler_enterState($evt:SSEvent):void
+	public function enterState($oldState:String, $newState:String):void
 	{
-		trace('picPanel.updateOnStateChanged:', $evt.info.oldState, $evt.info.newState);
+		trace('picPanel.updateOnStateChanged:', $oldState, $newState);
 		//如果是从START状态跳转过来的，就更新一次fileList的值
-		if($evt.info.oldState == StateType.START)
+		if($oldState == StateType.START)
 			v.fileM.setFileList(file.selectedFiles);
 		v.pic.transf.init();
 		v.fileM.init();
+	}
+	
+	public function handler_enterState($evt:SSEvent):void
+	{
+		enterState($evt.info.oldState,$evt.info.newState);
 	}
 	
 	public function handler_exitState($evt:SSEvent):void

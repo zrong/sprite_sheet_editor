@@ -38,6 +38,11 @@ public class TopPanelMediator extends Mediator
 		
 		_so = SOUtil.getSOUtil('sprite_sheet_editor');
 		showFPS();
+	}	
+	
+	private function handler_enterState($evt:SSEvent):void
+	{
+		enterState($evt.info.oldState, $evt.info.newState);
 	}
 	
 	private function showFPS():void
@@ -45,7 +50,7 @@ public class TopPanelMediator extends Mediator
 		v.fpsGRP.visible = (stateModel.state != StateType.START);
 	}
 	
-	private function handler_enterState($evt:SSEvent):void
+	private function enterState($oldState:String, $newState:String):void
 	{
 		var __frameRate:int = int(_so.get('frameRate'));
 		if(__frameRate > 0)
@@ -53,9 +58,9 @@ public class TopPanelMediator extends Mediator
 			v.fpsNS.value = __frameRate;
 			v.stage.frameRate = v.fpsNS.value;
 		}
-		_oldState = $evt.info.oldState;;
-		_newState = $evt.info.newState;
-		v.stateName = StateType.toMainStateName(_newState);
+		_oldState = $oldState;
+		_newState = $newState;
+		v.stateNameLabel.text = StateType.toMainStateName(_newState);
 		if(_newState == StateType.START)
 		{
 			_prevState = null;
@@ -66,7 +71,8 @@ public class TopPanelMediator extends Mediator
 		if( (_newState == StateType.PIC || _newState == StateType.SWF) &&
 			(_oldState != StateType.START) )
 			_prevState = StateType.START;
-		v.prevBTN.enabled = (_prevState !=null);
+		trace(_prevState);
+		v.prevBTN.enabled = (_prevState != null);
 		showFPS();
 	}
 	

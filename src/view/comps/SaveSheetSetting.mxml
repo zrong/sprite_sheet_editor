@@ -20,6 +20,7 @@
 			<s:Label text="保存SpriteSheet" />
 			<s:RadioButton id="pngRB" groupName="picRBG" label="PNG格式" value=".png" selected="true"/>
 			<s:RadioButton id="jpgRB" groupName="picRBG" label="JPEG格式" value=".jpg"/>
+			<s:RadioButton id="jpgxrRB" groupName="picRBG" label="JPEG-XR格式" value=".hdp"/>
 			<comps:JPEGQuelity id="quality" visible="{jpgRB.selected}" width="120"/>
 			<s:HGroup width="120" verticalAlign="middle">
 				<s:Label text="蒙版:"/>

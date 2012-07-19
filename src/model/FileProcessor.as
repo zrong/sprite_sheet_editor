@@ -7,6 +7,8 @@
 package model
 {
 import flash.display.BitmapData;
+import flash.display.JPEGEncoderOptions;
+import flash.display.PNGEncoderOptions;
 import flash.errors.IOError;
 import flash.events.Event;
 import flash.events.FileListEvent;
@@ -16,9 +18,6 @@ import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 import flash.net.FileFilter;
 import flash.utils.ByteArray;
-
-import mx.graphics.codec.JPEGEncoder;
-import mx.graphics.codec.PNGEncoder;
 
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.net.SpriteSheetLoader;
@@ -206,11 +205,11 @@ public class FileProcessor extends Actor
 		var __ba:ByteArray = null;
 		if($ext == '.png')
 		{
-			var __png:PNGEncoder = new PNGEncoder();
-			return __png.encode($bmd);
+			var __pngOpt:PNGEncoderOptions = new PNGEncoderOptions();
+			return $bmd.encode($bmd.rect, __pngOpt);
 		}
-		var __jpg:JPEGEncoder = new JPEGEncoder($quality);
-		return __jpg.encode($bmd);
+		var __jpgOpt:JPEGEncoderOptions = new JPEGEncoderOptions($quality);
+		return $bmd.encode($bmd.rect, __jpgOpt);
 	}
 	
 	//----------------------------------------
