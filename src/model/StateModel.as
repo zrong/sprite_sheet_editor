@@ -12,6 +12,13 @@ public class StateModel extends Actor
 	
 	private var _state:String;
 	
+	private var _oldState:String;
+	
+	public function get oldState():String
+	{
+		return _oldState;
+	}
+	
 	public function get state():String
 	{
 		return _state;
@@ -19,8 +26,9 @@ public class StateModel extends Actor
 	
 	public function set state($state:String):void
 	{
-		this.dispatch(new SSEvent(SSEvent.ENTER_STATE, {oldState:_state, newState:$state}));
+		_oldState = _state;
 		_state = $state;
+		this.dispatch(new SSEvent(SSEvent.ENTER_STATE, {oldState:_oldState, newState:$state}));
 	}
 }
 }

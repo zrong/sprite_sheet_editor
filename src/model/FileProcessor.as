@@ -21,13 +21,14 @@ import mx.graphics.codec.JPEGEncoder;
 import mx.graphics.codec.PNGEncoder;
 
 import org.robotlegs.mvcs.Actor;
-import org.zengrong.display.spritesheet.SpriteSheetType;
 import org.zengrong.net.SpriteSheetLoader;
 
 import type.StateType;
 
 import utils.Funs;
 import utils.Global;
+
+import vo.SaveVO;
 
 /**
  * 专门负责对文件的处理，包括打开、保存等等操作。
@@ -71,9 +72,7 @@ public class FileProcessor extends Actor
 	
 	private var _ssLoader:SpriteSheetLoader;	//用于载入现有的SpriteSheet
 	
-	private var _fileData:*;		//等待保存的数据
-	private var _fileName:*;		//要保存的文件名称或者其他代表文件名称的值
-	private var _quality:int;		//jpeg压缩的质量
+	private var _saveData:SaveVO;
 	
 	public function get selectedFiles():Array
 	{
@@ -114,46 +113,30 @@ public class FileProcessor extends Actor
 	// 保存文件操作
 	//----------------------------------------
 	
-	/**
-	 * 保存SpriteSheet图像
-	 * @param $ba	图像的字节
-	 * @param $type	图像的类型，值为SprietSheetType
-	 * @param $doneFun	保存完毕后的回调方法
-	 * @see org.zengrong.display.spritesheet.SpriteSheetType
-	 */	
-	public function saveSS($bmd:BitmapData, $type:String, $quality:int=70):void
+	public function save($vo:SaveVO):void
 	{
-		_openState = StateType.SAVE_SHEET;
-		_fileData = $bmd;
-		_quality = $quality;
-		_fileName = $type;
-		_file.browseForSave('选择SpriteSheet的保存路径');
-	}
-	
-	public function saveMeta($meta:String, $ext:String):void
-	{
-		_openState = StateType.SAVE_META;
-		_fileName = $ext;
-		_fileData = $meta;
-		_file.browseForSave('选择元数据的保存路径');
-	}
-	
-	public function saveAll($data:Object, $exts:Array, $quality:int=70):void
-	{
-		_openState = StateType.SAVE_ALL;
-		_fileData = $data;
-		_fileName = $exts;
-		_quality = $quality;
-		_file.browseForSave('选择图像和元数据的保存路径');
-	}
-	
-	public function saveSeq($seq:Vector.<BitmapData>, $names:Vector.<String>, $quality:int=70):void
-	{
-		_openState = StateType.SAVE_SEQ;
-		_fileData = $seq;
-		_fileName = $names;
-		_quality = $quality;
-		_file.browseForDirectory('选择图像序列的保存路径');
+		_saveData = $vo;
+		_openState = _saveData.type;
+		var __title:String;
+		switch(_saveData.type)
+		{
+			case StateType.SAVE_SHEET_PIC:
+				__title = '选择SpriteSheet的保存路径';
+				_file.browseForSave(__title);
+				break;
+			case StateType.SAVE_META:
+				__title = '选择元数据的保存路径';
+				_file.browseForSave(__title);
+				break;
+			case StateType.SAVE_SEQ:
+				__title = '选择图像序列的保存路径';
+				_file.browseForDirectory(__title);
+				break;
+			case StateType.SAVE_ALL:
+				__title = '选择图像和元数据的保存路径';
+				_file.browseForSave(__title);
+				break;
+		}
 	}
 	
 	private function saveData():void
@@ -162,39 +145,39 @@ public class FileProcessor extends Actor
 		var __ba:ByteArray = null;
 		if(_openState == StateType.SAVE_META)
 		{
-			__stream.open(getFile(_fileName), FileMode.WRITE);
-			__stream.writeUTFBytes(_fileData);
+			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
+			__stream.writeUTFBytes(_saveData.metadata);
 			__stream.close();
 		}
-		else if(_openState == StateType.SAVE_SHEET)
+		else if(_openState == StateType.SAVE_SHEET_PIC)
 		{
-			__ba = getSheet(_fileData, _fileName, _quality);
-			__stream.open(getFile(_fileName), FileMode.WRITE);
+			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
+			__stream.open(getFile(_saveData.picType), FileMode.WRITE);
 			__stream.writeBytes(__ba);
 			__stream.close();
 		}
 		else if(_openState == StateType.SAVE_ALL)
 		{
 			//使用metadata的扩展名（数组元素1）新建一个File
-			__stream.open(getFile((_fileName as Array)[1]), FileMode.WRITE);
-			__stream.writeUTFBytes(_fileData.meta);
+			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
+			__stream.writeUTFBytes(_saveData.metadata);
 			__stream.close();
 			
 			//使用sheet的扩展名（数组元素0）新建一个File
-			__ba = getSheet(_fileData.bitmapData, (_fileName as Array)[0], _quality);
-			__stream.open(getFile((_fileName as Array)[0]), FileMode.WRITE);
+			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
+			__stream.open(getFile(_saveData.picType), FileMode.WRITE);
 			__stream.writeBytes(__ba);
 			__stream.close();
 		}
 		else if(_openState == StateType.SAVE_SEQ)
 		{
-			var __bmds:Vector.<BitmapData> = Vector.<BitmapData>(_fileData);
-			var __names:Vector.<String> = Vector.<String>(_fileName);
+			var __bmds:Vector.<BitmapData> = _saveData.bitmapDataList;
+			var __names:Vector.<String> = _saveData.fileNameList;
 			//获取文件的扩展名
 			var __ext:String = __names[0].slice(__names[0].lastIndexOf('.'));
 			for (var i:int = 0; i < __bmds.length; i++) 
 			{
-				__ba = getSheet(__bmds[i], __ext, _quality);
+				__ba = getSheet(__bmds[i], __ext, _saveData.quality);
 				__stream.open(_file.resolvePath(__names[i]), FileMode.WRITE);
 				__stream.writeBytes(__ba);
 				__stream.close();
@@ -236,14 +219,15 @@ public class FileProcessor extends Actor
 	
 	private function handler_selectSingle($evt:Event):void
 	{
-		//如果发生选择事件的state是编辑器主状态，就执行状态切换
-		if(StateType.isMainState(_openState))
+		//如果发生选择事件的state是编辑器界面状态，就执行状态切换
+		if(StateType.isViewState(_openState))
 		{
 			_selectedFiles = [_file.clone()];
-			if(_openState != StateType.SS)
-				stateModel.state = _openState;
-			else
+			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态
+			if(_openState == StateType.SS)
 				_ssLoader.load(_file.url);
+			else
+				stateModel.state = _openState;
 		}
 		//否则执行保存
 		else
@@ -256,7 +240,7 @@ public class FileProcessor extends Actor
 	private function handler_selectMulti($evt:FileListEvent):void
 	{
 		_selectedFiles = $evt.files;
-		if(StateType.isMainState(_openState))
+		if(StateType.isViewState(_openState))
 		{
 			stateModel.state = _openState;
 		}
@@ -284,7 +268,7 @@ public class FileProcessor extends Actor
 	{
 		Global.instance.sheet = _ssLoader.getSpriteSheet();
 		Global.instance.sheet.parseSheet();
-		stateModel.state = _openState;
+		stateModel.state = StateType.SS;
 	}
 	
 	private function handler_ssLoadError($evt:IOErrorEvent):void

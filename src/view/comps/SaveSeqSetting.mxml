@@ -12,8 +12,8 @@
 		[Event(name="saveSeq", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:states>
-		<s:State name="SSP"/>
-		<s:State name="SSJ"/>
+		<s:State name="SSPI"/>
+		<s:State name="SSJI"/>
 	</s:states>
 	<s:Label text="{title}" fontWeight="bold"/>
 	<s:HGroup width="100%" verticalAlign="middle">
@@ -29,7 +29,7 @@
 	<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
 		<s:RadioButton id="pngRB" groupName="formatRBG" label="PNG序列" value="SSPI" change="preview()" selected="true"/>
 		<s:RadioButton id="jpgRB" groupName="formatRBG" label="JPEG序列" value="SSJI" change="preview()"/>
-		<comps:JPEGQuelity id="quality" includeIn="SSJ"/>
+		<comps:JPEGQuelity id="quality" includeIn="SSJI"/>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label text="文件名预览:"/>

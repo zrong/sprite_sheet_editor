@@ -64,7 +64,6 @@
 	<comps1:BMPPreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
 	<fx:Script>
 	<![CDATA[
-		
 		import events.SSEvent;
 		
 		import model.FileProcessor;
@@ -77,7 +76,6 @@
 		import org.zengrong.display.spritesheet.MaskType;
 		import org.zengrong.display.spritesheet.SpriteSheet;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-		import org.zengrong.display.spritesheet.SpriteSheetType;
 		import org.zengrong.utils.BitmapUtil;
 		import org.zengrong.utils.MathUtil;
 		import org.zengrong.utils.Vec2D;
@@ -86,6 +84,8 @@
 		
 		import utils.Funs;
 		import utils.Global;
+		
+		import vo.SaveVO;
 		
 		[Bindable] private var _enabled:Boolean;
 		
@@ -200,55 +200,65 @@
 			
 		}
 		
-		
 		/**
 		 * 获取要保存的metadata和位图
 		 */
-		public function getAllData():Object
+		public function getAllSave():SaveVO
 		{
 			updateMetadata();
+			var __vo:SaveVO = new SaveVO();
 			var __bmd:BitmapData = getBitmapDataForSave(
 				Global.instance.adjustedSheet.bitmapData,
 				saveSheet.maskDDL.selectedIndex,
 				optPanel.transparentCB.selected,
 				optPanel.bgColorPicker.selectedColor
 			);
-			return { data:{meta:getMetadata(), bitmapData:__bmd},
-				ext:[saveSheet.picRBG.selectedValue.toString(),saveSheet.metaRBG.selectedValue.toString()] };
+			__vo.bitmapData = __bmd;
+			__vo.metadata = getMetadata();
+			__vo.picType = saveSheet.picRBG.selectedValue.toString();
+			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
+			__vo.type = StateType.SAVE_ALL;
+			return __vo;
 		}
 		
-		public function getMeta():Object
+		public function getMetaSave():SaveVO
 		{
 			updateMetadata();
-			return { meta:getMetadata(),
-			type:saveSheet.metaRBG.selectedValue.toString() }
+			var __vo:SaveVO = new SaveVO();
+			__vo.metadata = getMetadata();
+			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
+			__vo.type = StateType.SAVE_META;
+			return __vo;
 		}
 		
-		public function getPicData():Object
+		public function getPicSave():SaveVO
 		{
 			updateMetadata();
-			var __bmd:BitmapData = getBitmapDataForSave(
+			var __vo:SaveVO = new SaveVO();
+			__vo.bitmapData = getBitmapDataForSave(
 				Global.instance.adjustedSheet.bitmapData,
 				saveSheet.maskDDL.selectedIndex,
 				optPanel.transparentCB.selected,
 				optPanel.bgColorPicker.selectedColor
 			);
-			return { bmd:__bmd,
-				type:saveSheet.picRBG.selectedValue.toString(),
-				quality:saveSheet.quality.value }
+			__vo.picType = saveSheet.picRBG.selectedValue.toString();
+			__vo.quality = saveSheet.quality.value;
+			__vo.type = StateType.SAVE_SHEET_PIC;
+			return __vo;
 		}
 		
-		public function getSeqData():Object
+		public function getSeqSave():SaveVO
 		{
 			//根据显示的帧类型来保存序列
 			var __bmds:Vector.<BitmapData> = disFrameRB.selected ? 
 				Global.instance.adjustedSheet.getAll():
 				Global.instance.sheet.getAll();
-			return {
-				bmds:__bmds,
-				names:saveSeq.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame),
-				quality:(saveSeq.quality?saveSeq.quality.value:0)
-			}
+			var __vo:SaveVO = new SaveVO();
+			__vo.bitmapDataList = __bmds;
+			__vo.fileNameList = saveSeq.getFileNames(Global.instance.adjustedSheet.metadata.totalFrame);
+			__vo.quality = (saveSeq.quality?saveSeq.quality.value:0);
+			__vo.type = StateType.SAVE_SEQ;
+			return __vo;
 		}
 		
 		protected function handler_saveResizeBTNclick($event:MouseEvent):void

@@ -5,8 +5,11 @@ import events.SSEvent;
 import flash.events.Event;
 
 import model.FileProcessor;
+import model.StateModel;
 
 import org.robotlegs.mvcs.Mediator;
+
+import type.StateType;
 
 import view.panel.SSPanel;
 
@@ -14,6 +17,7 @@ public class SSPanelMediator extends Mediator
 {
 	[Inject] public var v:SSPanel;
 	[Inject] public var file:FileProcessor;
+	[Inject] public var stateModel:StateModel;
 	
 	override public function onRegister():void
 	{
@@ -25,30 +29,31 @@ public class SSPanelMediator extends Mediator
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_PIC, handler_savePic);
 		eventMap.mapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
+		
+		if(stateModel.state == StateType.SS)
+		{
+			v.enterState(stateModel.oldState, stateModel.state);
+		}
 	}
 	
 	private function handler_saveAll($evt:SSEvent):void
 	{
-		var __data:Object = v.getAllData();		
-		file.saveAll(__data.data, __data.ext);
+		file.save(v.getAllSave());
 	}
 	
 	protected function handler_saveMeta($event:SSEvent):void
 	{
-		var __data:Object = v.getMeta();
-		file.saveMeta(__data.meta, __data.type);
+		file.save(v.getMetaSave());
 	}
 	
 	protected function handler_savePic($event:SSEvent):void
 	{
-		var __data:Object = v.getPicData();
-		file.saveSS(__data.bmd, __data.type, __data.quality);
+		file.save(v.getPicSave());
 	}
 	
 	private function handler_saveSeq($evt:SSEvent):void
 	{
-		var __data:Object = v.getSeqData();
-		file.saveSeq(__data.bmds, __data.names, __data.quality);
+		file.save(v.getSeqSave());
 	}
 
 	private function handler_addToSS($evt:Event):void

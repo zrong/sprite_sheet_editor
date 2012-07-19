@@ -39,7 +39,7 @@ public class StateType
 	/**
 	 * 检测$state是不是主编辑器状态
 	 */	
-	public static function isMainState($state:String):Boolean
+	public static function isViewState($state:String):Boolean
 	{
 		var __mainState:Vector.<String> = Vector.<String>([START, SWF, PIC, SS]);
 		for (var i:int = 0; i < __mainState.length; i++) 
@@ -76,7 +76,7 @@ public class StateType
 	/**
 	 * 保存SpriteSheet文件
 	 */	
-	public static const SAVE_SHEET:String = 'saveSheet';
+	public static const SAVE_SHEET_PIC:String = 'saveSheet';
 	
 	/**
 	 * 同时保存SpriteSheet和metadata文件
