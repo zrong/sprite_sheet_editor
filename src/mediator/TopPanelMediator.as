@@ -23,10 +23,7 @@ public class TopPanelMediator extends Mediator
 	[Inject] public var stateModel:StateModel;
 	
 	private var _prevState:String;
-	
-	private var _oldState:String;
-	private var _newState:String;
-	
+
 	private var _so:SOUtil;
 	
 	override public function onRegister():void
@@ -48,29 +45,30 @@ public class TopPanelMediator extends Mediator
 	private function showFPS():void
 	{
 		v.fpsGRP.visible = (stateModel.state != StateType.START);
-	}
-	
-	private function enterState($oldState:String, $newState:String):void
-	{
 		var __frameRate:int = int(_so.get('frameRate'));
 		if(__frameRate > 0)
 		{
 			v.fpsNS.value = __frameRate;
 			v.stage.frameRate = v.fpsNS.value;
 		}
-		_oldState = $oldState;
-		_newState = $newState;
-		v.stateNameLabel.text = StateType.toMainStateName(_newState);
-		if(_newState == StateType.START)
+	}
+	
+	private function enterState($oldState:String, $newState:String):void
+	{
+		if(!$oldState && !$newState) return;
+		v.stateNameLabel.text = StateType.toMainStateName($newState);
+		if($newState == StateType.START)
 		{
 			_prevState = null;
-			return;
 		}
-		_prevState = _oldState;
-		//如果状态是反向跳转（从后一步跳转到前一步），那么就将返回按钮指向第一步
-		if( (_newState == StateType.PIC || _newState == StateType.SWF) &&
-			(_oldState != StateType.START) )
-			_prevState = StateType.START;
+		else
+		{
+			_prevState = $oldState;
+			//如果状态是反向跳转（从后一步跳转到前一步），那么就将返回按钮指向第一步
+			if( ($newState == StateType.PIC || $newState == StateType.SWF) &&
+				($oldState != StateType.START) )
+				_prevState = StateType.START;
+		}
 		trace(_prevState);
 		v.prevBTN.enabled = (_prevState != null);
 		showFPS();

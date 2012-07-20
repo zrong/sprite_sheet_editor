@@ -10,7 +10,7 @@ public class StateModel extends Actor
 	{
 	}
 	
-	private var _state:String;
+	private var _state:String = 'start';
 	
 	private var _oldState:String;
 	

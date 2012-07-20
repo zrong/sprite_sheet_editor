@@ -12,10 +12,10 @@ public class AppMediator extends Mediator
 	
 	override public function onRegister():void
 	{
-		v.startState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
-		v.picState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
-		v.ssState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
-		v.swfState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
+//		v.startState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
+//		v.picState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
+//		v.ssState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
+//		v.swfState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 	}
 	

@@ -21,6 +21,13 @@ public class StartPanelMediator extends Mediator
 		eventMap.mapListener(v.openSSBTN, MouseEvent.CLICK, handler_openSSBTNclick);
 	}
 	
+	override public function onRemove():void
+	{
+		eventMap.unmapListener(v.openSWFBTN, MouseEvent.CLICK, handler_openSWFBTNClick);
+		eventMap.unmapListener(v.openPicBTN, MouseEvent.CLICK, handler_openPicBTNClick);
+		eventMap.unmapListener(v.openSSBTN, MouseEvent.CLICK, handler_openSSBTNclick);
+	}
+	
 	
 	protected function handler_openSWFBTNClick(event:MouseEvent):void
 	{

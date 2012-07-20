@@ -27,11 +27,20 @@ public class PicPanelMediator extends Mediator
 		eventMap.mapListener(v.fileM, Event.SELECT, handler_select);
 		
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
-		eventMap.mapListener(eventDispatcher, SSEvent.EXIT_STATE, handler_exitState);
 		if(stateModel.state == StateType.PIC)
 		{
 			enterState(stateModel.oldState, stateModel.state);
 		}
+	}
+	
+	override public function onRemove():void
+	{
+		removeViewListener(Event.COMPLETE, handler_captureDone);
+		eventMap.unmapListener(v.fileM, Event.SELECT, handler_select);
+		
+		eventMap.unmapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
+		v.pic.viewer.source = null;
+		v.pic.transf.destroy();
 	}
 	
 	private function handler_select($evt:Event):void
@@ -57,12 +66,6 @@ public class PicPanelMediator extends Mediator
 	public function handler_enterState($evt:SSEvent):void
 	{
 		enterState($evt.info.oldState,$evt.info.newState);
-	}
-	
-	public function handler_exitState($evt:SSEvent):void
-	{
-		v.pic.viewer.source = null;
-		v.pic.transf.destroy();
 	}
 }
 }

@@ -22,7 +22,6 @@ public class SSPanelMediator extends Mediator
 	override public function onRegister():void
 	{
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
-		eventMap.mapListener(eventDispatcher, SSEvent.EXIT_STATE, handler_exitState);
 		
 		eventMap.mapListener(v.framesAndLabels, Event.SELECT, handler_addToSS);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
@@ -34,6 +33,19 @@ public class SSPanelMediator extends Mediator
 		{
 			v.enterState(stateModel.oldState, stateModel.state);
 		}
+	}
+	
+	override public function onRemove():void
+	{
+		trace('remove');
+		eventMap.unmapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
+		
+		eventMap.unmapListener(v.framesAndLabels, Event.SELECT, handler_addToSS);
+		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
+		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
+		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_PIC, handler_savePic);
+		eventMap.unmapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
+		v.exitState();
 	}
 	
 	private function handler_saveAll($evt:SSEvent):void
@@ -63,12 +75,14 @@ public class SSPanelMediator extends Mediator
 	
 	private function handler_enterState($evt:SSEvent):void
 	{
-		v.enterState($evt.info.oldState, $evt.info.newState);
+		if(stateModel.state == StateType.SS)
+		{
+			v.enterState($evt.info.oldState, $evt.info.newState);
+		}
 	}
 	
-	private function handler_exitState():void
+	private function handler_exitState($evt:SSEvent):void
 	{
-		v.exitState();
 	}
 }
 }

@@ -32,8 +32,18 @@ public class SwfPanelMediator extends Mediator
 	{
 		addViewListener(Event.COMPLETE, handler_captureDone);
 		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_buildClick);
-		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
-		eventMap.mapListener(eventDispatcher, SSEvent.EXIT_STATE, handler_exitState);
+		
+		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
+	}
+	
+	override public function onRemove():void
+	{
+		removeViewListener(Event.COMPLETE, handler_captureDone);
+		eventMap.unmapListener(v.buildSetting, SSEvent.BUILD, handler_buildClick);
+		
+		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
+		
+		handler_exitState();
 	}
 	
 	private function handler_captureDone($evt:Event):void
@@ -53,7 +63,7 @@ public class SwfPanelMediator extends Mediator
 		v.swf.transf.init();
 	}
 	
-	private function handler_exitState($evt:SSEvent):void
+	private function handler_exitState():void
 	{
 		v.swf.removeEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 		v.swf.source = null;
