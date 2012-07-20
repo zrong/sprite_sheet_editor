@@ -8,6 +8,7 @@ package model
 {
 import flash.display.BitmapData;
 import flash.display.JPEGEncoderOptions;
+import flash.display.JPEGXREncoderOptions;
 import flash.display.PNGEncoderOptions;
 import flash.errors.IOError;
 import flash.events.Event;
@@ -22,6 +23,7 @@ import flash.utils.ByteArray;
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.net.SpriteSheetLoader;
 
+import type.ExtendedNameType;
 import type.StateType;
 
 import utils.Funs;
@@ -37,15 +39,11 @@ public class FileProcessor extends Actor
 {
 	[Inject] public var stateModel:StateModel;
 	/**
-	 * 图像文件扩展名数组
-	 */	
-	public static const PIC_FILE_EXT:Array = ['png', 'jpg', 'jpeg'];
-	
-	/**
 	 * 要打开的图像文件类型
 	 */	
 	public static const PNG_FILTER:FileFilter = new FileFilter('PNG图像', '*.png');
 	public static const JPG_FILTER:FileFilter = new FileFilter('JPG图像', '*.jpg;*.jpeg');
+	public static const JPEG_XR_FILTER:FileFilter = new FileFilter('JPEG-XR图像', '*.wdp;*.hdp');
 	public static const SWF_FILTER:FileFilter = new FileFilter('SWF动画', '*.swf');
 	
 	public function FileProcessor()
@@ -55,8 +53,8 @@ public class FileProcessor extends Actor
 		_file.addEventListener(Event.SELECT, handler_selectSingle);
 		_file.addEventListener(Event.CANCEL, handler_selectCancel);
 		
-		_allPicFilter = new FileFilter('全部支持图像', PNG_FILTER.extension+';'+JPG_FILTER.extension);
-		_allPicArr = [_allPicFilter, PNG_FILTER, JPG_FILTER];
+		initFilter();
+		
 		_ssLoader = new SpriteSheetLoader();
 		_ssLoader.addEventListener(Event.COMPLETE, handler_ssLoadComplete);
 		_ssLoader.addEventListener(IOErrorEvent.IO_ERROR, handler_ssLoadError);
@@ -72,6 +70,12 @@ public class FileProcessor extends Actor
 	private var _ssLoader:SpriteSheetLoader;	//用于载入现有的SpriteSheet
 	
 	private var _saveData:SaveVO;
+	
+	private function initFilter():void
+	{
+		_allPicFilter = new FileFilter('全部支持图像', PNG_FILTER.extension+';'+JPG_FILTER.extension+';'+JPEG_XR_FILTER.extension);
+		_allPicArr = [_allPicFilter, PNG_FILTER, JPG_FILTER, JPEG_XR_FILTER];
+	}
 	
 	public function get selectedFiles():Array
 	{
@@ -203,13 +207,20 @@ public class FileProcessor extends Actor
 	private function getSheet($bmd:BitmapData, $ext:String, $quality:int=70):ByteArray
 	{
 		var __ba:ByteArray = null;
-		if($ext == '.png')
+		var __opt:*;
+		if($ext == ExtendedNameType.PNG)
 		{
-			var __pngOpt:PNGEncoderOptions = new PNGEncoderOptions();
-			return $bmd.encode($bmd.rect, __pngOpt);
+			__opt = new PNGEncoderOptions();
 		}
-		var __jpgOpt:JPEGEncoderOptions = new JPEGEncoderOptions($quality);
-		return $bmd.encode($bmd.rect, __jpgOpt);
+		else if($ext == ExtendedNameType.JPEG_XR)
+		{
+			__opt = new JPEGXREncoderOptions($quality);
+		}
+		else
+		{
+			__opt = new JPEGEncoderOptions($quality);
+		}
+		return $bmd.encode($bmd.rect, __opt);
 	}
 	
 	//----------------------------------------

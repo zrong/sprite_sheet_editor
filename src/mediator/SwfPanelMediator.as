@@ -34,6 +34,8 @@ public class SwfPanelMediator extends Mediator
 		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_buildClick);
 		
 		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
+		if(stateModel.state == StateType.SWF)
+			enterState(stateModel.oldState, stateModel.state);
 	}
 	
 	override public function onRemove():void
@@ -43,7 +45,7 @@ public class SwfPanelMediator extends Mediator
 		
 		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		
-		handler_exitState();
+		exitState();
 	}
 	
 	private function handler_captureDone($evt:Event):void
@@ -53,9 +55,14 @@ public class SwfPanelMediator extends Mediator
 	
 	private function handler_enterState($evt:SSEvent):void
 	{
-		trace('swfPanel.updateOnStateChanged:', $evt.info.oldState, $evt.info.newState);
+		enterState($evt.info.oldState, $evt.info.newState);
+	}
+	
+	private function enterState($oldState:String, $newState:String):void
+	{
+		trace('swfPanel.updateOnStateChanged:', $oldState, $newState);
 		//如果是从START状态跳转过来的，就更新一次swfURL的值
-		if($evt.info.oldState == StateType.START)
+		if($oldState == StateType.START)
 			_swfURL = File(file.selectedFiles[0]).url;
 		trace('swfPanel.load:', _swfURL);
 		v.swf.addEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
@@ -63,7 +70,7 @@ public class SwfPanelMediator extends Mediator
 		v.swf.transf.init();
 	}
 	
-	private function handler_exitState():void
+	private function exitState():void
 	{
 		v.swf.removeEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 		v.swf.source = null;

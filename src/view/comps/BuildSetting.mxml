@@ -26,8 +26,8 @@
 				<fx:String>高</fx:String>
 			</s:ArrayList>
 		</s:DropDownList>
-		<!-- Flash Player 10最大支持8192宽度(或高度)，另外还有1600万总像素量限制 -->
-		<s:NumericStepper id="whNS" width="60" minimum="1" maximum="8192" maxChars="4" value="200"/>
+		<!-- AIR3已经取消了对位图尺寸的限制，但这里还是限制一下 -->
+		<s:NumericStepper id="whNS" width="80" minimum="1" maximum="1000000" maxChars="6" value="200"/>
 		<s:Spacer width="100%" height="20"/>
 	</s:HGroup>
 	<s:HGroup includeIn="buildAndOpt" width="100%">
