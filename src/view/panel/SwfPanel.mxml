@@ -40,6 +40,8 @@
 		
 		import flash.utils.setTimeout;
 		
+		import model.FileProcessor;
+		
 		import mx.binding.utils.ChangeWatcher;
 		import mx.events.FlexEvent;
 		import mx.events.PropertyChangeEvent;
@@ -48,7 +50,6 @@
 		
 		import type.StateType;
 		
-		import model.FileProcessor;
 		import utils.Funs;
 		import utils.Global;
 		
@@ -72,6 +73,46 @@
 		public function get frameHeight():int
 		{
 			return useOriginalSizeCB.selected ? swf.sourceHeight : frameH.value;
+		}
+		
+		//----------------------------------
+		//  界面相关方法
+		//----------------------------------
+		
+		public function showSWF($url:String):void
+		{
+			swf.addEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+			swf.source = $url;
+			swf.transf.init();
+		}
+		
+		public function build($url:String):void
+		{
+			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
+			state = StateType.WAIT_LOADED;
+			swf.destroy();
+			swf.source = $url;
+		}
+		
+		public function destroy():void
+		{
+			swf.removeEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
+			swf.source = null;
+			swf.transf.destroy();
+		}
+		
+		private function handler_swfLoadDone(event:SSEvent) : void
+		{
+			//若当前处于等待载入状态，则开始建立sheet
+			if(state == StateType.WAIT_LOADED)
+			{
+				//开始capture
+				capture();
+			}
+			else
+			{
+				state = StateType.LOAD_DONE;
+			}
 		}
 		//----------------------------------
 		//  绘制相关方法

@@ -10,8 +10,7 @@
 		<s:viewport>
 			<s:Group id="scrollerView" width="100%" height="100%">
 				<s:BitmapImage id="chessboard" source="{Global.instance.bmp_checks}" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
-				<s:SWFLoader id="viewer" mouseChildren="false" mouseEnabled="false" scaleContent="{scaleContent}" showBusyCursor="true" 
-							 complete="handler_loadComplete(event)" />
+				<s:SWFLoader id="viewer" mouseChildren="false" mouseEnabled="false" scaleContent="{scaleContent}" complete="handler_loadComplete(event)" />
 				<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
 									 visible="{showTransformTool&amp;&amp;!scaleContent}"/>
 			</s:Group>

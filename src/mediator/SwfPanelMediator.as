@@ -34,8 +34,7 @@ public class SwfPanelMediator extends Mediator
 		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_buildClick);
 		
 		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
-		if(stateModel.state == StateType.SWF)
-			enterState(stateModel.oldState, stateModel.state);
+		enterState(stateModel.oldState, stateModel.state);
 	}
 	
 	override public function onRemove():void
@@ -45,7 +44,7 @@ public class SwfPanelMediator extends Mediator
 		
 		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		
-		exitState();
+		v.destroy();
 	}
 	
 	private function handler_captureDone($evt:Event):void
@@ -60,43 +59,17 @@ public class SwfPanelMediator extends Mediator
 	
 	private function enterState($oldState:String, $newState:String):void
 	{
-		trace('swfPanel.updateOnStateChanged:', $oldState, $newState);
-		//如果是从START状态跳转过来的，就更新一次swfURL的值
-		if($oldState == StateType.START)
+		if($newState == StateType.SWF)
+		{
 			_swfURL = File(file.selectedFiles[0]).url;
-		trace('swfPanel.load:', _swfURL);
-		v.swf.addEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
-		v.swf.source = _swfURL;
-		v.swf.transf.init();
-	}
-	
-	private function exitState():void
-	{
-		v.swf.removeEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
-		v.swf.source = null;
-		v.swf.transf.destroy();
+			trace('swfPanel.load:', _swfURL);
+			if(_swfURL) v.showSWF(_swfURL);
+		}
 	}
 	
 	private function handler_buildClick($evt:SSEvent):void
 	{
-		//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
-		v.state = StateType.WAIT_LOADED;
-		v.swf.destroy();
-		v.swf.source = _swfURL;
-	}
-	
-	private function handler_swfLoadDone(event:SSEvent) : void
-	{
-		//若当前处于等待载入状态，则开始建立sheet
-		if(v.state == StateType.WAIT_LOADED)
-		{
-			//开始capture
-			v.capture();
-		}
-		else
-		{
-			v.state = StateType.LOAD_DONE;
-		}
+		v.build(_swfURL);
 	}
 }
 }
