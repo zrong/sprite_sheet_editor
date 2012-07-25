@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   width="320" height="240"
+				   xmlns:comps="view.comps.*"
+				   borderColor="0x696969" backgroundAlpha="0">
+	<fx:Declarations>
+		<s:RadioButtonGroup id="frameCropDisplayRBG"/>
+	</fx:Declarations>
+		<s:layout>
+			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+		</s:layout>
+		<s:Label text="位图动画预览" fontWeight="bold"/>
+		<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"
+						   showTransformTool="{resizeOriginCB.selected}"/>
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Label id="frameLabel" width="50" />
+			<s:ToggleButton id="playBTN" label="{playBTN.selected?'暂停':'播放'}" width="100%"/>
+			<s:Spacer width="100%" height="20"/>
+			<s:RadioButton id="disCropRB" width="100%" label="修剪"
+						   groupName="frameDisplayRBG" selected="true" value="true"
+						   toolTip="显示修剪空白后的帧的宽高"/>
+			<s:RadioButton id="disOriginRB" width="100%" label="原始"
+						   groupName="frameDisplayRBG" value="false"
+						   toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
+		</s:HGroup>
+		<s:HGroup horizontalAlign="center" width="100%">
+			<s:CheckBox id="resizeOriginCB" label="调整帧原始大小(x,y,w,h)" enabled="{!ani.scaleContent}"
+						toolTip="选择后，会缩小帧的原始大小。但你依然可以在缩小后的原始大小基础上再次执行“修剪空白”的优化。"/>
+			<s:Spacer width="100%" height="20"/>
+			<s:Button id="saveResizeBTN" label="保存调整"
+					  toolTip="根据调整的原始大小重新计算帧大小，并立即执行优化。&#13;此操作会直接修改原始帧的大小。"/>
+		</s:HGroup>
+		<s:HGroup width="100%" enabled="{resizeOriginCB.selected}">
+			<s:NumericStepper id="frameX" width="100%" value="@{ani.transf.x}" minimum="0" maximum="{ani.sourceWidth-1}" change="handler_frameChange(event)"/>
+			<s:NumericStepper id="frameY" width="100%" value="@{ani.transf.y}" minimum="0" maximum="{ani.sourceHeight-1}" change="handler_frameChange(event)"//>
+			<s:NumericStepper id="frameW" width="100%" value="@{ani.transf.width}" minimum="1" maximum="{ani.sourceWidth}" change="handler_frameChange(event)"//>
+			<s:NumericStepper id="frameH" width="100%" value="@{ani.transf.height}" minimum="1" maximum="{ani.sourceHeight}" change="handler_frameChange(event)"//>
+		</s:HGroup>
+	<fx:Script>
+		<![CDATA[
+			
+			public static const EVENT_FRAME_SIZE_CHANGE:String = 'frameChange';
+			
+			public function init():void
+			{
+				ani.transf.init();
+			}
+			
+			public function destory():void
+			{
+				ani.transf.destroy();
+				ani.destroy();
+			}
+			
+			public function get disFrame():Boolean
+			{
+				return disCropRB.selected;
+			}
+			
+			public function set disFrame($value:Boolean):void
+			{
+				disCropRB.selected = $value;
+			}
+			
+			public function getResizeRect():Rectangle
+			{
+				return new Rectangle(frameX.value, frameY.value,frameW.value,frameH.value)
+			}
+			
+			public function showBmd($bmd:BitmapData):void
+			{
+				ani.source = $bmd;
+			}
+			
+			protected function handler_frameChange($evt:Event):void
+			{
+				dispatchEvent(new Event(EVENT_FRAME_SIZE_CHANGE));
+			}
+			
+		]]>
+	</fx:Script>
+</s:BorderContainer>

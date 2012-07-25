@@ -1,13 +1,15 @@
-package mediator
+package mediator.panel
 {
 import events.SSEvent;
 
 import flash.events.Event;
 
 import model.FileProcessor;
+import model.SpriteSheetModel;
 import model.StateModel;
 
 import org.robotlegs.mvcs.Mediator;
+import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 
 import type.StateType;
 
@@ -21,10 +23,14 @@ public class PicPanelMediator extends Mediator
 	
 	[Inject] public var file:FileProcessor;
 	
+	[Inject] public var ssModel:SpriteSheetModel;
+	
 	override public function onRegister():void
 	{
-		addViewListener(Event.COMPLETE, handler_captureDone);
+		addViewListener(SSEvent.CAPTURE_DONE, handler_captureDone);
+		addViewListener(SSEvent.ADD_FRAME, handler_addFrame);
 		eventMap.mapListener(v.fileM, Event.SELECT, handler_select);
+		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_build);
 		
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		if(stateModel.state == StateType.PIC)
@@ -35,8 +41,10 @@ public class PicPanelMediator extends Mediator
 	
 	override public function onRemove():void
 	{
-		removeViewListener(Event.COMPLETE, handler_captureDone);
+		removeViewListener(SSEvent.CAPTURE_DONE, handler_captureDone);
+		removeViewListener(SSEvent.ADD_FRAME, handler_addFrame);
 		eventMap.unmapListener(v.fileM, Event.SELECT, handler_select);
+		eventMap.unmapListener(v.buildSetting, SSEvent.BUILD, handler_build);
 		
 		eventMap.unmapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		v.pic.viewer.source = null;
@@ -48,8 +56,15 @@ public class PicPanelMediator extends Mediator
 		file.openPics(v.fileM.fun_addFile);
 	}
 	
-	private function handler_captureDone($evt:Event):void
+	private function handler_captureDone($evt:SSEvent):void
 	{
+		ssModel.sheet.drawSheet($evt.info.bmd);
+		if($evt.info.updateNames)
+		{
+			ssModel.sheet.metadata.hasName = $evt.info.updateNames.hasName;
+			ssModel.sheet.metadata.names = $evt.info.updateNames.names;
+			ssModel.sheet.metadata.namesIndex = $evt.info.updateNames.nameIndex;
+		}
 		stateModel.state = StateType.SS;
 	}
 	
@@ -67,5 +82,16 @@ public class PicPanelMediator extends Mediator
 	{
 		enterState($evt.info.oldState,$evt.info.newState);
 	}
+	
+	protected function handler_build($event:SSEvent):void
+	{
+		ssModel.resetSheet(null, new SpriteSheetMetadata());
+		v.capture();
+	}
+	
+	private function handler_addFrame($evt:SSEvent):void
+	{
+		ssModel.sheet.addFrame($evt.info.bmd, $evt.info.rect);
+	}	
 }
 }

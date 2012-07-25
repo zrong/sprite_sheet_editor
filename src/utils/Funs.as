@@ -99,13 +99,6 @@ public class Funs
 		$whRect.width += $frameRect.width;
 	}
 	
-	public static function resetSheet($bmd:BitmapData=null, $meta:SpriteSheetMetadata=null):void
-	{
-		if(Global.instance.sheet)
-			Global.instance.sheet.destroy();
-		Global.instance.sheet = new SpriteSheet($bmd, $meta);
-	}
-	
 	public static function alert($text:String, $title:String='警告'):void
 	{
 		var __alert:Alert = PopUpManager.createPopUp(Global.instance.root, Alert, true) as Alert;

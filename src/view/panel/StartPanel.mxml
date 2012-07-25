@@ -22,7 +22,7 @@
 			  click="handler_visitBTNclick(event)"/>
 	<fx:Script>
 	<![CDATA[
-		import view.comps.About;
+		import view.About;
 		
 		import flash.net.navigateToURL;
 		

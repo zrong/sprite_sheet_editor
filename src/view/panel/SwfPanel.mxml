@@ -81,7 +81,6 @@
 		
 		public function showSWF($url:String):void
 		{
-			swf.addEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 			swf.source = $url;
 			swf.transf.init();
 		}
@@ -89,31 +88,16 @@
 		public function build($url:String):void
 		{
 			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
-			state = StateType.WAIT_LOADED;
 			swf.destroy();
 			swf.source = $url;
 		}
 		
 		public function destroy():void
 		{
-			swf.removeEventListener(SSEvent.PREVIEW_LOAD_COMPLETE, handler_swfLoadDone);
 			swf.source = null;
 			swf.transf.destroy();
 		}
 		
-		private function handler_swfLoadDone(event:SSEvent) : void
-		{
-			//若当前处于等待载入状态，则开始建立sheet
-			if(state == StateType.WAIT_LOADED)
-			{
-				//开始capture
-				capture();
-			}
-			else
-			{
-				state = StateType.LOAD_DONE;
-			}
-		}
 		//----------------------------------
 		//  绘制相关方法
 		//----------------------------------
@@ -121,9 +105,7 @@
 		public function capture():void
 		{
 			trace('swf capture');
-			state = StateType.PROCESSING;
 			this.addEventListener(Event.EXIT_FRAME, drawFrame);
-			Funs.resetSheet(null, new SpriteSheetMetadata());
 			//帧索引永远从0开始，无论正在播放的主时间轴有几帧（可能只有1帧，使用MC做动画），也可以实现多帧捕获
 			_frameNum = 0;
 			_whRect = null;
@@ -135,11 +117,9 @@
 		
 		private function captureDone():void
 		{
-			state = StateType.LOAD_DONE;
 			this.removeEventListener(Event.EXIT_FRAME, drawFrame);
 			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
-			Global.instance.sheet.drawSheet(__bmd);
-			this.dispatchEvent(new Event(Event.COMPLETE));
+			this.dispatchEvent(new SSEvent(SSEvent.CAPTURE_DONE, __bmd));
 		}
 		
 		/**
@@ -176,7 +156,7 @@
 				}
 				var __bmd:BitmapData =  drawBMD(_frameRect);
 				//向Sheet中添加这个位图
-				Global.instance.sheet.addFrame(__bmd, _rectInSheet.clone());
+				this.dispatchEvent(SSEvent.ADD_FRAME, {bmd:__bmd, rect:_rectInSheet.clone()});
 			}
 			//所有帧捕获完毕后取消侦听
 			if (_frameNum - firstFrameNS.value >= totalFrameNS.value)

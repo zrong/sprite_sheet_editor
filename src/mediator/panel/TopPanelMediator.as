@@ -1,4 +1,4 @@
-package mediator
+package mediator.panel
 {
 import events.SSEvent;
 

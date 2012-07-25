@@ -38,6 +38,7 @@ import vo.SaveVO;
 public class FileProcessor extends Actor
 {
 	[Inject] public var stateModel:StateModel;
+	[Inject] public var ssModel:SpriteSheetModel;
 	/**
 	 * 要打开的图像文件类型
 	 */	
@@ -276,8 +277,8 @@ public class FileProcessor extends Actor
 	 */
 	private function handler_ssLoadComplete($evt:Event):void
 	{
-		Global.instance.sheet = _ssLoader.getSpriteSheet();
-		Global.instance.sheet.parseSheet();
+		ssModel.sheet = _ssLoader.getSpriteSheet();
+		ssModel.sheet.parseSheet();
 		stateModel.state = StateType.SS;
 	}
 	

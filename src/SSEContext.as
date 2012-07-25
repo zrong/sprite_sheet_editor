@@ -3,6 +3,8 @@ package
 import flash.display.DisplayObjectContainer;
 
 import mediator.*;
+import mediator.comps.*;
+import mediator.panel.*;
 
 import model.*;
 
@@ -10,6 +12,8 @@ import org.robotlegs.mvcs.Context;
 
 import utils.Global;
 
+import view.comps.FramesAndLabels;
+import view.comps.SSPreview;
 import view.panel.*;
 
 /**
@@ -34,6 +38,7 @@ public class SSEContext extends Context
 		init();
 		injector.mapSingleton(FileProcessor);
 		injector.mapSingleton(StateModel);
+		injector.mapSingleton(SpriteSheetModel);
 		
 		mediatorMap.mapView(SpriteSheetEditor, AppMediator);
 		mediatorMap.mapView(TopPanel, TopPanelMediator);
@@ -41,6 +46,9 @@ public class SSEContext extends Context
 		mediatorMap.mapView(SSPanel, SSPanelMediator);
 		mediatorMap.mapView(StartPanel, StartPanelMediator);
 		mediatorMap.mapView(PicPanel, PicPanelMediator);
+		
+		mediatorMap.mapView(SSPreview, SSPreviewMediator);
+		mediatorMap.mapView(FramesAndLabels,FramesAndLabelMediator);
 	}
 }
 }

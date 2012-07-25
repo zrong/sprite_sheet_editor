@@ -12,7 +12,8 @@
 	<fx:Metadata>
 		[Event(name="deleteFrame", type="events.SSEvent")]
 		[Event(name="frameAndLabelChange", type="events.SSEvent")]
-		[Event(name="addFrame", type="events.SSEvent")]
+		[Event(name="addFrameToSS", type="events.SSEvent")]
+		[Event(name="selectedFrameIndicesChange", type="events.SSEvent")]
 		[Event(name="select", type="flash.events.Event")]
 	</fx:Metadata>
 	<s:states>
@@ -195,6 +196,7 @@
 				refreshFrameDG();
 				trace('init:', selectedFrameIndices);
 				frameDG.selectedIndices = selectedFrameIndices;
+				selectFrameChange();
 			}
 			initAssets();
 		}
@@ -219,6 +221,7 @@
 			if(_framesNotInLabels) _framesNotInLabels.removeAll();
 			_framesNotInLabels = null;
 			selectedFrameIndices = null;
+			selectFrameChange();
 			pause();
 			if(_assets)
 			{
@@ -324,6 +327,11 @@
 		//----------------------------------------
 		// 内部方法
 		//----------------------------------------
+		
+		private function selectFrameChange():void
+		{
+			this.dispatchEvent(new SSEvent(SSEvent.SELECTED_FRAMEINDICES_CHANGE, selectedFrameIndices));
+		}
 		
 		/**
 		 * 将帧信息中保存的大于$frameNum的帧的索引减1
@@ -536,7 +544,7 @@
 		{
 			//labelList.selectedIndex = labelAL.length - 1;
 			refreshFrameDG();
-			this.dispatchEvent(new SSEvent(SSEvent.ADD_FRAME));
+			this.dispatchEvent(new SSEvent(SSEvent.ADD_FRAME_TO_SS));
 		}
 		
 		protected function handler_frameDGValueCommit($event:FlexEvent):void
@@ -548,6 +556,7 @@
 				//获取到的Vector是降序的，倒转它
 				selectedFrameIndices.sort(Array.NUMERIC);
 				trace('更新indices:', selectedFrameIndices);
+				selectFrameChange();
 			}
 			selectedFrameNum = frameDG.selectedIndex==-1?-1:FrameVO(frameDG.selectedItem).frameNum;
 			trace('dgValueCommit:', selectedFrameNum, addLabelBTN);
@@ -656,6 +665,7 @@
 				refreshFrameNum(_framesNotInLabels, __delItem.frameNum);
 			}
 			selectedFrameIndices = null;
+			selectFrameChange();
 			//刷新frameDG的显示
 			refreshFrameDG();
 			//通知SSPanel已经删除了帧，SSPanel根据需求重新生成
