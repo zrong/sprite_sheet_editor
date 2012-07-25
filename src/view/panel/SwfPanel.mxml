@@ -156,7 +156,7 @@
 				}
 				var __bmd:BitmapData =  drawBMD(_frameRect);
 				//向Sheet中添加这个位图
-				this.dispatchEvent(SSEvent.ADD_FRAME, {bmd:__bmd, rect:_rectInSheet.clone()});
+				this.dispatchEvent(new SSEvent(SSEvent.ADD_FRAME, {bmd:__bmd, rect:_rectInSheet.clone()}));
 			}
 			//所有帧捕获完毕后取消侦听
 			if (_frameNum - firstFrameNS.value >= totalFrameNS.value)

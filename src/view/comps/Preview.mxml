@@ -99,7 +99,6 @@
 		
 		public function set source($so:*):void
 		{
-			
 		}
 		
 		public function get content():IBitmapDrawable

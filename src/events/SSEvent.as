@@ -13,10 +13,8 @@ public class SSEvent extends Event
 	public static const ENTER_STATE:String = 'enterState';
 	public static const EXIT_STATE:String = 'exitState';
 	
-	public static const DELETE_FRAME:String = 'deleteFrame';
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	public static const SELECTED_FRAMEINDICES_CHANGE:String = 'selectedFrameIndicesChange';
-	public static const ADD_FRAME_TO_SS:String = 'addFrameToSS';
 	public static const ADD_FRAME:String = 'addFrame';
 	
 	public static const CAPTURE_DONE:String = 'captureDone';
@@ -25,6 +23,8 @@ public class SSEvent extends Event
 	public static const SAVE_META:String = 'saveMeta';
 	public static const SAVE_ALL:String = 'saveAll';
 	public static const SAVE_SEQ:String = 'saveSeq';
+	
+	public static const OPTIMIZE_SHEET:String = 'optimizeSheet';
 	
 	public static const FILE_MANAGER_SELECTION_CHANGE:String = 'selectionChange';
 	public static const FILE_MANAGER_SELECTION_CHANGING:String = 'selectionChanging';

@@ -34,9 +34,9 @@
 		</s:HGroup>
 		<s:HGroup width="100%" enabled="{resizeOriginCB.selected}">
 			<s:NumericStepper id="frameX" width="100%" value="@{ani.transf.x}" minimum="0" maximum="{ani.sourceWidth-1}" change="handler_frameChange(event)"/>
-			<s:NumericStepper id="frameY" width="100%" value="@{ani.transf.y}" minimum="0" maximum="{ani.sourceHeight-1}" change="handler_frameChange(event)"//>
-			<s:NumericStepper id="frameW" width="100%" value="@{ani.transf.width}" minimum="1" maximum="{ani.sourceWidth}" change="handler_frameChange(event)"//>
-			<s:NumericStepper id="frameH" width="100%" value="@{ani.transf.height}" minimum="1" maximum="{ani.sourceHeight}" change="handler_frameChange(event)"//>
+			<s:NumericStepper id="frameY" width="100%" value="@{ani.transf.y}" minimum="0" maximum="{ani.sourceHeight-1}" change="handler_frameChange(event)"/>
+			<s:NumericStepper id="frameW" width="100%" value="@{ani.transf.width}" minimum="1" maximum="{ani.sourceWidth}" change="handler_frameChange(event)"/>
+			<s:NumericStepper id="frameH" width="100%" value="@{ani.transf.height}" minimum="1" maximum="{ani.sourceHeight}" change="handler_frameChange(event)"/>
 		</s:HGroup>
 	<fx:Script>
 		<![CDATA[

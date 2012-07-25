@@ -4,6 +4,8 @@ import events.SSEvent;
 
 import flash.display.BitmapData;
 import flash.events.Event;
+import flash.filesystem.File;
+import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import model.FileProcessor;
@@ -11,6 +13,8 @@ import model.SpriteSheetModel;
 import model.StateModel;
 
 import org.robotlegs.mvcs.Mediator;
+import org.zengrong.display.spritesheet.MaskType;
+import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.utils.BitmapUtil;
 import org.zengrong.utils.MathUtil;
 
@@ -32,15 +36,15 @@ public class SSPanelMediator extends Mediator
 	override public function onRegister():void
 	{
 		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
-		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
+		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		addContextListener(SSEvent.PREVIEW_SS_DIS_CHANGE, handler_displayChange);
-		addContextListener(SSEvent.ADD_FRAME_TO_SS, handler_addFraemToSS);
-		addContextListener(SSEvent.DELETE_FRAME, handler_addFraemToSS);
 		
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_PIC, handler_savePic);
 		eventMap.mapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
+		eventMap.mapListener(v.optPanel, SSEvent.BUILD, handler_optimizeSheet);
+		eventMap.mapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
 		
 		if(stateModel.state == StateType.SS)
 		{
@@ -52,10 +56,8 @@ public class SSPanelMediator extends Mediator
 	{
 		trace('remove');
 		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
-		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
+		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		removeContextListener(SSEvent.PREVIEW_SS_DIS_CHANGE, handler_displayChange);
-		removeContextListener(SSEvent.ADD_FRAME_TO_SS, handler_addFraemToSS);
-		removeContextListener(SSEvent.DELETE_FRAME, handler_addFraemToSS);
 		
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
@@ -66,6 +68,11 @@ public class SSPanelMediator extends Mediator
 		
 	}
 	
+	protected function handler_nameCBChange($evt:Event):void
+	{
+		ssModel.adjustedSheet.metadata.hasName = v.saveSheet.nameCB.selected;
+	}
+	
 	private function handler_displayChange($evt:SSEvent):void
 	{
 		v.saveSeq.title = $evt.info ? '保存序列(修剪尺寸)':'保存序列(原始尺寸)';
@@ -73,24 +80,23 @@ public class SSPanelMediator extends Mediator
 	
 	private function handler_saveAll($evt:SSEvent):void
 	{
-		file.save(v.getAllSave());
+		file.save(getAllSave());
 	}
 	
 	protected function handler_saveMeta($event:SSEvent):void
 	{
-		file.save(v.getMetaSave());
+		file.save(getMetaSave());
 	}
 	
 	protected function handler_savePic($event:SSEvent):void
 	{
-		file.save(v.getPicSave());
+		file.save(getPicSave());
 	}
 	
 	private function handler_saveSeq($evt:SSEvent):void
 	{
-		var __vo:SaveVO = v.getSeqSave();
-		//根据显示的帧类型来保存序列
-		__vo.bitmapDataList = ssModel.getBMDList();
+		var __vo:SaveVO = getSeqSave();
+
 		file.save(__vo);
 	}
 
@@ -100,11 +106,6 @@ public class SSPanelMediator extends Mediator
 		{
 			enterState();
 		}
-	}
-	
-	private function handler_addFraemToSS($evt:SSEvent):void
-	{
-		optimizeSheet();
 	}
 	
 	private function enterState():void
@@ -117,6 +118,9 @@ public class SSPanelMediator extends Mediator
 		v.saveSheet.nameCB.visible = ssModel.sheet.metadata.hasName;
 		v.saveSheet.nameCB.selected =ssModel.sheet.metadata.hasName;
 		v.leftPanelBG.enabled = true;
+		//使用当前Sheet的宽高重置WH的相关值
+		v.optPanel.whDDL.selectedIndex = 0;
+		v.optPanel.whNS.value = ssModel.adjustedSheet.bitmapData.width;
 		v.init();
 	}
 	
@@ -129,11 +133,9 @@ public class SSPanelMediator extends Mediator
 		v.destroy();
 	}
 	
-	protected function handler_saveResizeBTNclick($evt:SSEvent):void
+	protected function handler_optimizeSheet($evt:SSEvent):void
 	{
-		v.framesAndLabels.resizeFrames(ssModel.resizeRect);
 		optimizeSheet();
-		//ani.destroy();
 	}
 	
 	/**
@@ -306,6 +308,131 @@ public class SSPanelMediator extends Mediator
 			$whRect.height = MathUtil.nextPowerOf2($whRect.height);
 		}
 	}
+	
+	
+	/**
+	 * 获取要保存的metadata和位图
+	 */
+	public function getAllSave():SaveVO
+	{
+		updateMetadata();
+		var __vo:SaveVO = new SaveVO();
+		var __bmd:BitmapData = getBitmapDataForSave(
+			ssModel.adjustedSheet.bitmapData,
+			v.saveSheet.maskDDL.selectedIndex,
+			v.optPanel.transparentCB.selected,
+			v.optPanel.bgColorPicker.selectedColor
+		);
+		__vo.bitmapData = __bmd;
+		__vo.metadata = getMetadata();
+		__vo.picType = v.saveSheet.picRBG.selectedValue.toString();
+		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
+		__vo.type = StateType.SAVE_ALL;
+		return __vo;
+	}
+	
+	public function getMetaSave():SaveVO
+	{
+		updateMetadata();
+		var __vo:SaveVO = new SaveVO();
+		__vo.metadata = getMetadata();
+		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
+		__vo.type = StateType.SAVE_META;
+		return __vo;
+	}
+	
+	public function getPicSave():SaveVO
+	{
+		updateMetadata();
+		var __vo:SaveVO = new SaveVO();
+		__vo.bitmapData = getBitmapDataForSave(
+			ssModel.adjustedSheet.bitmapData,
+			v.saveSheet.maskDDL.selectedIndex,
+			v.optPanel.transparentCB.selected,
+			v.optPanel.bgColorPicker.selectedColor
+		);
+		__vo.picType = v.saveSheet.picRBG.selectedValue.toString();
+		__vo.quality = v.saveSheet.quality.value;
+		__vo.type = StateType.SAVE_SHEET_PIC;
+		return __vo;
+	}
+	
+	public function getSeqSave():SaveVO
+	{
+		var __vo:SaveVO = new SaveVO();
+		__vo.fileNameList = v.saveSeq.getFileNames(ssModel.adjustedSheet.metadata.totalFrame);
+		__vo.quality = (v.saveSeq.quality?v.saveSeq.quality.value:0);
+		__vo.type = StateType.SAVE_SEQ;
+		//根据显示的帧类型来保存序列
+		__vo.bitmapDataList = ssModel.getBMDList();
+		return __vo;
+	}
+	
+	
+	/**
+	 * 绘制Mask，返回带有Mask的位图（如果有mask的话）
+	 */
+	private function getBitmapDataForSave($bitmapData:BitmapData, $maskType:int, $transparent:Boolean, $bgcolor:uint):BitmapData
+	{
+		if(MaskType.useMask($maskType))
+		{
+			var __sourceRect:Rectangle = new Rectangle(0, 0, $bitmapData.width, $bitmapData.height);
+			var __destRect:Rectangle = new Rectangle(0, 0, $bitmapData.width, $bitmapData.height);
+			var __point:Point = new Point(0,0);
+			//用于Alpha通道部分的背景色
+			var __alphaBG:uint = 0xFF000000;
+			//新建一个带有Mask大小的位图
+			var __saveBmd:BitmapData = null;
+			if($maskType == MaskType.HOR_MASK)
+			{
+				__saveBmd = new BitmapData($bitmapData.width*2, $bitmapData.height, $transparent, $bgcolor);
+				__destRect.x = $bitmapData.width;
+				__point.x = __destRect.x;
+			}
+			else if($maskType == MaskType.VER_MASK)
+			{
+				__saveBmd = new BitmapData($bitmapData.width, $bitmapData.height*2, $transparent, $bgcolor);
+				__destRect.y = $bitmapData.height;
+				__point.y = __destRect.y;
+			}
+			__saveBmd.copyPixels($bitmapData, __sourceRect, new Point(0,0), null, null, true);
+			//为mask填充一个背景色
+			__saveBmd.fillRect(__destRect, __alphaBG);
+			//分别填充红绿蓝通道，这样生成出的透明的部分才是白色
+			__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 1);
+			__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 2);
+			__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 4);
+			return __saveBmd;
+		}
+		return $bitmapData;
+	}
+	
+	/**
+	 * 更新spriteSheet的metadata。在生成新的SpriteSheet前调用。
+	 */
+	private function updateMetadata():void
+	{
+		//hasName, names, namesIndex, totalFrame, frameRects, originalFrameRects 这几个变量
+		//是在生成Sheet的时候填充的，因此这里不需要更新
+		var __meta:SpriteSheetMetadata = ssModel.adjustedSheet.metadata;
+		__meta.type = v.saveSheet.sheetType;
+		__meta.maskType = v.saveSheet.maskDDL.selectedIndex;
+		var __labelMeta:Object = v.framesAndLabels.getLabels();
+		__meta.hasLabel = __labelMeta.hasLabel;
+		__meta.labels = __labelMeta.labels;
+		__meta.labelsFrame = __labelMeta.labelsFrame;
+	}
+	
+	private function getMetadata():String
+	{
+		if(v.saveSheet.jsonRB.selected)
+			return JSON.stringify(ssModel.adjustedSheet.metadata.toObject(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected));
+		if(v.saveSheet.xmlRB.selected)
+			return ssModel.adjustedSheet.metadata.toXMLString(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected, File.lineEnding);
+		return ssModel.adjustedSheet.metadata.toTXT(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected, File.lineEnding);
+	}
+	
+	
 	
 }
 }

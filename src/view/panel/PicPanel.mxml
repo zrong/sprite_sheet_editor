@@ -31,7 +31,7 @@
 							selectionChange="handler_selectionChange(event)" 
 							selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
-	<comps1:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
+	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -106,7 +106,7 @@
 			pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
 			//根据sheet的w和h建立一个大bitmapData
 			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
-			this.dispatchEvent(new SSEvent(SSEvent.CAPTURE_DONE, {bmd:__bmd, updateNames:getUpdateNames()});
+			this.dispatchEvent(new SSEvent(SSEvent.CAPTURE_DONE, {bmd:__bmd, updateNames:getUpdateNames()}));
 		}
 		
 		/**
