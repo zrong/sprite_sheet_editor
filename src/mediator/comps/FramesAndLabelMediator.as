@@ -8,6 +8,7 @@ import flash.events.MouseEvent;
 import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import flash.ui.Mouse;
 
 import model.FileProcessor;
 import model.SpriteSheetModel;
@@ -33,6 +34,7 @@ import utils.Funs;
 import view.comps.FramesAndLabels;
 
 import vo.FrameVO;
+import vo.LabelListVO;
 import vo.LabelVO;
 
 public class FramesAndLabelMediator extends Mediator
@@ -63,25 +65,42 @@ public class FramesAndLabelMediator extends Mediator
 	 */
 	private var _framesNotInLabels:ArrayCollection;
 	
+	private var _labelAL:ArrayList;
+	
+	public var selectedFrameNum:int;		//当前选择的帧编号
+	
 	override public function onRegister():void
 	{
-		addViewListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
-		addViewListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_selectedFrameIndicesChange);
-		
 		eventMap.mapListener(v.delBTN,  MouseEvent.CLICK,handler_disOptimize);
-		eventMap.mapListener(v.addSSBTN, MouseEvent.CLICK, handler_select);
-		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_select);
-		eventMap.mapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_select);
+		eventMap.mapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
+		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
+		eventMap.mapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
+		eventMap.mapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
 		eventMap.mapListener(v.addLabelBTN, MouseEvent.CLICK, handler_addLabelBTNclick);
 		eventMap.mapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
+		eventMap.mapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
+		
 		addContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
-		initAssets();
+		
+		init();
 	}
 	
 	override public function onRemove():void
 	{
+		eventMap.unmapListener(v.delBTN,  MouseEvent.CLICK,handler_disOptimize);
+		eventMap.unmapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
+		eventMap.unmapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
+		eventMap.unmapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
+		eventMap.unmapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
+		eventMap.unmapListener(v.addLabelBTN, MouseEvent.CLICK, handler_addLabelBTNclick);
+		eventMap.unmapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
+		eventMap.unmapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
+		
 		removeContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
+		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
+		
+		destroy();
 	}
 	
 	
@@ -101,7 +120,8 @@ public class FramesAndLabelMediator extends Mediator
 			_framesNotInLabels.addItem(__frame);
 		}
 		
-		v.labelAL = new ArrayList();
+		_labelAL = new ArrayList();
+		v.labelList.dataProvider = _labelAL;
 		v.labelCB.selected = __meta.hasLabel;
 		if(__meta.hasLabel)
 		{
@@ -120,7 +140,7 @@ public class FramesAndLabelMediator extends Mediator
 					__framesInLabel.addItem(_framesNotInLabels.getItemAt(__framesIndex[k]));
 					__toDelFrames.push(__framesIndex[k]);
 				}
-				v.labelAL.addItem(new LabelVO(__label, __framesInLabel));
+				_labelAL.addItem(new LabelVO(__label, __framesInLabel));
 			}
 			//从最后一个要删除的帧开始删除（这样就不会影响到_framesNotInLabels的顺序，确保删除的成功）
 			__toDelFrames.sort(Array.NUMERIC);
@@ -138,34 +158,32 @@ public class FramesAndLabelMediator extends Mediator
 			refreshFrameDG();
 			trace('init:', v.selectedFrameIndices);
 			v.frameDG.selectedIndices = v.selectedFrameIndices;
-			v.selectFrameChange();
+			selectFrameChange();
 		}
-	}
-	
-	public function destroy():void
-	{
-		if(_framesNotInLabels) _framesNotInLabels.removeAll();
-		_framesNotInLabels = null;
-	}
-	
-	private function initAssets():void
-	{
 		if(!_assets)
 		{
 			_assets = new Assets();
 			_assets.addEventListener(AssetsEvent.COMPLETE, handler_assetsComp);
 			_assets.addEventListener(AssetsEvent.PROGRESS, handler_assetsProgress);
 		}
+		v.init();
 	}
 	
-	private function destroyAssets():void
+	public function destroy():void
 	{
+		if(_framesNotInLabels) _framesNotInLabels.removeAll();
+		_framesNotInLabels = null;
 		if(_assets)
 		{
 			_assets.removeEventListener(AssetsEvent.PROGRESS, handler_assetsProgress);
 			_assets.removeEventListener(AssetsEvent.COMPLETE, handler_assetsComp);
 			_assets = null;
 		}
+		if(_labelAL)	_labelAL.removeAll();
+		_labelAL = null;
+		v.selectedFrameIndices = null;
+		selectFrameChange();
+		v.destroy();
 	}
 	
 	/**
@@ -189,6 +207,35 @@ public class FramesAndLabelMediator extends Mediator
 		//labelList.selectedIndex = labelAL.length - 1;
 		refreshFrameDG();
 		handler_disOptimize(null);
+	}
+	
+	/**
+	 * 获取metadata中需要的label数据
+	 */
+	public function getLabels():LabelListVO
+	{
+		var __vo:LabelListVO = new LabelListVO();
+		__vo.hasLabel = v.labelCB.selected && _labelAL.length>0;
+		if(__vo.hasLabel)
+		{
+			__vo.labels = new Vector.<String>(_labelAL.length, true);
+			__vo.labelsFrame = {};
+			var __labelItem:LabelVO = null;
+			for (var i:int = 0; i < _labelAL.length; i++) 
+			{
+				__labelItem = _labelAL.getItemAt(i) as LabelVO;
+				__vo.labels[i] = __labelItem.name;
+				__vo.labelsFrame[__labelItem.name] = __labelItem.getFramesIndex();
+			}
+		}
+		return __vo;
+	}
+	
+	
+	public function selectFrameChange():void
+	{
+		ssModel.selectedFrameIndices = v.selectedFrameIndices;
+		dispatch(new SSEvent(SSEvent.SELECTED_FRAMEINDICES_CHANGE));
 	}
 	
 	/**
@@ -263,7 +310,7 @@ public class FramesAndLabelMediator extends Mediator
 					__labelFrameAL.addItem(__frameVOs[__frameNum]);
 					__frameVOs[__frameNum] = null;
 				}
-				v.labelAL.addItem(new LabelVO(__labelName, __labelFrameAL));
+				_labelAL.addItem(new LabelVO(__labelName, __labelFrameAL));
 			}
 		}
 		
@@ -336,7 +383,37 @@ public class FramesAndLabelMediator extends Mediator
 	{
 		refreshFrameDG();
 	}
+	
+	protected function handler_frameDGValueCommit($event:FlexEvent):void
+	{
+		//只有不在播放状态，才更新选择的帧列表
+		if(!v.playing)
+		{
+			v.selectedFrameIndices = v.frameDG.selectedIndices.concat();
+			//获取到的Vector是降序的，倒转它
+			v.selectedFrameIndices.sort(Array.NUMERIC);
+			trace('更新indices:', v.selectedFrameIndices);
+			selectFrameChange();
+		}
+		selectedFrameNum = v.frameDG.selectedIndex==-1? -1 : FrameVO(v.frameDG.selectedItem).frameNum;
+		trace('dgValueCommit:', selectedFrameNum);
 		
+		//Lable修改的时候更新动画预览
+		ssModel.selectedFrameIndex = v.selectedFrameIndex;
+		ssModel.selectedFrmaeNum = selectedFrameNum;
+		if(v.selectedFrameIndex > -1)
+		{
+			dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+		}
+	}
+	
+	private function handler_renameBTNClick($evt:MouseEvent):void
+	{
+		var __item:Object = _labelAL.getItemAt(v.labelList.selectedIndex);
+		__item.name = v.labelInput.text;
+		_labelAL.setItemAt(__item, v.labelList.selectedIndex);
+	}
+	
 	protected function handler_addLabelBTNclick($event:MouseEvent):void
 	{
 		//trace(frameDG.selectedIndex, frameDG.selectedItem, frameDG.selectedItems);
@@ -346,9 +423,9 @@ public class FramesAndLabelMediator extends Mediator
 			v.addLabelBTN.enabled = false;
 			return;
 		}
-		for (var i:int = 0; i < v.labelAL.length; i++) 
+		for (var i:int = 0; i < _labelAL.length; i++) 
 		{
-			if(LabelVO(v.labelAL.getItemAt(i)).name == v.labelInput.text)
+			if(LabelVO(_labelAL.getItemAt(i)).name == v.labelInput.text)
 			{
 				Funs.alert('Label不允许重复！');
 				return;
@@ -370,8 +447,8 @@ public class FramesAndLabelMediator extends Mediator
 			var __itemIndex:int = _framesNotInLabels.getItemIndex(__item);
 			_framesNotInLabels.removeItemAt(__itemIndex);
 		}
-		v.labelAL.addItem(new LabelVO(v.labelInput.text, __al));
-		v.labelList.selectedIndex = v.labelAL.length - 1;
+		_labelAL.addItem(new LabelVO(v.labelInput.text, __al));
+		v.labelList.selectedIndex = _labelAL.length - 1;
 		refreshFrameDG();
 	}
 	
@@ -383,7 +460,7 @@ public class FramesAndLabelMediator extends Mediator
 			var __frame:FrameVO = __item.frames.getItemAt(i) as FrameVO;
 			_framesNotInLabels.addItem(__frame);
 		}
-		v.labelAL.removeItem(__item);
+		_labelAL.removeItem(__item);
 		refreshFrameDG();
 	}
 	
@@ -417,16 +494,16 @@ public class FramesAndLabelMediator extends Mediator
 				_framesNotInLabels.removeItemAt(__index);
 			}
 			//修改所有label中的帧的编号
-			for(var i:int=0;i<v.labelAL.length;i++)
+			for(var i:int=0;i<_labelAL.length;i++)
 			{
-				var __labelItem:LabelVO = v.labelAL.getItemAt(i) as LabelVO;
+				var __labelItem:LabelVO = _labelAL.getItemAt(i) as LabelVO;
 				v.refreshFrameNum(__labelItem.frames, __delItem.frameNum);
 			}
 			//修改不在label中的帧的编号
 			v.refreshFrameNum(_framesNotInLabels, __delItem.frameNum);
 		}
 		v.selectedFrameIndices = null;
-		v.selectFrameChange();
+		selectFrameChange();
 		//刷新frameDG的显示
 		refreshFrameDG();
 		//通知SSPanel已经删除了帧，SSPanel根据需求重新生成
@@ -442,7 +519,7 @@ public class FramesAndLabelMediator extends Mediator
 			v.pause();
 	}
 	
-	private function handler_select($evt:MouseEvent):void
+	private function handler_selectFile($evt:Event):void
 	{
 		_isAddSSFrame = ($evt.currentTarget == v.addSSBTN);
 		file.addToSS(fun_addToSS);
@@ -475,25 +552,6 @@ public class FramesAndLabelMediator extends Mediator
 	private function handler_disOptimize($evt:Event):void
 	{
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
-	}
-	
-	/**
-	 * Lable修改的时候更新动画预览
-	 */
-	protected function handler_framesAndLabelsChange($event:Event):void
-	{
-		ssModel.selectedFrameIndex = v.selectedFrameIndex;
-		ssModel.selectedFrmaeNum = v.selectedFrameNum;
-		if(v.selectedFrameIndex > -1)
-		{
-			dispatch(new SSEvent(SSEvent.PREVIEW_SS_DIS_CHANGE));
-		}
-	}
-	
-	private function handler_selectedFrameIndicesChange($evt:SSEvent):void
-	{
-		ssModel.selectedFrameIndices = v.selectedFrameIndices;
-		dispatch($evt);
 	}
 	
 	protected function handler_saveResizeBTNclick($evt:SSEvent):void

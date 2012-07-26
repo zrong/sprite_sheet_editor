@@ -14,6 +14,10 @@ public class SSEvent extends Event
 	public static const EXIT_STATE:String = 'exitState';
 	
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
+	
+	/**
+	 * 选择的帧变化了
+	 */
 	public static const SELECTED_FRAMEINDICES_CHANGE:String = 'selectedFrameIndicesChange';
 	public static const ADD_FRAME:String = 'addFrame';
 	
@@ -39,17 +43,17 @@ public class SSEvent extends Event
 	/**
 	 * 改变SS中每一帧的大小
 	 */
-	public static const PREVIEW_SS_RESIZE_SAVE:String = 'previewSSResizeSzve';
+	public static const PREVIEW_SS_RESIZE_SAVE:String = 'previewSSResizeSize';
 	
 	/**
-	 * 预览
+	 * 发送要预览的帧信息
 	 */
 	public static const PREVIEW_SS_SHOW:String = 'previewSSShow';
 	
 	/**
-	 * 显示裁剪或原始帧
+	 * 要预览的帧信息变化
 	 */
-	public static const PREVIEW_SS_DIS_CHANGE:String = 'previewSSDisChange';
+	public static const PREVIEW_SS_CHANGE:String = 'previewSSDisChange';
 	
 	/**
 	 * 建立或优化SpriteSheet

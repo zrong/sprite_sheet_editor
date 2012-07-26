@@ -40,7 +40,7 @@
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
     <buildTarget buildTargetName="default">
-      <airSettings airCertificatePath="E:/worksDuDu/zrong.p12" airTimestamp="true" anePathSet="true" version="1">
+      <airSettings airCertificatePath="D:/works/certificate/zengrong.net.p12" airTimestamp="false" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths/>
       </airSettings>

@@ -8,8 +8,8 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:comps="view.comps.*">
 	<s:BorderContainer id="leftPanelBG" width="320" height="100%" borderColor="0x878787" backgroundAlpha="0" enabled="false">
-		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
-			<comps:SSPreview id="ssPreview" width="100%"/>
+		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" horizontalAlign="center">
+			<s:Button id="openPreviewBTN" label="打开预览窗口" height="40"/>
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
 			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
 			<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"/>
@@ -17,66 +17,35 @@
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
-	<comps:BMPPreview id="sheet" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
+	<comps:BMPPreview id="sheetPreview" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
 	<fx:Script>
 	<![CDATA[
-		import events.SSEvent;
-		
-		import model.FileProcessor;
-		
-		import mx.collections.ArrayCollection;
-		import mx.collections.ArrayList;
-		import mx.graphics.codec.JPEGEncoder;
-		import mx.graphics.codec.PNGEncoder;
-		
-		import org.zengrong.display.spritesheet.MaskType;
-		import org.zengrong.display.spritesheet.SpriteSheet;
-		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-		import org.zengrong.utils.BitmapUtil;
-		import org.zengrong.utils.MathUtil;
-		import org.zengrong.utils.Vec2D;
-		
-		import type.StateType;
-		
-		import utils.Funs;
-		import utils.Global;
-		
-		import vo.SaveVO;
-		
-		public function init():void
+		public function init($bmd:BitmapData, $hasName:Boolean):void
 		{
 			//从SpriteSheet中初始化Label和Frame
-			framesAndLabels.init();
-			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
-			ssPreview.init();
+			sheetPreview.source = $bmd;
+			//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
+			//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
+			saveSheet.nameCB.visible = $hasName;
+			saveSheet.nameCB.selected = $hasName;
+			leftPanelBG.enabled = true;
+			//使用当前Sheet的宽高重置WH的相关值
+			optPanel.whDDL.selectedIndex = 0;
+			optPanel.whNS.value = $bmd.width;
 		}
 		
 		public function destroy():void
 		{
-			framesAndLabels.destroy();
-			sheet.destroy();
-			ssPreview.destory();
-			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			sheetPreview.destroy();
 		}
 		
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		/**
-		 * 实现帧的动画预览
-		 */
-		private function handler_enterFrame($evt:Event):void
-		{
-			if(framesAndLabels.playing)
-			{
-				framesAndLabels.nextFrame();
-			}
-		}
-		
+
 		//----------------------------------------
 		// 内部方法
 		//----------------------------------------
-		
 	]]>
 	</fx:Script>
 </s:HGroup>

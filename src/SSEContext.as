@@ -1,5 +1,9 @@
 package
 {
+import ctrl.PreviewSSChangeCmd;
+
+import events.SSEvent;
+
 import flash.display.DisplayObjectContainer;
 
 import mediator.*;
@@ -47,8 +51,10 @@ public class SSEContext extends Context
 		mediatorMap.mapView(StartPanel, StartPanelMediator);
 		mediatorMap.mapView(PicPanel, PicPanelMediator);
 		
-		mediatorMap.mapView(SSPreview, SSPreviewMediator);
-		mediatorMap.mapView(FramesAndLabels,FramesAndLabelMediator);
+		mediatorMap.mapView(SSPreview, SSPreviewMediator,null, false, false);
+		mediatorMap.mapView(FramesAndLabels,FramesAndLabelMediator, null, false, false);
+		
+		commandMap.mapEvent(SSEvent.PREVIEW_SS_CHANGE, PreviewSSChangeCmd);
 	}
 }
 }

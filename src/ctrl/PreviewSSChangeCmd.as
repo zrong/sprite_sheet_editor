@@ -3,17 +3,18 @@ package ctrl
 import events.SSEvent;
 
 import flash.display.BitmapData;
+import flash.geom.Rectangle;
 
 import model.SpriteSheetModel;
 
 import org.robotlegs.mvcs.Command;
 
 /**
- * 显示修剪
+ * 显示帧改变
  * @author zrong
- * 
+ * 创建日期：2012-07-26
  */
-public class PreviewSSDisChangeCmd extends Command
+public class PreviewSSChangeCmd extends Command
 {
 	[Inject] public var ssModel:SpriteSheetModel;
 	
@@ -29,16 +30,18 @@ public class PreviewSSDisChangeCmd extends Command
 	{
 		var __frameBmd:BitmapData = null;
 		//根据选择显示原始的或者修剪过的Frame
-		/*
-		__frameBmd = disFrameRB.selected ? 
-		Global.instance.adjustedSheet.getBMDByIndex(framesAndLabels.selectedFrameIndex) : 
-		Global.instance.sheet.getBMDByIndex(framesAndLabels.selectedFrameIndex);*/
 		if(ssModel.displayCrop)
+		{
 			__frameBmd = ssModel.adjustedSheet.getTrimBMDByIndex(ssModel.selectedFrameIndex);
+		}
 		else
+		{
 			__frameBmd = ssModel.adjustedSheet.getBMDByIndex(ssModel.selectedFrameIndex);
+		}
+		//rect永远使用剪切过的值
+		var __rect:Rectangle = ssModel.adjustedSheet.metadata.frameRects[ssModel.selectedFrameIndex];
 		trace('更新帧：', __frameBmd.rect, ssModel.displayCrop);
-		dispatch(new SSEvent(SSEvent.PREVIEW_SS_SHOW, __frameBmd));
+		dispatch(new SSEvent(SSEvent.PREVIEW_SS_SHOW, {bmd:__frameBmd, rect:__rect}));
 	}
 }
 }

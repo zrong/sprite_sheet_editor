@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
-		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  currentState="{formatRBG.selectedValue}" xmlns:comps="view.comps.*">
+		  xmlns:s="library://ns.adobe.com/flex/spark" xmlns:comps="view.comps.*">
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
-	<fx:Declarations>
-		<s:RadioButtonGroup id="formatRBG"/>
-	</fx:Declarations>
 	<fx:Metadata>
 		[Event(name="saveSeq", type="events.SSEvent")]
 	</fx:Metadata>
-	<s:states>
-		<s:State name="SSPI"/>
-		<s:State name="SSJI"/>
-	</s:states>
 	<s:Label text="{title}" fontWeight="bold"/>
-	<s:HGroup width="100%" verticalAlign="middle">
-		<s:Label text="序列前缀:"/>
-		<s:TextInput id="preTI" width="100%" change="preview()"/>
-	</s:HGroup>
-	<s:HGroup width="100%" verticalAlign="middle">
-		<s:Label text="起始编号:"/>
-		<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" width="100%" change="preview()"/>
-		<s:Label text="编号位数:"/>
-		<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%" change="fillTen()"/>
-	</s:HGroup>
-	<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
-		<s:RadioButton id="pngRB" groupName="formatRBG" label="PNG序列" value="SSPI" change="preview()" selected="true"/>
-		<s:RadioButton id="jpgRB" groupName="formatRBG" label="JPEG序列" value="SSJI" change="preview()"/>
-		<comps:JPEGQuelity id="quality" includeIn="SSJI"/>
+	<s:HGroup width="100%">
+		<comps:ImageTypeSetting id="imageSetting" change="preview()"/>
+		<s:VGroup width="100%">
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:Label text="序列前缀:"/>
+				<s:TextInput id="preTI" width="100%" change="preview()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:Label text="起始编号:"/>
+				<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" width="100%" change="preview()"/>
+			</s:HGroup>
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:Label text="编号位数:"/>
+				<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%" change="fillTen()"/>
+			</s:HGroup>
+		</s:VGroup>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label text="文件名预览:"/>
@@ -77,7 +71,7 @@
 				if($num<_ten[i])
 					__str += '0';
 			}
-			return __str + String($num) + (formatRBG.selectedValue.toString() == SpriteSheetType.JPG_IMAGE ? '.jpg' : '.png');
+			return __str + String($num) + imageSetting.imageType;
 		}
 		
 		protected function handler_saveSeqBTNClick(event:MouseEvent):void

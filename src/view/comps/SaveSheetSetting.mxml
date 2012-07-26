@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:utils="com.youxi.utils.*" xmlns:comps="view.comps.*">
+		  xmlns:comps="view.comps.*">
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5"  paddingTop="5"/>
 	</s:layout>
 	<fx:Declarations>
-		<s:RadioButtonGroup id="picRBG"/>
 		<s:RadioButtonGroup id="metaRBG"/>
 	</fx:Declarations>
 	<fx:Metadata>
@@ -18,10 +17,7 @@
 	<s:HGroup width="100%">
 		<s:VGroup width="50%">
 			<s:Label text="保存SpriteSheet" />
-			<s:RadioButton id="pngRB" groupName="picRBG" label="PNG格式"  selected="true"/>
-			<s:RadioButton id="jpgRB" groupName="picRBG" label="JPEG格式" />
-			<s:RadioButton id="jpgxrRB" groupName="picRBG" label="JPEG-XR格式" />
-			<comps:JPEGQuelity id="quality" visible="{jpgRB.selected||jpgxrRB.selected}" width="120"/>
+			<comps:ImageTypeSetting id="imageSetting" width="100%"/>
 			<s:HGroup width="120" verticalAlign="middle">
 				<s:Label text="蒙版:"/>
 				<s:DropDownList id="maskDDL" width="100%" requireSelection="true">
@@ -60,9 +56,6 @@
 		override protected function createChildren():void
 		{
 			super.createChildren();
-			pngRB.value = ExtendedNameType.PNG;
-			jpgRB.value = ExtendedNameType.JPEG;
-			jpgxrRB.value = ExtendedNameType.JPEG_XR;
 			
 			xmlRB.value = ExtendedNameType.XML;
 			txtRB.value = ExtendedNameType.TEXT;
@@ -71,7 +64,7 @@
 		
 		public function get sheetType():String
 		{
-			if(picRBG.selectedValue.toString() == '.png')
+			if(imageSetting.imageType == ExtendedNameType.PNG)
 				return SpriteSheetType.PNG_IMAGE;
 			return SpriteSheetType.JPG_IMAGE;
 		}

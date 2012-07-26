@@ -30,6 +30,14 @@ public class SpriteSheetModel extends Actor
 		if(displayCrop) return adjustedSheet.getAll();
 		return sheet.getAll();
 	}
+	
+	public function destroySheet():void
+	{
+		if(sheet) sheet.destroy();
+		sheet = null;
+		if(adjustedSheet) adjustedSheet.destroy();
+		adjustedSheet = null;	
+	}
 	/**
 	 * 刚生成的sheet，或者打开的sheet文件，保存在此对象中。在此sheet的基础上进行调整后保存
 	 */	
@@ -54,7 +62,7 @@ public class SpriteSheetModel extends Actor
 	
 	public var selectedFrmaeNum:int = -1;
 	
-	public var selectedFrameIndices:Vector.<int>
+	public var selectedFrameIndices:Vector.<int>;
 	
 	public var playing:Boolean;
 }

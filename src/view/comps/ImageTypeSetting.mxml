@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<s:RadioButtonGroup id="formatRBG" valueCommit="handler_formatRBGvalueCommit(event)"/>
+	</fx:Declarations>
+	<s:RadioButton id="pngRB" groupName="formatRBG" label="PNG格式"  selected="true"/>
+	<s:RadioButton id="jpgRB" groupName="formatRBG" label="JPEG格式" />
+	<s:RadioButton id="jpgxrRB" groupName="formatRBG" label="JPEG-XR格式" />
+	<s:HGroup verticalAlign="middle" visible="{jpgRB.selected||jpgxrRB.selected}">
+		<s:Label text="压缩:"/>
+		<s:NumericStepper id="qualityNS" minimum="1" maximum="100" value="70" maxChars="3" width="100%" toolTip="JPEG格式越大越好；JPEG-XR格式越小越好。"/>
+	</s:HGroup>
+	<fx:Metadata>
+		[Event(name="change", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import type.ExtendedNameType;
+			
+			override protected function createChildren():void
+			{
+				super.createChildren();
+				pngRB.value = ExtendedNameType.PNG;
+				jpgRB.value = ExtendedNameType.JPEG;
+				jpgxrRB.value = ExtendedNameType.JPEG_XR;
+			}
+			
+			public function get qualityValue():int
+			{
+				return qualityNS.value;
+			}
+			
+			public function get imageType():String
+			{
+				return formatRBG.selectedValue as String;
+			}
+			
+			public function set imageType($type:String):void
+			{
+				formatRBG.selectedValue = $type;
+			}
+			
+			protected function handler_formatRBGvalueCommit($evt:FlexEvent):void
+			{
+				this.dispatchEvent(new Event(Event.CHANGE));
+			}
+		]]>
+	</fx:Script>
+</s:VGroup>

@@ -4,13 +4,19 @@ import events.SSEvent;
 
 import flash.display.BitmapData;
 import flash.events.Event;
+import flash.events.MouseEvent;
 import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
+import mediator.comps.FramesAndLabelMediator;
+
 import model.FileProcessor;
 import model.SpriteSheetModel;
 import model.StateModel;
+
+import mx.events.CloseEvent;
+import mx.managers.PopUpManager;
 
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.display.spritesheet.MaskType;
@@ -22,8 +28,10 @@ import type.StateType;
 
 import utils.Funs;
 
+import view.comps.SSPreview;
 import view.panel.SSPanel;
 
+import vo.LabelListVO;
 import vo.SaveVO;
 
 public class SSPanelMediator extends Mediator
@@ -33,23 +41,24 @@ public class SSPanelMediator extends Mediator
 	[Inject] public var stateModel:StateModel;
 	[Inject] public var ssModel:SpriteSheetModel;
 	
+	private var _ssPreview:SSPreview;
+	
 	override public function onRegister():void
 	{
 		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
-		addContextListener(SSEvent.PREVIEW_SS_DIS_CHANGE, handler_displayChange);
+		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
+		addContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
 		
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_PIC, handler_savePic);
 		eventMap.mapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
-		eventMap.mapListener(v.optPanel, SSEvent.BUILD, handler_optimizeSheet);
+		eventMap.mapListener(v.optPanel, SSEvent.BUILD, handler_build);
 		eventMap.mapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
+		eventMap.mapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
 		
-		if(stateModel.state == StateType.SS)
-		{
-			enterState();
-		}
+		enterState();
 	}
 	
 	override public function onRemove():void
@@ -57,15 +66,18 @@ public class SSPanelMediator extends Mediator
 		trace('remove');
 		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
-		removeContextListener(SSEvent.PREVIEW_SS_DIS_CHANGE, handler_displayChange);
+		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
+		removeContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
 		
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_PIC, handler_savePic);
 		eventMap.unmapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
+		eventMap.unmapListener(v.optPanel, SSEvent.BUILD, handler_build);
+		eventMap.unmapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
+		eventMap.unmapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
 		
 		exitState();
-		
 	}
 	
 	protected function handler_nameCBChange($evt:Event):void
@@ -75,7 +87,7 @@ public class SSPanelMediator extends Mediator
 	
 	private function handler_displayChange($evt:SSEvent):void
 	{
-		v.saveSeq.title = $evt.info ? '保存序列(修剪尺寸)':'保存序列(原始尺寸)';
+		v.saveSeq.title = ssModel.displayCrop ? '保存序列(修剪尺寸)':'保存序列(原始尺寸)';
 	}
 	
 	private function handler_saveAll($evt:SSEvent):void
@@ -102,35 +114,58 @@ public class SSPanelMediator extends Mediator
 
 	private function handler_enterState($evt:SSEvent):void
 	{
-		if(stateModel.state == StateType.SS)
+		enterState();
+	}
+	
+	private function handler_openPreview($evt:MouseEvent):void
+	{
+		if(_ssPreview) 
 		{
-			enterState();
+			PopUpManager.addPopUp(_ssPreview, v.root);
+			PopUpManager.centerPopUp(_ssPreview);
+		}
+		else
+		{
+			_ssPreview = PopUpManager.createPopUp(v.root, SSPreview, false) as SSPreview;
+			PopUpManager.centerPopUp(_ssPreview);
+			_ssPreview.addEventListener(CloseEvent.CLOSE, destroySSPreview);
+		}
+		v.openPreviewBTN.enabled = false;
+		if(!mediatorMap.hasMediatorForView(_ssPreview)) mediatorMap.createMediator(_ssPreview);
+	}
+	
+	private function destroySSPreview($evt:CloseEvent=null):void
+	{
+		if(_ssPreview)
+		{
+			PopUpManager.removePopUp(_ssPreview);
+			mediatorMap.removeMediatorByView(_ssPreview);
+			v.openPreviewBTN.enabled = true;
 		}
 	}
 	
 	private function enterState():void
 	{
+		if(stateModel.state != StateType.SS) return;
 		//更新调整后的Sheet
 		ssModel.adjustedSheet = ssModel.sheet.clone();
-		v.sheet.source = ssModel.adjustedSheet.bitmapData;
-		//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
-		//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
-		v.saveSheet.nameCB.visible = ssModel.sheet.metadata.hasName;
-		v.saveSheet.nameCB.selected =ssModel.sheet.metadata.hasName;
-		v.leftPanelBG.enabled = true;
-		//使用当前Sheet的宽高重置WH的相关值
-		v.optPanel.whDDL.selectedIndex = 0;
-		v.optPanel.whNS.value = ssModel.adjustedSheet.bitmapData.width;
-		v.init();
+		v.init(ssModel.adjustedSheet.bitmapData, ssModel.sheet.metadata.hasName);
+		
+		mediatorMap.createMediator(v.framesAndLabels);
 	}
 	
 	private function exitState():void
 	{
-		ssModel.sheet.destroy();
-		ssModel.sheet = null;
-		ssModel.adjustedSheet.destroy();
-		ssModel.adjustedSheet = null;
+		ssModel.destroySheet();
 		v.destroy();
+		
+		destroySSPreview();
+		mediatorMap.removeMediatorByView(v.framesAndLabels);
+	}
+	
+	protected function handler_build($evt:SSEvent):void
+	{
+		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
 	}
 	
 	protected function handler_optimizeSheet($evt:SSEvent):void
@@ -138,13 +173,20 @@ public class SSPanelMediator extends Mediator
 		optimizeSheet();
 	}
 	
+	private function handler_previewShow($evt:SSEvent):void
+	{
+		var __rect:Rectangle = $evt.info.rect as Rectangle;
+		trace(__rect);
+		v.sheetPreview.clearCanva();
+		v.sheetPreview.drawRect(__rect.x, __rect.y, __rect.width, __rect.height);
+	}
+	
 	/**
 	 * 根据当前的选择优化Sheet，优化的信息会被写入adjustedSheet中
 	 */
 	public function optimizeSheet():void
 	{
-		v.ssPreview.destory();
-		v.sheet.destroy();
+		v.sheetPreview.destroy();
 		if(ssModel.sheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
 		{
 			Funs.alert('没有帧的信息，不能生成Sheet。');
@@ -159,7 +201,7 @@ public class SSPanelMediator extends Mediator
 		//保存新计算出的每个帧在大Sheet中放置的位置
 		var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
 		//重新计算出最终Sheet的宽高以及修改过的frameRect
-		calculateSize(	
+		Funs.calculateSize(	
 			__list.frame, 
 			__newFrameRects, 
 			__whRect,
@@ -172,9 +214,7 @@ public class SSPanelMediator extends Mediator
 		//绘制大Sheet位图
 		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, v.optPanel.transparentCB.selected, v.optPanel.bgColorPicker.selectedColor);
 		ssModel.adjustedSheet.drawSheet(__sheetBmd);
-		v.sheet.source = ssModel.adjustedSheet.bitmapData;
-		//显示优化过的Frame
-		v.ssPreview.disFrame = true;
+		v.sheetPreview.source = ssModel.adjustedSheet.bitmapData;
 	}
 	
 	/**
@@ -239,77 +279,6 @@ public class SSPanelMediator extends Mediator
 		return {frame:__frame, origin:__origin, bmd:__bmd}
 	}
 	
-	
-	
-	/**
-	 * 根据提供的Rectangle数组计算最终Sheet的宽高以及每帧在Sheet中的位置
-	 * @param $frameRect 当前帧的独立大小
-	 */
-	private function calculateSize($frameRects:Vector.<Rectangle>, 
-								   $newSizeRects:Vector.<Rectangle>,
-								   $whRect:Rectangle, 
-								   $limitW:Boolean, 
-								   $wh:int,
-								   $powOf2:Boolean=false,
-								   $square:Boolean=false):void
-	{
-		if($frameRects.length==0) return;
-		var __frameRect:Rectangle = $frameRects[0];
-		$newSizeRects[0] = new Rectangle(0,0,__frameRect.width, __frameRect.height);
-		var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
-		trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
-		//设置sheet的初始宽高
-		if($limitW)
-		{
-			//若限制宽度小于帧的宽度，就扩大限制宽度
-			$whRect.width = $wh;
-			if($whRect.width<__frameRect.width) $whRect.width = __frameRect.width;
-			//计算2的幂
-			if($powOf2) $whRect.width = MathUtil.nextPowerOf2($whRect.width);
-			$whRect.height = __frameRect.height;
-		}
-		else
-		{
-			$whRect.height = $wh;
-			if($whRect.height<__frameRect.height) $whRect.height = __frameRect.height;
-			if($powOf2) $whRect.height = MathUtil.nextPowerOf2($whRect.height);
-			$whRect.width = __frameRect.width;
-		}
-		for (var i:int = 1; i < $frameRects.length; i++) 
-		{
-			__frameRect = $frameRects[i];
-			Funs.updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
-			trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
-			$newSizeRects[i] = __rectInSheet.clone();
-		}
-		if($square)
-		{
-			//计算正方形的尺寸
-			if($whRect.width!=$whRect.height)
-			{
-				//使用当前计算出的面积开方得到正方形的基准尺寸
-				var __newWH:int = Math.sqrt($whRect.width*$whRect.height);
-				//使用基准尺寸重新排列一次
-				calculateSize($frameRects,$newSizeRects,$whRect,$limitW,__newWH, $powOf2);
-				//trace('正方形计算1:', $whRect);
-				//如果基准尺寸无法实现正方形尺寸，就使用结果WH中比较大的那个尺寸作为正方形边长
-				if($whRect.width!=$whRect.height)
-				{
-					var __max:int = Math.max($whRect.width, $whRect.height);
-					$whRect.width = __max;
-					$whRect.height = __max;
-				}
-				//trace('正方形计算2:', $whRect);
-			}
-		}
-		if($powOf2)
-		{
-			$whRect.width = MathUtil.nextPowerOf2($whRect.width);
-			$whRect.height = MathUtil.nextPowerOf2($whRect.height);
-		}
-	}
-	
-	
 	/**
 	 * 获取要保存的metadata和位图
 	 */
@@ -325,8 +294,9 @@ public class SSPanelMediator extends Mediator
 		);
 		__vo.bitmapData = __bmd;
 		__vo.metadata = getMetadata();
-		__vo.picType = v.saveSheet.picRBG.selectedValue.toString();
+		__vo.picType = v.saveSheet.imageSetting.imageType;
 		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
+		__vo.quality = v.saveSheet.imageSetting.qualityValue;
 		__vo.type = StateType.SAVE_ALL;
 		return __vo;
 	}
@@ -351,8 +321,8 @@ public class SSPanelMediator extends Mediator
 			v.optPanel.transparentCB.selected,
 			v.optPanel.bgColorPicker.selectedColor
 		);
-		__vo.picType = v.saveSheet.picRBG.selectedValue.toString();
-		__vo.quality = v.saveSheet.quality.value;
+		__vo.picType = v.saveSheet.imageSetting.imageType;
+		__vo.quality = v.saveSheet.imageSetting.qualityValue;
 		__vo.type = StateType.SAVE_SHEET_PIC;
 		return __vo;
 	}
@@ -361,7 +331,7 @@ public class SSPanelMediator extends Mediator
 	{
 		var __vo:SaveVO = new SaveVO();
 		__vo.fileNameList = v.saveSeq.getFileNames(ssModel.adjustedSheet.metadata.totalFrame);
-		__vo.quality = (v.saveSeq.quality?v.saveSeq.quality.value:0);
+		__vo.quality = v.saveSeq.imageSetting.qualityValue;
 		__vo.type = StateType.SAVE_SEQ;
 		//根据显示的帧类型来保存序列
 		__vo.bitmapDataList = ssModel.getBMDList();
@@ -417,7 +387,8 @@ public class SSPanelMediator extends Mediator
 		var __meta:SpriteSheetMetadata = ssModel.adjustedSheet.metadata;
 		__meta.type = v.saveSheet.sheetType;
 		__meta.maskType = v.saveSheet.maskDDL.selectedIndex;
-		var __labelMeta:Object = v.framesAndLabels.getLabels();
+		var __mediator:FramesAndLabelMediator = mediatorMap.retrieveMediator(v.framesAndLabels) as FramesAndLabelMediator;
+		var __labelMeta:LabelListVO = __mediator.getLabels();
 		__meta.hasLabel = __labelMeta.hasLabel;
 		__meta.labels = __labelMeta.labels;
 		__meta.labelsFrame = __labelMeta.labelsFrame;
@@ -431,8 +402,5 @@ public class SSPanelMediator extends Mediator
 			return ssModel.adjustedSheet.metadata.toXMLString(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected, File.lineEnding);
 		return ssModel.adjustedSheet.metadata.toTXT(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected, File.lineEnding);
 	}
-	
-	
-	
 }
 }

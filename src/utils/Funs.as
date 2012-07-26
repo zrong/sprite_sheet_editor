@@ -1,7 +1,5 @@
 package utils
 {
-import view.comps.Alert;
-
 import flash.desktop.NativeApplication;
 import flash.display.BitmapData;
 import flash.geom.Point;
@@ -11,9 +9,81 @@ import mx.managers.PopUpManager;
 
 import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+import org.zengrong.utils.MathUtil;
+
+import view.comps.Alert;
 
 public class Funs
 {
+	
+	/**
+	 * 根据提供的Rectangle数组计算最终Sheet的宽高以及每帧在Sheet中的位置
+	 * @param $frameRect 当前帧的独立大小
+	 */
+	public static function calculateSize($frameRects:Vector.<Rectangle>, 
+								   $newSizeRects:Vector.<Rectangle>,
+								   $whRect:Rectangle, 
+								   $limitW:Boolean, 
+								   $wh:int,
+								   $powOf2:Boolean=false,
+								   $square:Boolean=false):void
+	{
+		if($frameRects.length==0) return;
+		var __frameRect:Rectangle = $frameRects[0];
+		$newSizeRects[0] = new Rectangle(0,0,__frameRect.width, __frameRect.height);
+		var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
+		trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
+		//设置sheet的初始宽高
+		if($limitW)
+		{
+			//若限制宽度小于帧的宽度，就扩大限制宽度
+			$whRect.width = $wh;
+			if($whRect.width<__frameRect.width) $whRect.width = __frameRect.width;
+			//计算2的幂
+			if($powOf2) $whRect.width = MathUtil.nextPowerOf2($whRect.width);
+			$whRect.height = __frameRect.height;
+		}
+		else
+		{
+			$whRect.height = $wh;
+			if($whRect.height<__frameRect.height) $whRect.height = __frameRect.height;
+			if($powOf2) $whRect.height = MathUtil.nextPowerOf2($whRect.height);
+			$whRect.width = __frameRect.width;
+		}
+		for (var i:int = 1; i < $frameRects.length; i++) 
+		{
+			__frameRect = $frameRects[i];
+			Funs.updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
+			trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
+			$newSizeRects[i] = __rectInSheet.clone();
+		}
+		if($square)
+		{
+			//计算正方形的尺寸
+			if($whRect.width!=$whRect.height)
+			{
+				//使用当前计算出的面积开方得到正方形的基准尺寸
+				var __newWH:int = Math.sqrt($whRect.width*$whRect.height);
+				//使用基准尺寸重新排列一次
+				calculateSize($frameRects,$newSizeRects,$whRect,$limitW,__newWH, $powOf2);
+				//trace('正方形计算1:', $whRect);
+				//如果基准尺寸无法实现正方形尺寸，就使用结果WH中比较大的那个尺寸作为正方形边长
+				if($whRect.width!=$whRect.height)
+				{
+					var __max:int = Math.max($whRect.width, $whRect.height);
+					$whRect.width = __max;
+					$whRect.height = __max;
+				}
+				//trace('正方形计算2:', $whRect);
+			}
+		}
+		if($powOf2)
+		{
+			$whRect.width = MathUtil.nextPowerOf2($whRect.width);
+			$whRect.height = MathUtil.nextPowerOf2($whRect.height);
+		}
+	}
+	
 	/**
 	 * 更新在Sheet中帧的Rect的位置，根据Rect位置计算出大Sheet的WH
 	 * 会直接修改$rectInSheet和$whRect参数的值。
@@ -89,7 +159,6 @@ public class Funs
 		$rectInSheet.y = $whRect.height;
 		//更新Sheet的高度
 		$whRect.height += $frameRect.height;
-		
 	}
 	
 	private static function newColumn($rectInSheet:Rectangle, $frameRect:Rectangle, $whRect:Rectangle):void

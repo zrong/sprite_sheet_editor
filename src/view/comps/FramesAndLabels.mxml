@@ -11,7 +11,6 @@
 	</s:layout>
 	<fx:Metadata>
 		[Event(name="frameAndLabelChange", type="events.SSEvent")]
-		[Event(name="selectedFrameIndicesChange", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:states>
 		<s:State name="frame"/>
@@ -35,8 +34,7 @@
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
 	<s:DataGrid id="frameDG" width="100%" height="200" dataProvider="{frameAC}"
-				selectionMode="multipleRows" sortableColumns="false"
-				valueCommit="handler_frameDGValueCommit(event)">
+				selectionMode="multipleRows" sortableColumns="false">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
@@ -59,13 +57,11 @@
 				  enabled="{labelList.selectedItem}"
 				  toolTip="删除选中的Label"/>
 		<s:Button id="renameBTN" width="100%" label="改Label" 
-				  click="handler_renameBTNclick(event)"
 				  enabled="{labelInput.text&amp;&amp;labelList.selectedItem}" toolTip="修改Label名称"/>
 		<s:Button id="cancelBTN" width="100%" label="取消选择" enabled="{labelList.selectedItem}" 
 				  click="labelList.selectedIndex=-1;"/>
 	</s:HGroup>
-	<s:List id="labelList" width="100%" height="150" dataProvider="{labelAL}"
-			labelField="name" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
+	<s:List id="labelList" width="100%" height="150" labelField="name" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -94,18 +90,33 @@
 		import utils.Global;
 		
 		import vo.FrameVO;
+		import vo.LabelListVO;
 		import vo.LabelVO;
 		
-		[Bindable] public var labelAL:ArrayList;
 		[Bindable] public var frameAC:ArrayCollection;
-		[Bindable] public var selectedFrameNum:int;		//当前选择的帧编号
-		[Bindable] public var selectedFrameIndices:Vector.<int>;	//frameDG中选择的索引
 		[Bindable] public var playing:Boolean;	//是否正在播放动画。如果是播放动画状态，那么valueCommit的时候，就不更新selectedFrameIndices的值
+		
+		//frameDG中选择的索引
+		[Bindable] public var selectedFrameIndices:Vector.<int>;
 
 		/**
 		 * 当前正在播放的帧在selectedFrameIndices中的索引
 		 */
 		private var _currentIndex:int=-1;
+		
+		public function init():void
+		{
+			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
+		}
+		
+		public function destroy():void
+		{
+			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
+			trace('FrameAndLabels.destroy');
+			if(frameAC)	frameAC.removeAll();
+			frameAC = null;
+			pause();
+		}
 		
 		public function get selectedFrameIndex():int
 		{
@@ -113,23 +124,7 @@
 				return FrameVO(frameDG.selectedItem).frameNum;
 			return -1;
 		}
-		
-		public function init():void
-		{
-	
-		}
-		
-		public function destroy():void
-		{
-			trace('FrameAndLabels.destroy');
-			if(labelAL)	labelAL.removeAll();
-			labelAL = null;
-			if(frameAC)	frameAC.removeAll();
-			frameAC = null;
-			selectedFrameIndices = null;
-			selectFrameChange();
-			pause();
-		}
+
 		
 		public function play():void
 		{
@@ -170,36 +165,11 @@
 			
 		}
 		
-		/**
-		 * 获取metadata中需要的label数据
-		 */
-		public function getLabels():Object
-		{
-			var __hasLabel:Boolean = labelCB.selected && labelAL.length>0;
-			if(__hasLabel)
-			{
-				var __labels:Vector.<String> = new Vector.<String>(labelAL.length, true);
-				var __labelsFrame:Object = {};
-				var __labelItem:LabelVO = null;
-				for (var i:int = 0; i < labelAL.length; i++) 
-				{
-					__labelItem = labelAL.getItemAt(i) as LabelVO;
-					__labels[i] = __labelItem.name;
-					__labelsFrame[__labelItem.name] = __labelItem.getFramesIndex();
-				}
-				return {hasLabel:__hasLabel, labels:__labels, labelsFrame:__labelsFrame};
-			}
-			return {hasLabel:__hasLabel};
-		}
-		
+
 		//----------------------------------------
 		// 内部方法
 		//----------------------------------------
-		
-		public function selectFrameChange():void
-		{
-			this.dispatchEvent(new SSEvent(SSEvent.SELECTED_FRAMEINDICES_CHANGE, selectedFrameIndices));
-		}
+
 		
 		/**
 		 * 将帧信息中保存的大于$frameNum的帧的索引减1
@@ -222,30 +192,17 @@
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		
-		protected function handler_frameDGValueCommit($event:FlexEvent):void
+		/**
+		 * 实现帧的动画预览
+		 */
+		private function handler_enterFrame($evt:Event):void
 		{
-			//只有不在播放状态，才更新选择的帧列表
-			if(!playing)
+			if(playing)
 			{
-				selectedFrameIndices = frameDG.selectedIndices.concat();
-				//获取到的Vector是降序的，倒转它
-				selectedFrameIndices.sort(Array.NUMERIC);
-				trace('更新indices:', selectedFrameIndices);
-				selectFrameChange();
+				nextFrame();
 			}
-			selectedFrameNum = frameDG.selectedIndex==-1?-1:FrameVO(frameDG.selectedItem).frameNum;
-			trace('dgValueCommit:', selectedFrameNum, addLabelBTN);
-			dispatchEvent(new SSEvent(SSEvent.FRAME_AND_LABEL_CHANGE));
 		}
 		
-		protected function handler_renameBTNclick($event:MouseEvent):void
-		{
-			var __item:Object = labelAL.getItemAt(labelList.selectedIndex);
-			__item.name = labelInput.text;
-			labelAL.setItemAt(__item, labelList.selectedIndex);
-		}
-
 		protected function handler_allBTNclick($event:MouseEvent):void
 		{
 			var __indics:Vector.<int> = new Vector.<int>;
