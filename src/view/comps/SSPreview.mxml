@@ -2,7 +2,6 @@
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   width="320"
 				   xmlns:comps="view.comps.*"
 				   backgroundColor="0x696969"
 				   borderColor="0x696969"

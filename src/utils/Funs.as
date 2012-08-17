@@ -170,7 +170,7 @@ public class Funs
 	
 	public static function alert($text:String, $title:String='警告'):void
 	{
-		var __alert:Alert = PopUpManager.createPopUp(Global.instance.root, Alert, true) as Alert;
+		var __alert:Alert = PopUpManager.createPopUp(Global.root, Alert, true) as Alert;
 		__alert.title = $title;
 		__alert.text = $text;
 		var __xy:Array = getAlertXY(__alert);
@@ -179,7 +179,7 @@ public class Funs
 	
 	public static function confirm($text:String, $okHandler:Function, $cancelHandler:Function=null, $title:String="请确认"):void
 	{
-		var __alert:Alert = PopUpManager.createPopUp(Global.instance.root, Alert, true) as Alert;
+		var __alert:Alert = PopUpManager.createPopUp(Global.root, Alert, true) as Alert;
 		__alert.currentState = 'confirm';
 		__alert.title = $title;
 		__alert.text = $text;
@@ -191,7 +191,7 @@ public class Funs
 	
 	private static function getAlertXY($alert:Alert):Array
 	{
-		return [(Global.instance.root.width-$alert.width)*.5, (Global.instance.root.height-$alert.height)*.5];
+		return [(Global.root.width-$alert.width)*.5, (Global.root.height-$alert.height)*.5];
 	}
 	
 }

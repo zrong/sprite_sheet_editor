@@ -1,30 +1,50 @@
 package utils
 {
-import org.zengrong.display.spritesheet.SpriteSheet;
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+import flash.display.Sprite;
+import flash.display.StageQuality;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.ui.Mouse;
+import flash.ui.MouseCursorData;
 
 public class Global
 {
-	[Embed(source="/checks.png")]
-	[Bindable] public var bmp_checks:Class;
+	[Embed(source="assets/chess.png")]
+	public static const BMP_CHESS:Class;
+	
+	//Assets.swf来自于Flex框架 %FLEX_SDK%\frameworks\projects\framework\assets\Assets.swf
+	[Embed(source="Assets.swf",symbol="mx.skins.cursor.VBoxDivider")]
+	public static const MC_CURSOR_VDIVIDER:Class;
+	
+	[Embed(source="Assets.swf",symbol="mx.skins.BoxDividerSkin")]
+	public static const MC_BOX_DIVIDER:Class;
+	
+	public static const VDIVIDER:String = 'vdivider';
 	
 	/**
 	 * 保存root对象
 	 */	
-	[Bindable] public var root:SpriteSheetEditor;
+	public static var root:SpriteSheetEditor;
 	
-	private static var _instance:Global;
+	public static var bmd_chess:BitmapData;
 	
-	public static function get instance():Global
+	public static var cursor_vdivider:MouseCursorData;
+	
+	public static function init($root:SpriteSheetEditor):void
 	{
-		if(!_instance)
-			_instance = new Global(new Singlton);
-		return _instance;
-	}
-	
-	public function Global($sig:Singlton)
-	{
-		if(!$sig) throw new TypeError('请使用Global.instance获取单例！');
+		root = $root;
+		var __bmp:Bitmap = new BMP_CHESS as Bitmap;
+		bmd_chess = __bmp.bitmapData;
+		
+		var __sp:Sprite = new MC_CURSOR_VDIVIDER as Sprite;
+		var __bmd:BitmapData = new BitmapData(16, 16, true, 0x00000000);
+		__bmd.drawWithQuality(__sp, new Matrix(1,0,0,1, 8, 8), null, null, null, true, StageQuality.BEST);
+		cursor_vdivider = new MouseCursorData();
+		cursor_vdivider.data = Vector.<BitmapData>([__bmd]);
+		cursor_vdivider.hotSpot = new Point(8,8);
+		Mouse.registerCursor(VDIVIDER, cursor_vdivider);
 	}
 }
 }
-class Singlton{};

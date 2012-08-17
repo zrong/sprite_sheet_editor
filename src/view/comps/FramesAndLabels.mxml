@@ -5,7 +5,7 @@
 <!-- 管理帧和Label -->
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  currentState="{labelCB.selected?'frameAndLabel':'frame'}">
+		  currentState="{labelCB.selected?'frameAndLabel':'frame'}" xmlns:comps="view.comps.*" minHeight="420" >
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
@@ -13,17 +13,17 @@
 		[Event(name="frameAndLabelChange", type="events.SSEvent")]
 	</fx:Metadata>
 	<s:states>
-		<s:State name="frame"/>
-		<s:State name="frameAndLabel"/>
+		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
+		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
 	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧:'+frameAC.length):'所有可用帧:'+frameAC.length}"/>
-	<s:HGroup verticalAlign="middle" width="100%">
+	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
 		<s:Button id="addSSBTN" width="100%" label="增加SpriteSheet"
 				  toolTip="添加一个或多个SpriteSheet到当前Sheet的末尾。规则如下：&#13;1.所有帧会增加到当前Sheet的末尾；&#13;2.若label重名，则被导入Sheet中的label不导入，但依然会导入该lable的所有帧；&#13;3.若name重名，则被导入的Sheet中该name对应的重名帧不会被导入；&#13;4.若原始Sheet中包含name，但被导入Sheet中不含name，则会自动为被导入的Sheet中的所有帧命名。"/>
 		<s:Button id="addPicBTN" width="100%" label="增加图像帧"
 				  toolTip="添加多个图像文件。每个图像作为一帧增加到当前Sheet的末尾。"/>
 	</s:HGroup>
-	<s:HGroup verticalAlign="middle" width="100%">
+	<s:HGroup id="naviGRP" verticalAlign="middle" width="100%">
 		<s:Button id="delBTN" label="删帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
 				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
 		<s:Button id="prevBTN" label="上帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
@@ -33,7 +33,7 @@
 		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
-	<s:DataGrid id="frameDG" width="100%" height="200" dataProvider="{frameAC}"
+	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{frameAC}"
 				selectionMode="multipleRows" sortableColumns="false">
 		<s:columns>
 			<s:ArrayList>
@@ -61,7 +61,8 @@
 		<s:Button id="cancelBTN" width="100%" label="取消选择" enabled="{labelList.selectedItem}" 
 				  click="labelList.selectedIndex=-1;"/>
 	</s:HGroup>
-	<s:List id="labelList" width="100%" height="150" labelField="name" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
+	<s:List id="labelList" width="100%" height="100%" minHeight="150" labelField="name" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
+	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -80,7 +81,6 @@
 		import org.zengrong.display.spritesheet.SpriteSheet;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
-		import org.zengrong.events.InfoEvent;
 		
 		import spark.collections.Sort;
 		import spark.collections.SortField;
@@ -211,6 +211,53 @@
 				__indics[i] = i;
 			}
 			frameDG.selectedIndices = __indics;
+		}
+		
+		protected function handler_dividedHeightDown($evt:MouseEvent):void
+		{
+			this.parent.addEventListener(MouseEvent.MOUSE_MOVE, handler_resizeHeight);
+			this.parent.addEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
+			this.parent.addEventListener(MouseEvent.RELEASE_OUTSIDE, handler_mouseUp);
+		}
+		
+		private function handler_resizeHeight($evt:MouseEvent):void
+		{
+//			trace('contentGrpoup:',this.contentGroup.height);
+//			trace(this.mouseY, _minHeight, this.height);
+			if(this.height< this.minHeight)
+			{
+				this.height = this.minHeight;
+				handler_mouseUp(null);
+				return;
+			}
+			this.height = this.mouseY+10;
+		}
+		
+		private function handler_mouseUp($evt:MouseEvent):void
+		{
+			this.parent.removeEventListener(MouseEvent.MOUSE_MOVE, handler_resizeHeight);
+			this.parent.removeEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
+			this.parent.removeEventListener(MouseEvent.RELEASE_OUTSIDE, handler_mouseUp);
+		}
+		
+		protected function handler_labelEnterState($evt:FlexEvent):void
+		{
+			this.minHeight = 640;
+			//更新容器实际高度
+			this.addEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
+		}
+		
+		protected function handler_frameEnterState($evt:FlexEvent):void
+		{
+			this.minHeight = 440;
+		}
+		
+		protected function handler_updateComp($evt:FlexEvent):void
+		{
+			//trace('updateComp:', this.contentGroup.height, this.height);
+			//若不更新，可能会出现容器内容被遮挡的情况
+			if(this.height < this.contentGroup.height) this.height = this.contentGroup.height;
+			this.removeEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
 		}
 	]]>
 	</fx:Script>

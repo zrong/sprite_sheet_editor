@@ -27,7 +27,6 @@ import org.zengrong.assets.AssetsType;
 import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
-import org.zengrong.events.InfoEvent;
 
 import utils.Funs;
 
@@ -189,9 +188,9 @@ public class FramesAndLabelMediator extends Mediator
 	/**
 	 * 载入一个图像文件成功后，将其加入spritesheet中
 	 */
-	private function handler_assetsProgress($evt:InfoEvent):void
+	private function handler_assetsProgress($evt:AssetsEvent):void
 	{
-		var __vo:AssetsProgressVO = $evt.info as AssetsProgressVO;
+		var __vo:AssetsProgressVO = $evt.vo;
 		if(__vo.whole && __vo.done)
 		{
 			trace('FrameAndLabels.handler_assetsProgress:',__vo.toString());
@@ -202,7 +201,7 @@ public class FramesAndLabelMediator extends Mediator
 		}
 	}
 	
-	private function handler_assetsComp($evt:InfoEvent):void
+	private function handler_assetsComp($evt:AssetsEvent):void
 	{
 		//labelList.selectedIndex = labelAL.length - 1;
 		refreshFrameDG();
@@ -245,9 +244,9 @@ public class FramesAndLabelMediator extends Mediator
 	{
 		var __ss:SpriteSheet = _assets.getSpriteSheet($vo.name);
 		//当前Sheet的总帧数
-		var __sheetTotal:int = ssModel.sheet.metadata.totalFrame;
+		var __sheetTotal:int = ssModel.originalSheet.metadata.totalFrame;
 		//当前Sheet的最后一帧的Rect
-		var __lastFrameRect:Rectangle = ssModel.sheet.metadata.frameRects[__sheetTotal-1];
+		var __lastFrameRect:Rectangle = ssModel.originalSheet.metadata.frameRects[__sheetTotal-1];
 		//加入的sheet的总帧数
 		var __addSheetTotal:int = __ss.metadata.totalFrame;
 		var __rect:Rectangle = null;
@@ -278,7 +277,7 @@ public class FramesAndLabelMediator extends Mediator
 				__frame.frameName = $vo.name + '_' + i;
 			__name = __frame.frameName;
 			__frameVOs[i] = __frame;
-			ssModel.sheet.addFrame(__bmd, __rect, __origRect, __name);
+			ssModel.addOriginalFrame(__bmd, __rect, __origRect, __name);
 		}
 		//如果加入的Sheet包含Label，就使用它
 		if(__ss.metadata.hasLabel)
@@ -328,9 +327,9 @@ public class FramesAndLabelMediator extends Mediator
 	private function addPicToSheet($vo:AssetsProgressVO):void
 	{
 		var __bmd:BitmapData = _assets.getBitmapData($vo.name);
-		var __total:int = ssModel.sheet.metadata.totalFrame;
+		var __total:int = ssModel.originalSheet.metadata.totalFrame;
 		//基于最后一帧的rect位置，横向移动rect
-		var __rect:Rectangle = ssModel.sheet.metadata.frameRects[__total-1].clone();
+		var __rect:Rectangle = ssModel.originalSheet.metadata.frameRects[__total-1].clone();
 		__rect.x += __rect.width;
 		__rect.width = __bmd.width;
 		__rect.height = __bmd.height;
@@ -343,7 +342,7 @@ public class FramesAndLabelMediator extends Mediator
 		__frame.frameRect = __rect;
 		__frame.originRect = __origRect;
 		_framesNotInLabels.addItem(__frame);
-		ssModel.sheet.addFrame(__bmd, __rect, __origRect, __frame.frameName);
+		ssModel.addOriginalFrame(__bmd, __rect, __origRect, __frame.frameName);
 	}
 	
 	/**
@@ -478,9 +477,9 @@ public class FramesAndLabelMediator extends Mediator
 		while(v.selectedFrameIndices.length>0)
 		{
 			var __delItem:FrameVO = v.frameAC.getItemAt(v.selectedFrameIndices.pop()) as FrameVO;
-			ssModel.sheet.removeFrameAt(__delItem.frameNum);
+			ssModel.originalSheet.removeFrameAt(__delItem.frameNum);
 			ssModel.adjustedSheet.removeFrameAt(__delItem.frameNum);
-			trace('删除Sheet与adjustedSheet中的帧，删除后：', ssModel.sheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
+			trace('删除Sheet与adjustedSheet中的帧，删除后：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
 			//若选择了Label，在labelVO中删除
 			if(v.labelCB.selected && v.labelList.selectedIndex!=-1)
 			{
@@ -576,11 +575,11 @@ public class FramesAndLabelMediator extends Mediator
 				__frame.originRect.width = $rect.width;
 				__frame.originRect.height = $rect.height;
 				//根据调整的大小重新绘制当前帧的bmd
-				__bmd.copyPixels(ssModel.sheet.getBMDByIndex(__frame.frameNum), $rect, __point, null, null, true);
+				__bmd.copyPixels(ssModel.originalSheet.getBMDByIndex(__frame.frameNum), $rect, __point, null, null, true);
 				//设置adjustedSheet中的bmd，由于已经修改了两个rect的值，这里就不需要再重置rect
-				ssModel.adjustedSheet.addFrameAt(__frame.frameNum, __bmd);
+				ssModel.addAdjustedFrameAt(__frame.frameNum, __bmd);
 				//设置sheet中的bmd，同时设置两个rect
-				ssModel.sheet.addFrameAt(__frame.frameNum,__bmd.clone(), __frame.frameRect.clone(), __frame.originRect.clone());
+				ssModel.addOriginalFrameAt(__frame.frameNum,__bmd.clone(), __frame.frameRect.clone(), __frame.originRect.clone());
 				v.frameAC.refresh();
 			}
 		}

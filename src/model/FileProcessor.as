@@ -277,8 +277,7 @@ public class FileProcessor extends Actor
 	 */
 	private function handler_ssLoadComplete($evt:Event):void
 	{
-		ssModel.sheet = _ssLoader.getSpriteSheet();
-		ssModel.sheet.parseSheet();
+		ssModel.updateOriginalSheet(_ssLoader.getSpriteSheet());
 		stateModel.state = StateType.SS;
 	}
 	

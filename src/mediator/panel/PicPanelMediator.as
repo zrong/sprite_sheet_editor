@@ -15,6 +15,8 @@ import type.StateType;
 
 import view.panel.PicPanel;
 
+import vo.NamesVO;
+
 public class PicPanelMediator extends Mediator
 {
 	[Inject] public var v:PicPanel;
@@ -58,12 +60,13 @@ public class PicPanelMediator extends Mediator
 	
 	private function handler_captureDone($evt:SSEvent):void
 	{
-		ssModel.sheet.drawSheet($evt.info.bmd);
-		if($evt.info.updateNames)
+		ssModel.drawOriginalSheet($evt.info.bmd);
+		var __namesVO:NamesVO = $evt.info.updateNames as NamesVO;
+		if(__namesVO)
 		{
-			ssModel.sheet.metadata.hasName = $evt.info.updateNames.hasName;
-			ssModel.sheet.metadata.names = $evt.info.updateNames.names;
-			ssModel.sheet.metadata.namesIndex = $evt.info.updateNames.nameIndex;
+			ssModel.originalSheet.metadata.hasName = __namesVO.hasName;
+			ssModel.originalSheet.metadata.names = __namesVO.names;
+			ssModel.originalSheet.metadata.namesIndex = __namesVO.namesIndex;
 		}
 		stateModel.state = StateType.SS;
 	}
@@ -91,7 +94,7 @@ public class PicPanelMediator extends Mediator
 	
 	private function handler_addFrame($evt:SSEvent):void
 	{
-		ssModel.sheet.addFrame($evt.info.bmd, $evt.info.rect);
+		ssModel.addOriginalFrame($evt.info.bmd, $evt.info.rect);
 	}	
 }
 }

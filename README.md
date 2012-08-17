@@ -6,7 +6,8 @@
 * 将多张图像拼合成一张大的Sprite Sheet以降低文件尺寸和减少网络请求；
 * 让Sprite Sheet也支持Label，实现类似于MovieClip中Label的功能；
 * 自动修剪Sheet中每帧四周的空白像素；
-* 让jpeg格式也支持透明，大幅降低需要透明的文件的尺寸；
+* 使用Mask技术让JPEG格式也支持透明，大幅降低需要透明的文件的尺寸；
+* 支持JPEG-XR格式，该格式支持Alpha通道，图像质量优于JPEG格式；
 * 还有更多……
 
 这个工具原来的名字叫做[Sprite Sheet Packer](http://zengrong.net/spritesheetpacker)，从v0.5.0改名为Sprite Sheet Editor。

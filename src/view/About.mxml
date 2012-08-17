@@ -22,7 +22,9 @@
 		import mx.events.FlexEvent;
 		
 		import utils.Funs;
-		[Embed(source="/about.txt",mimeType="application/octet-stream")] private static const TXT:Class;
+		[Embed(source="assets/about.txt",mimeType="application/octet-stream")] 
+		private static const TXT:Class;
+		
 		[Bindable] private var _tf:TextFlow;
 		
 		protected function handler_closing($event:Event):void

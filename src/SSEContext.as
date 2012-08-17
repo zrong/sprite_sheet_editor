@@ -34,7 +34,7 @@ public class SSEContext extends Context
 	
 	private function init():void
 	{
-		Global.instance.root = contextView as SpriteSheetEditor;
+		Global.init(contextView as SpriteSheetEditor);
 	}
 	
 	override public function startup():void

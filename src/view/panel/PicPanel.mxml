@@ -46,6 +46,8 @@
 		import utils.Funs;
 		import utils.Global;
 		
+		import vo.NamesVO;
+		
 		private var _frameNum:int;				//当前正在处理的帧编号
 		private var _rectInSheet:Rectangle;	//正在处理的帧在整个Sheet上的rect位置
 		private var _whRect:Rectangle;			//保存Sheet的宽高
@@ -153,10 +155,11 @@
 		/**
 		 * 更新保存在全局变量中的sheet中的name值
 		 */
-		private function getUpdateNames():Object
+		private function getUpdateNames():NamesVO
 		{
 			if(fileM.fileList.length>0)
 			{
+				var __namesvo:NamesVO = new NamesVO();
 				var __names:Vector.<String> = new Vector.<String>(fileM.fileList.length, true);
 				var __namesIndex:Object = {};
 				var __dotIndex:int = 0;
@@ -173,7 +176,10 @@
 					__namesIndex[__main] = i;
 					__names[i] = __main;
 				}
-				return {hasName:true, names:__names, namesIndex:__namesIndex};
+				__namesvo.hasName = true;
+				__namesvo.names = __names;
+				__namesvo.namesIndex = __namesIndex;
+				return __namesvo;
 			}
 			return null;
 		}

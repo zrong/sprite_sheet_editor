@@ -148,8 +148,8 @@ public class SSPanelMediator extends Mediator
 	{
 		if(stateModel.state != StateType.SS) return;
 		//更新调整后的Sheet
-		ssModel.adjustedSheet = ssModel.sheet.clone();
-		v.init(ssModel.adjustedSheet.bitmapData, ssModel.sheet.metadata.hasName);
+		ssModel.updateAdjustedSheet();
+		v.init(ssModel.adjustedSheet.bitmapData, ssModel.originalSheet.metadata.hasName);
 		
 		mediatorMap.createMediator(v.framesAndLabels);
 	}
@@ -187,13 +187,13 @@ public class SSPanelMediator extends Mediator
 	public function optimizeSheet():void
 	{
 		v.sheetPreview.destroy();
-		if(ssModel.sheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
+		if(ssModel.originalSheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
 		{
 			Funs.alert('没有帧的信息，不能生成Sheet。');
 			v.leftPanelBG.enabled = false;
 			return;
 		}
-		trace('优化帧数：', ssModel.sheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
+		trace('优化帧数：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
 		var __list:Object = getRectsAndBmds();
 		trace('新生成的：', __list.bmd, __list.frame, __list.origin)
 		//保存新计算出的WH
@@ -210,10 +210,10 @@ public class SSPanelMediator extends Mediator
 			v.optPanel.powerOf2CB.selected,
 			v.optPanel.squareCB.selected
 		);
-		ssModel.adjustedSheet.setFrames(__list.bmd, __newFrameRects, __list.origin, ssModel.sheet.metadata.names);
+		ssModel.adjustedSheet.setFrames(__list.bmd, __newFrameRects, __list.origin, ssModel.originalSheet.metadata.names);
 		//绘制大Sheet位图
 		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, v.optPanel.transparentCB.selected, v.optPanel.bgColorPicker.selectedColor);
-		ssModel.adjustedSheet.drawSheet(__sheetBmd);
+		ssModel.drawAdjustedSheet(__sheetBmd);
 		v.sheetPreview.source = ssModel.adjustedSheet.bitmapData;
 	}
 	
@@ -236,10 +236,10 @@ public class SSPanelMediator extends Mediator
 			var __sizeRect:Rectangle = null;
 			//用于保存执行trim方法后的结果
 			var __trim:Object = null;
-			for (var i:int=0; i < ssModel.sheet.metadata.totalFrame; i++) 
+			for (var i:int=0; i < ssModel.originalSheet.metadata.totalFrame; i++) 
 			{
-				__trim = BitmapUtil.trim(ssModel.sheet.getBMDByIndex(i));
-				__sizeRect = ssModel.sheet.metadata.originalFrameRects[i];
+				__trim = BitmapUtil.trim(ssModel.originalSheet.getBMDByIndex(i));
+				__sizeRect = ssModel.originalSheet.metadata.originalFrameRects[i];
 				__frame[i] = __trim.rect;
 				//如果重设帧的尺寸，就使用trim过后的帧的宽高建立一个新的Rect尺寸，并更新bmd
 				if(v.optPanel.resetRectCB.selected)
@@ -252,7 +252,7 @@ public class SSPanelMediator extends Mediator
 					//如果不重设帧的尺寸，就使用原始大小的宽高。同时计算trim后的xy的偏移。
 					//因为获得xy的偏移是基于与原始帧大小的正数，要将其转换为基于trim后的帧的偏移，用0减
 					//不重设尺寸的情况下，不更新bmd，因为原始尺寸没变。SpriteSheet中保存的bmdList，永远都与原始尺寸相同
-					__bmd = ssModel.sheet.cloneFrames();
+					__bmd = ssModel.originalSheet.cloneFrames();
 					__origin[i] = new Rectangle(
 						0-__trim.rect.x,
 						0-__trim.rect.y,
@@ -264,9 +264,9 @@ public class SSPanelMediator extends Mediator
 		else
 		{
 			//bmdlist永远都是原始尺寸的，因此不需要重新绘制
-			__bmd = ssModel.sheet.cloneFrames();
-			__frame = ssModel.sheet.metadata.frameRects.concat();
-			__origin = ssModel.sheet.metadata.originalFrameRects.concat();
+			__bmd = ssModel.originalSheet.cloneFrames();
+			__frame = ssModel.originalSheet.metadata.frameRects.concat();
+			__origin = ssModel.originalSheet.metadata.originalFrameRects.concat();
 			//不trim，将以前trim过的信息还原
 			for (var j:int = 0; j < __frame.length; j++) 
 			{

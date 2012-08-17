@@ -58,7 +58,7 @@ public class SwfPanelMediator extends Mediator
 	private function handler_captureDone($evt:SSEvent):void
 	{
 		v.state = StateType.LOAD_DONE;
-		ssModel.sheet.drawSheet($evt.info);
+		ssModel.drawOriginalSheet($evt.info);
 		stateModel.state = StateType.SS;
 	}
 	
@@ -105,7 +105,7 @@ public class SwfPanelMediator extends Mediator
 	
 	private function handler_addFrame($evt:SSEvent):void
 	{
-		ssModel.sheet.addFrame($evt.info.bmd, $evt.info.rect);
+		ssModel.addOriginalFrame($evt.info.bmd, $evt.info.rect);
 	}
 }
 }
