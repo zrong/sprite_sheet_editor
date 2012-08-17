@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SpriteVisualElement xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" 
+					   width="30" height="10"
+					   addedToStage="handler_addToStage(event)"
+					   mouseOver="handler_mouseOver(event)"
+					   mouseOut="handler_mouseOut(event)"
+					   mouseUp="handler_mouseOut(event)"
+					   releaseOutside="handler_mouseOut(event)">
+	<fx:Script>
+		<![CDATA[
+			import flash.utils.getDefinitionByName;
+			
+			import mx.managers.CursorManager;
+			
+			import utils.Global;
+			private static const W:int = 30;
+			private static const H:int = 10;
+			
+			protected function handler_addToStage($evt:Event):void
+			{
+				this.graphics.clear();
+				this.graphics.beginFill(0xFFFFFF, 0);
+				this.graphics.drawRect(0,0, W, H);
+				this.graphics.beginFill(0xFFFFFF);
+				for (var i:int = 0; i < 3; i++) 
+				{
+					this.graphics.drawRect(0, i*3+2, W, 1);
+				}
+				this.graphics.endFill();
+//				this.addChild(new Global.MC_BOX_DIVIDER);
+			}
+			
+			protected function handler_mouseOver($evt:MouseEvent):void
+			{
+				//CursorManager.setCursor(Global.MC_CURSOR_VDIVIDER);
+				Mouse.cursor = Global.VDIVIDER;
+			}
+			
+			protected function handler_mouseOut($evt:MouseEvent):void
+			{
+				Mouse.cursor = MouseCursor.AUTO;
+			}
+			
+		]]>
+	</fx:Script>
+</s:SpriteVisualElement>
