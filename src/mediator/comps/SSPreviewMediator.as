@@ -26,6 +26,7 @@ public class SSPreviewMediator extends Mediator
 		eventMap.mapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.mapListener(v.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
 		eventMap.mapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
+		eventMap.mapListener(v.resizeOriginCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
 		addViewListener(SSPreview.EVENT_FRAME_SIZE_CHANGE, handler_frameSizeChange);
 		
 		addContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
@@ -42,6 +43,7 @@ public class SSPreviewMediator extends Mediator
 		eventMap.unmapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.unmapListener(v.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
 		eventMap.unmapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
+		eventMap.unmapListener(v.resizeOriginCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
 		removeViewListener(SSPreview.EVENT_FRAME_SIZE_CHANGE, handler_frameSizeChange);
 		
 		removeContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
@@ -81,8 +83,13 @@ public class SSPreviewMediator extends Mediator
 		ssModel.displayCrop = v.frameCropDisplayRBG.selectedValue;
 		updateFrame();
 		v.frameLabel.text = ssModel.selectedFrmaeNum.toString();
-		setPlayEnable();
 		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+	}
+	
+	private function handler_resizeOriginCBChange($evt:FlexEvent):void
+	{
+		//setSaveEnable();
+		updateFrame();
 	}
 	
 	private function handler_framesAndLabelsChange($evt:SSEvent):void
@@ -92,14 +99,20 @@ public class SSPreviewMediator extends Mediator
 	
 	private function handler_frameSizeChange($evt:Event):void
 	{
-		ssModel.resizeRect = v.getResizeRect();
+		updateFrame();
 	}
 	
 	private function updateFrame():void
 	{
 		v.frameLabel.text = ssModel.selectedFrmaeNum.toString();
 		setPlayEnable();
-		v.saveResizeBTN.enabled = !ssModel.playing && v.resizeOriginCB.selected && v.playBTN.enabled;
+		setSaveEnable();
+		ssModel.resizeRect = v.getResizeRect();
+	}
+	
+	private function setSaveEnable():void
+	{
+		v.saveResizeBTN.enabled = !ssModel.playing && v.resizeOriginCB.selected && ssModel.selectedFrameIndices;
 	}
 	
 	private function setPlayEnable():void

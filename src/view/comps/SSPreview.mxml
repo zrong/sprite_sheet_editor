@@ -5,6 +5,7 @@
 				   xmlns:comps="view.comps.*"
 				   backgroundColor="0x696969"
 				   borderColor="0x696969"
+				   minWidth="320"
 				   title="位图动画预览">
 	<fx:Declarations>
 		<s:RadioButtonGroup id="frameCropDisplayRBG" />
@@ -29,7 +30,7 @@
 		<s:CheckBox id="resizeOriginCB" label="调整帧原始大小(x,y,w,h)" enabled="{!ani.scaleContent}"
 					toolTip="选择后，会缩小帧的原始大小。但你依然可以在缩小后的原始大小基础上再次执行“修剪空白”的优化。"/>
 		<s:Spacer width="100%" height="20"/>
-		<s:Button id="saveResizeBTN" label="保存调整"
+		<s:Button id="saveResizeBTN" label="保存调整" enabled="false"
 				  toolTip="根据调整的原始大小重新计算帧大小，并立即执行优化。&#13;此操作会直接修改原始帧的大小。"/>
 	</s:HGroup>
 	<s:HGroup width="100%" enabled="{resizeOriginCB.selected}">

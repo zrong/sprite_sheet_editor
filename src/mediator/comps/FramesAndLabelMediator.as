@@ -354,15 +354,15 @@ public class FramesAndLabelMediator extends Mediator
 		if(!_framesNotInLabels.sort)
 		{
 			_framesNotInLabels.sort = new Sort();
-			_framesNotInLabels.sort.fields = [new SortField('frameNum', false, true)];
+			_framesNotInLabels.sort.fields = [new SortField('frameNum', false, false)];
 		}
 		_framesNotInLabels.refresh();
-		v.frameAC = new ArrayCollection();
+		v.newFrameAC();
 		//若选择的是label，就显示该Label中的所有帧
 		if(v.labelCB.selected && v.labelList.selectedIndex != -1)
 		{
 			var __framesInLabel:ArrayList = LabelVO(v.labelList.selectedItem).frames;
-			v.frameAC.addAll(__framesInLabel);
+			v.addFrameAll(__framesInLabel);
 			var __indices:Vector.<int> = new Vector.<int>;
 			for (var j:int = 0; j < __framesInLabel.length; j++) 
 			{
@@ -373,7 +373,7 @@ public class FramesAndLabelMediator extends Mediator
 			//否则显示不在Label中的所有帧
 		else
 		{
-			v.frameAC.addAll(_framesNotInLabels);
+			v.addFrameAll(_framesNotInLabels);
 			v.frameDG.selectedIndex = -1;
 		}
 	}
@@ -476,7 +476,7 @@ public class FramesAndLabelMediator extends Mediator
 		}
 		while(v.selectedFrameIndices.length>0)
 		{
-			var __delItem:FrameVO = v.frameAC.getItemAt(v.selectedFrameIndices.pop()) as FrameVO;
+			var __delItem:FrameVO = v.getFrameItemAt(v.selectedFrameIndices.pop());
 			ssModel.originalSheet.removeFrameAt(__delItem.frameNum);
 			ssModel.adjustedSheet.removeFrameAt(__delItem.frameNum);
 			trace('删除Sheet与adjustedSheet中的帧，删除后：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
@@ -556,7 +556,7 @@ public class FramesAndLabelMediator extends Mediator
 	protected function handler_saveResizeBTNclick($evt:SSEvent):void
 	{
 		//修改选择的帧的初始大小，同时直接重新绘制该帧的bitmapData
-		var $rect:Rectangle = ssModel.resizeRect;
+		var __rect:Rectangle = ssModel.resizeRect;
 		if(v.selectedFrameIndices)
 		{
 			var __frame:FrameVO= null;
@@ -565,22 +565,22 @@ public class FramesAndLabelMediator extends Mediator
 			var __frameNum:int = 0;
 			for (var i:int = 0; i < v.selectedFrameIndices.length; i++) 
 			{
-				__bmd = new BitmapData($rect.width, $rect.height, true, 0x00000000);
-				__frame = v.frameAC.getItemAt(v.selectedFrameIndices[i]) as FrameVO;
+				__bmd = new BitmapData(__rect.width, __rect.height, true, 0x00000000);
+				__frame = v.getFrameItemAt(v.selectedFrameIndices[i]);
 				//设置frameVO中保存的两个rect的值，frameVO中的两个rect是从adjustedSheet获取而来，而且使用的是引用，因此同时修改了Global中的adjustedSheet的值
-				__frame.frameRect.width = $rect.width;
-				__frame.frameRect.height = $rect.height;
+				__frame.frameRect.width = __rect.width;
+				__frame.frameRect.height = __rect.height;
 				__frame.originRect.x = 0;
 				__frame.originRect.y = 0;
-				__frame.originRect.width = $rect.width;
-				__frame.originRect.height = $rect.height;
+				__frame.originRect.width = __rect.width;
+				__frame.originRect.height = __rect.height;
 				//根据调整的大小重新绘制当前帧的bmd
-				__bmd.copyPixels(ssModel.originalSheet.getBMDByIndex(__frame.frameNum), $rect, __point, null, null, true);
+				__bmd.copyPixels(ssModel.originalSheet.getBMDByIndex(__frame.frameNum), __rect, __point, null, null, true);
 				//设置adjustedSheet中的bmd，由于已经修改了两个rect的值，这里就不需要再重置rect
 				ssModel.addAdjustedFrameAt(__frame.frameNum, __bmd);
 				//设置sheet中的bmd，同时设置两个rect
 				ssModel.addOriginalFrameAt(__frame.frameNum,__bmd.clone(), __frame.frameRect.clone(), __frame.originRect.clone());
-				v.frameAC.refresh();
+				v.refreshFrame();
 			}
 		}
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));

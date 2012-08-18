@@ -8,7 +8,6 @@
 		[Event(name="previewLoadComplete", type="events.SSEvent")]
 	</fx:Metadata>
 	<fx:Declarations>
-		<s:RadioButtonGroup id="bgRBG" change="handler_bgSelect(event)"/>
 		<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
 							 visible="{showTransformTool&amp;&amp;!scaleContent}"/>
 	</fx:Declarations>
@@ -17,15 +16,16 @@
 			<s:BitmapImage id="chessboard" fillMode="repeat" width="{viewerWidth}" height="{viewerHeight}"/>
 		</s:Group>
 	</s:Scroller>
-	<s:HGroup right="0" bottom="0" verticalAlign="bottom">
-		<s:CheckBox id="showAllCB" change="handler_showAll(event)"/>
-		<s:RadioButton id="showChessRB" selected="true" groupName="bgRBG"/>
-		<s:RadioButton id="showWhiteRB" groupName="bgRBG"/>
-		<s:RadioButton id="showBlackRB" groupName="bgRBG"/>
+	<s:HGroup width="100%" bottom="0" verticalAlign="bottom">
 		<s:Label text="{sourceInfo}"/>
+		<s:Spacer width="100%"/>
+		<s:CheckBox id="showAllCB" change="handler_showAll(event)"/>
+		<s:DropDownList id="BGDDL" change="handler_bgSelect(event)" width="90" requireSelection="true"/>
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
+		import mx.collections.ArrayList;
+		
 		import utils.Global;
 		
 		public static const LABEL_SHOW_ALL:String = '显示全部';
@@ -55,11 +55,6 @@
 		
 		[Bindable] public var sourceInfo:String;
 		
-		protected var _showAllCMI:ContextMenuItem;
-		protected var _showCheckBGCMI:ContextMenuItem;
-		protected var _showWhiteBGCMI:ContextMenuItem;
-		protected var _showBlackBGCMI:ContextMenuItem;
-		
 		override protected function createChildren():void
 		{
 			super.createChildren();
@@ -70,9 +65,8 @@
 		{
 			chessboard.source = Global.BMP_CHESS;
 			showAllCB.label = LABEL_SHOW_ALL;
-			showWhiteRB.label = LABEL_WHITE;
-			showBlackRB.label = LABEL_BLACK;
-			showChessRB.label = LABEL_CHESS;
+			var __bgAL:ArrayList = new ArrayList([LABEL_CHESS, LABEL_BLACK,LABEL_WHITE]);
+			BGDDL.dataProvider = __bgAL;
 		}
 		
 		protected function get bg():*
@@ -88,7 +82,7 @@
 		
 		private function handler_bgSelect($evt:Event):void
 		{
-			var __bgName:String = bgRBG.selectedValue as String;
+			var __bgName:String = BGDDL.selectedItem as String;
 			var __source:* = null;
 			if(__bgName == LABEL_CHESS)
 				__source = Global.BMP_CHESS;

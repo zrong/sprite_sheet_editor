@@ -16,7 +16,7 @@
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
-	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧:'+frameAC.length):'所有可用帧:'+frameAC.length}"/>
+	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧:'+_frameAC.length):'所有可用帧:'+_frameAC.length}"/>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
 		<s:Button id="addSSBTN" width="100%" label="增加SpriteSheet"
 				  toolTip="添加一个或多个SpriteSheet到当前Sheet的末尾。规则如下：&#13;1.所有帧会增加到当前Sheet的末尾；&#13;2.若label重名，则被导入Sheet中的label不导入，但依然会导入该lable的所有帧；&#13;3.若name重名，则被导入的Sheet中该name对应的重名帧不会被导入；&#13;4.若原始Sheet中包含name，但被导入Sheet中不含name，则会自动为被导入的Sheet中的所有帧命名。"/>
@@ -28,12 +28,12 @@
 				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
 		<s:Button id="prevBTN" label="上帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
 				  click="prevFrame();"/>
-		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameAC.length-1}" 
+		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;_frameAC.length-1}" 
 				  click="nextFrame();"/>
-		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameAC&amp;&amp;frameAC.length>0}"
+		<s:Button id="allBTN" width="100%" label="全选" enabled="{_frameAC&amp;&amp;_frameAC.length>0}"
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
-	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{frameAC}"
+	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{_frameAC}"
 				selectionMode="multipleRows" sortableColumns="false">
 		<s:columns>
 			<s:ArrayList>
@@ -93,7 +93,7 @@
 		import vo.LabelListVO;
 		import vo.LabelVO;
 		
-		[Bindable] public var frameAC:ArrayCollection;
+		[Bindable] private var _frameAC:ArrayCollection;
 		[Bindable] public var playing:Boolean;	//是否正在播放动画。如果是播放动画状态，那么valueCommit的时候，就不更新selectedFrameIndices的值
 		
 		//frameDG中选择的索引
@@ -109,12 +109,37 @@
 			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 		}
 		
+		public function addFrameItemAt():void
+		{
+			
+		}
+		
+		public function newFrameAC():void
+		{
+			_frameAC = new ArrayCollection();
+		}
+		
+		public function refreshFrame():void
+		{
+			_frameAC.refresh();
+		}
+		
+		public function getFrameItemAt($index:int):FrameVO
+		{
+			return _frameAC.getItemAt($index) as FrameVO;
+		}
+		
+		public function addFrameAll($addList:IList):void
+		{
+			_frameAC.addAll($addList);
+		}
+		
 		public function destroy():void
 		{
 			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			trace('FrameAndLabels.destroy');
-			if(frameAC)	frameAC.removeAll();
-			frameAC = null;
+			if(_frameAC) _frameAC.removeAll();
+			_frameAC = null;
 			pause();
 		}
 		
@@ -157,20 +182,18 @@
 			}
 			else
 			{
-				if(frameDG.selectedIndex < frameAC.length-1)
+				if(frameDG.selectedIndex < _frameAC.length-1)
 					frameDG.selectedIndex ++;
 				else
-					frameDG.selectedIndex = frameAC.length-1;
+					frameDG.selectedIndex = _frameAC.length-1;
 			}
 			
 		}
 		
-
 		//----------------------------------------
 		// 内部方法
 		//----------------------------------------
 
-		
 		/**
 		 * 将帧信息中保存的大于$frameNum的帧的索引减1
 		 */
@@ -206,7 +229,7 @@
 		protected function handler_allBTNclick($event:MouseEvent):void
 		{
 			var __indics:Vector.<int> = new Vector.<int>;
-			for (var i:int = 0; i < frameAC.length; i++) 
+			for (var i:int = 0; i < _frameAC.length; i++) 
 			{
 				__indics[i] = i;
 			}
