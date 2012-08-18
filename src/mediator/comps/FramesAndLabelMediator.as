@@ -70,7 +70,7 @@ public class FramesAndLabelMediator extends Mediator
 	
 	override public function onRegister():void
 	{
-		eventMap.mapListener(v.delBTN,  MouseEvent.CLICK,handler_disOptimize);
+		eventMap.mapListener(v.delBTN,  MouseEvent.CLICK,handler_delBTNclick);
 		eventMap.mapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.mapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
@@ -81,13 +81,14 @@ public class FramesAndLabelMediator extends Mediator
 		
 		addContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
+		addContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
 		
 		init();
 	}
 	
 	override public function onRemove():void
 	{
-		eventMap.unmapListener(v.delBTN,  MouseEvent.CLICK,handler_disOptimize);
+		eventMap.unmapListener(v.delBTN,  MouseEvent.CLICK,handler_delBTNclick);
 		eventMap.unmapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.unmapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.unmapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
@@ -98,6 +99,7 @@ public class FramesAndLabelMediator extends Mediator
 		
 		removeContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
+		removeContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
 		
 		destroy();
 	}
@@ -205,7 +207,7 @@ public class FramesAndLabelMediator extends Mediator
 	{
 		//labelList.selectedIndex = labelAL.length - 1;
 		refreshFrameDG();
-		handler_disOptimize(null);
+		dispatchOptimize();
 	}
 	
 	/**
@@ -234,7 +236,12 @@ public class FramesAndLabelMediator extends Mediator
 	public function selectFrameChange():void
 	{
 		ssModel.selectedFrameIndices = v.selectedFrameIndices;
-		dispatch(new SSEvent(SSEvent.SELECTED_FRAMEINDICES_CHANGE));
+		var __selectedFrame:Vector.<FrameVO> = new Vector.<FrameVO>;
+		for (var i:int = 0; ssModel.selectedFrameIndices && i < ssModel.selectedFrameIndices.length>0; i++) 
+		{
+			__selectedFrame[i] = v.getFrameItemAt(ssModel.selectedFrameIndices[i]);
+		}
+		dispatch(new SSEvent(SSEvent.SELECTED_FRAMEINDICES_CHANGE, __selectedFrame));
 	}
 	
 	/**
@@ -506,7 +513,7 @@ public class FramesAndLabelMediator extends Mediator
 		//刷新frameDG的显示
 		refreshFrameDG();
 		//通知SSPanel已经删除了帧，SSPanel根据需求重新生成
-		handler_disOptimize(null);
+		dispatchOptimize();
 	}
 	
 	
@@ -548,7 +555,7 @@ public class FramesAndLabelMediator extends Mediator
 		_assets.load(__urls);
 	}
 	
-	private function handler_disOptimize($evt:Event):void
+	private function dispatchOptimize():void
 	{
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
 	}
@@ -585,6 +592,11 @@ public class FramesAndLabelMediator extends Mediator
 		}
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
 		//ani.destroy();
+	}
+	
+	private function handler_previewClick($evt:SSEvent):void
+	{
+		v.findFrameByPoint($evt.info as Point);
 	}
 }
 }

@@ -31,6 +31,7 @@ import utils.Funs;
 import view.comps.SSPreview;
 import view.panel.SSPanel;
 
+import vo.FrameVO;
 import vo.LabelListVO;
 import vo.SaveVO;
 
@@ -49,6 +50,7 @@ public class SSPanelMediator extends Mediator
 		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
 		addContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
+		addContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_selected_frameindices_change);
 		
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
 		eventMap.mapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
@@ -57,6 +59,7 @@ public class SSPanelMediator extends Mediator
 		eventMap.mapListener(v.optPanel, SSEvent.BUILD, handler_build);
 		eventMap.mapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
 		eventMap.mapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
+		eventMap.mapListener(v.sheetPreview, SSEvent.PREVIEW_CLICK, handler_sheetPreviewClick);
 		
 		enterState();
 	}
@@ -68,6 +71,7 @@ public class SSPanelMediator extends Mediator
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
 		removeContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
+		removeContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_selected_frameindices_change);
 		
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_ALL, handler_saveAll);
 		eventMap.unmapListener(v.saveSheet, SSEvent.SAVE_META, handler_saveMeta);
@@ -76,8 +80,14 @@ public class SSPanelMediator extends Mediator
 		eventMap.unmapListener(v.optPanel, SSEvent.BUILD, handler_build);
 		eventMap.unmapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
 		eventMap.unmapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
+		eventMap.unmapListener(v.sheetPreview, SSEvent.PREVIEW_CLICK, handler_sheetPreviewClick);
 		
 		exitState();
+	}
+	
+	private function handler_sheetPreviewClick($evt:SSEvent):void
+	{
+		dispatch($evt);
 	}
 	
 	protected function handler_nameCBChange($evt:Event):void
@@ -173,12 +183,31 @@ public class SSPanelMediator extends Mediator
 		optimizeSheet();
 	}
 	
+	//在预览更新的时候，绘制帧的范围
 	private function handler_previewShow($evt:SSEvent):void
 	{
-		var __rect:Rectangle = $evt.info.rect as Rectangle;
-		trace(__rect);
-		v.sheetPreview.clearCanva();
-		v.sheetPreview.drawRect(__rect.x, __rect.y, __rect.width, __rect.height);
+		//仅在播放的时候才绘制帧的范围
+		if(ssModel.playing)
+		{
+			var __rect:Rectangle = $evt.info.rect as Rectangle;
+			v.sheetPreview.clearCanva();
+			v.sheetPreview.drawRect(__rect.x, __rect.y, __rect.width, __rect.height);
+		}
+	}
+	
+	//在选择帧的时候，绘制选择的帧的范围
+	private function handler_selected_frameindices_change($evt:SSEvent):void
+	{
+		var __frames:Vector.<FrameVO> = $evt.info as Vector.<FrameVO>;
+		if(__frames && __frames.length>0)
+		{
+			v.sheetPreview.clearCanva();
+			for (var i:int = 0; i < __frames.length; i++) 
+			{
+				var __rect:Rectangle = __frames[i].frameRect;
+				v.sheetPreview.drawRect(__rect.x, __rect.y, __rect.width, __rect.height);
+			}
+		}
 	}
 	
 	/**

@@ -11,6 +11,9 @@
 					   ready="handler_loadComplete(event)"/>
 		<s:SpriteVisualElement id="pieceRangeCanva"/>
 	</fx:Declarations>
+	<fx:Metadata>
+		[Event(name="previewClick", type="events.SSEvent")]
+	</fx:Metadata>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -23,6 +26,7 @@
 			scrollerView.addElement(viewer);
 			scrollerView.addElement(pieceRangeCanva);
 			scrollerView.addElement(transf);
+			scrollerView.addEventListener(MouseEvent.CLICK, handler_viewClick);
 		}
 		
 		//----------------------------------------
@@ -92,6 +96,11 @@
 			sourceInfo = 'W:'+sourceWidth+',H:'+sourceHeight;
 			this.dispatchEvent(new SSEvent(SSEvent.PREVIEW_LOAD_COMPLETE));
 			//trace('BMPPreview:', viewerWidth, viewerHeight, sourceWidth, sourceHeight);
+		}
+		
+		private function handler_viewClick($evt:MouseEvent):void
+		{
+			dispatchEvent(new SSEvent(SSEvent.PREVIEW_CLICK, new Point(scrollerView.mouseX, scrollerView.mouseY)));
 		}
 	]]>
 	</fx:Script>

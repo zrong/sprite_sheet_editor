@@ -21,6 +21,7 @@ public class SSEvent extends Event
 	public static const SELECTED_FRAMEINDICES_CHANGE:String = 'selectedFrameIndicesChange';
 	public static const ADD_FRAME:String = 'addFrame';
 	
+	
 	public static const CAPTURE_DONE:String = 'captureDone';
 	
 	public static const SAVE_PIC:String = 'savePic';
@@ -34,6 +35,7 @@ public class SSEvent extends Event
 	public static const FILE_MANAGER_SELECTION_CHANGING:String = 'selectionChanging';
 	
 	public static const PREVIEW_LOAD_COMPLETE:String = 'previewLoadComplete';
+	public static const PREVIEW_CLICK:String = 'previewClick';
 	
 	/**
 	 * 控制SS的播放

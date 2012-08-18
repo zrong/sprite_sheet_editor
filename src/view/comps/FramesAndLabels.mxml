@@ -149,6 +149,27 @@
 				return FrameVO(frameDG.selectedItem).frameNum;
 			return -1;
 		}
+		
+		/**
+		 * 根据单击的位置找到帧列表中的对应帧
+		 */
+		public function findFrameByPoint($point:Point):void
+		{
+			if(playing) return;
+			if(_frameAC.length>0)
+			{
+				var __frame:FrameVO;
+				for (var i:int = 0; i < _frameAC.length; i++) 
+				{
+					__frame = getFrameItemAt(i);
+					if(__frame.frameRect.containsPoint($point))
+					{
+						frameDG.selectedIndex = i;
+						return;
+					}
+				}
+			}
+		}
 
 		
 		public function play():void
