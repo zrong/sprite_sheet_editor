@@ -140,7 +140,6 @@
 			trace('FrameAndLabels.destroy');
 			if(_frameAC) _frameAC.removeAll();
 			_frameAC = null;
-			pause();
 		}
 		
 		public function get selectedFrameIndex():int
@@ -172,16 +171,10 @@
 		}
 
 		
-		public function play():void
+		public function play($play:Boolean):void
 		{
-			playing = true;
-			_currentIndex = 0;
-		}
-		
-		public function pause():void
-		{
-			playing = false;
-			_currentIndex = -1;
+			playing = $play;
+			_currentIndex = playing ? 0 : -1;
 		}
 		
 		public function prevFrame():void

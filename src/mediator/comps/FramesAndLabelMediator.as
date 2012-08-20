@@ -82,6 +82,7 @@ public class FramesAndLabelMediator extends Mediator
 		addContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
 		addContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
+		addContextListener(SSEvent.OPTIMIZE_SHEET_DONE, handler_optimizeDone);
 		
 		init();
 	}
@@ -100,6 +101,7 @@ public class FramesAndLabelMediator extends Mediator
 		removeContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
 		removeContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
+		removeContextListener(SSEvent.OPTIMIZE_SHEET_DONE, handler_optimizeDone);
 		
 		destroy();
 	}
@@ -185,6 +187,13 @@ public class FramesAndLabelMediator extends Mediator
 		v.selectedFrameIndices = null;
 		selectFrameChange();
 		v.destroy();
+		play(false);
+	}
+	
+	private function play($play:Boolean):void
+	{
+		v.play($play);
+		ssModel.playing = v.playing;
 	}
 	
 	/**
@@ -219,7 +228,7 @@ public class FramesAndLabelMediator extends Mediator
 		__vo.hasLabel = v.labelCB.selected && _labelAL.length>0;
 		if(__vo.hasLabel)
 		{
-			__vo.labels = new Vector.<String>(_labelAL.length, true);
+			__vo.labels = new Vector.<String>(_labelAL.length);
 			__vo.labelsFrame = {};
 			var __labelItem:LabelVO = null;
 			for (var i:int = 0; i < _labelAL.length; i++) 
@@ -519,10 +528,7 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function handler_ssPreviewPlay($evt:SSEvent):void
 	{
-		if($evt.info)
-			v.play();
-		else
-			v.pause();
+		play($evt.info);
 	}
 	
 	private function handler_selectFile($evt:Event):void
@@ -590,13 +596,18 @@ public class FramesAndLabelMediator extends Mediator
 				v.refreshFrame();
 			}
 		}
-		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
+		dispatchOptimize();
 		//ani.destroy();
 	}
 	
 	private function handler_previewClick($evt:SSEvent):void
 	{
 		v.findFrameByPoint($evt.info as Point);
+	}
+	
+	private function handler_optimizeDone($evt:SSEvent):void
+	{
+		init();
 	}
 }
 }

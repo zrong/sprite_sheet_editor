@@ -160,7 +160,7 @@
 			if(fileM.fileList.length>0)
 			{
 				var __namesvo:NamesVO = new NamesVO();
-				var __names:Vector.<String> = new Vector.<String>(fileM.fileList.length, true);
+				var __names:Vector.<String> = new Vector.<String>(fileM.fileList.length);
 				var __namesIndex:Object = {};
 				var __dotIndex:int = 0;
 				var __name:String = '';

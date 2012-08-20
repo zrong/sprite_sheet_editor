@@ -29,7 +29,14 @@ public class SSEvent extends Event
 	public static const SAVE_ALL:String = 'saveAll';
 	public static const SAVE_SEQ:String = 'saveSeq';
 	
+	/**
+	 * 收到此事件的时候开始优化Sheet，一般在删除或者增加帧内容的时候执行
+	 */
 	public static const OPTIMIZE_SHEET:String = 'optimizeSheet';
+	/**
+	 * 优化完成之后发布此事件
+	 */
+	public static const OPTIMIZE_SHEET_DONE:String = 'optimizeSheetDone';
 	
 	public static const FILE_MANAGER_SELECTION_CHANGE:String = 'selectionChange';
 	public static const FILE_MANAGER_SELECTION_CHANGING:String = 'selectionChanging';

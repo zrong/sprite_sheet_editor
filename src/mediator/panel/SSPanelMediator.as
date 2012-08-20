@@ -213,7 +213,7 @@ public class SSPanelMediator extends Mediator
 	/**
 	 * 根据当前的选择优化Sheet，优化的信息会被写入adjustedSheet中
 	 */
-	public function optimizeSheet():void
+	private function optimizeSheet():void
 	{
 		v.sheetPreview.destroy();
 		if(ssModel.originalSheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
@@ -244,6 +244,8 @@ public class SSPanelMediator extends Mediator
 		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, v.optPanel.transparentCB.selected, v.optPanel.bgColorPicker.selectedColor);
 		ssModel.drawAdjustedSheet(__sheetBmd);
 		v.sheetPreview.source = ssModel.adjustedSheet.bitmapData;
+		//优化完毕，FramesAndLabel需要更新
+		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET_DONE));
 	}
 	
 	/**
