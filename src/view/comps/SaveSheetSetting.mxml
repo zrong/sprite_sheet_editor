@@ -64,9 +64,7 @@
 		
 		public function get sheetType():String
 		{
-			if(imageSetting.imageType == ExtendedNameType.PNG)
-				return SpriteSheetType.PNG_IMAGE;
-			return SpriteSheetType.JPG_IMAGE;
+			return imageSetting.spriteSheetType;
 		}
 		
 		protected function handler_savePicBTNClick(event:MouseEvent):void

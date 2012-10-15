@@ -430,8 +430,8 @@ public class SSPanelMediator extends Mediator
 		if(v.saveSheet.jsonRB.selected)
 			return JSON.stringify(ssModel.adjustedSheet.metadata.toObject(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected));
 		if(v.saveSheet.xmlRB.selected)
-			return ssModel.adjustedSheet.metadata.toXMLString(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected, File.lineEnding);
-		return ssModel.adjustedSheet.metadata.toTXT(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected, File.lineEnding);
+			return ssModel.adjustedSheet.metadata.toXMLString(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected);
+		return ssModel.adjustedSheet.metadata.toTXT(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected);
 	}
 }
 }
