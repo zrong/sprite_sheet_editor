@@ -73,7 +73,7 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.mapListener(v.delBTN,  MouseEvent.CLICK,handler_delBTNclick);
 		eventMap.mapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
-		eventMap.mapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
+		eventMap.mapListener(v.labelDDL, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
 		eventMap.mapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
 		eventMap.mapListener(v.addLabelBTN, MouseEvent.CLICK, handler_addLabelBTNclick);
 		eventMap.mapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
@@ -92,7 +92,7 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.unmapListener(v.delBTN,  MouseEvent.CLICK,handler_delBTNclick);
 		eventMap.unmapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.unmapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
-		eventMap.unmapListener(v.labelList, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
+		eventMap.unmapListener(v.labelDDL, FlexEvent.VALUE_COMMIT,  handler_labelListvalueComit);
 		eventMap.unmapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
 		eventMap.unmapListener(v.addLabelBTN, MouseEvent.CLICK, handler_addLabelBTNclick);
 		eventMap.unmapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
@@ -105,7 +105,6 @@ public class FramesAndLabelMediator extends Mediator
 		
 		destroy();
 	}
-	
 	
 	public function init():void
 	{
@@ -122,17 +121,16 @@ public class FramesAndLabelMediator extends Mediator
 			__frame.originRect = __meta.originalFrameRects[i];
 			_framesNotInLabels.addItem(__frame);
 		}
+		v.frameDG.dataProvider = _framesNotInLabels;
 		
 		_labelAL = new ArrayList();
-		v.labelList.dataProvider = _labelAL;
+		v.labelDDL.dataProvider = _labelAL;
 		v.labelCB.selected = __meta.hasLabel;
 		if(__meta.hasLabel)
 		{
 			var __label:String = '';
 			var __framesIndex:Array = null;
 			var __framesInLabel:ArrayList = null;
-			//建立Label后，要从frameAL列表中删除的帧的索引（因为这些帧被加入到labelAL中了）
-			var __toDelFrames:Array = [];
 			for (i = 0; i < __meta.labels.length; i++) 
 			{
 				__label = __meta.labels[i];
@@ -141,14 +139,9 @@ public class FramesAndLabelMediator extends Mediator
 				for (var k:int = 0; k < __framesIndex.length; k++) 
 				{
 					__framesInLabel.addItem(_framesNotInLabels.getItemAt(__framesIndex[k]));
-					__toDelFrames.push(__framesIndex[k]);
 				}
 				_labelAL.addItem(new LabelVO(__label, __framesInLabel));
 			}
-			//从最后一个要删除的帧开始删除（这样就不会影响到_framesNotInLabels的顺序，确保删除的成功）
-			__toDelFrames.sort(Array.NUMERIC);
-			while(__toDelFrames.length>0)
-				_framesNotInLabels.removeItemAt(__toDelFrames.pop());
 		}
 		//如果当前有不在Label中的帧，就显示它们
 		if(_framesNotInLabels.length>0)
@@ -373,23 +366,36 @@ public class FramesAndLabelMediator extends Mediator
 			_framesNotInLabels.sort.fields = [new SortField('frameNum', false, false)];
 		}
 		_framesNotInLabels.refresh();
-		v.newFrameAC();
 		//若选择的是label，就显示该Label中的所有帧
-		if(v.labelCB.selected && v.labelList.selectedIndex != -1)
+		if(v.labelCB.selected)
 		{
-			var __framesInLabel:ArrayList = LabelVO(v.labelList.selectedItem).frames;
-			v.addFrameAll(__framesInLabel);
-			var __indices:Vector.<int> = new Vector.<int>;
-			for (var j:int = 0; j < __framesInLabel.length; j++) 
+			//-1是没有选择，-3是出于输入Label状态
+			if(v.labelDDL.selectedIndex < 0)
 			{
-				__indices[j] = j;
+				v.frameInLabelDG.dataProvider = null;
 			}
-			v.frameDG.selectedIndices = __indices;
+			else
+			{
+				var __selectedLabel:* = v.labelDDL.selectedItem;
+				if(__selectedLabel is LabelVO)
+				{
+					var __framesInLabel:ArrayList = LabelVO(__selectedLabel).frames;
+					v.frameInLabelDG.dataProvider = __framesInLabel;
+					var __indices:Vector.<int> = new Vector.<int>;
+					for (var j:int = 0; j < __framesInLabel.length; j++) 
+					{
+						__indices[j] = j;
+					}
+					v.frameInLabelDG.selectedIndices = __indices;
+				}
+				else if(__selectedLabel is String)
+				{
+					trace(__selectedLabel);
+				}
+			}
 		}
-			//否则显示不在Label中的所有帧
 		else
 		{
-			v.addFrameAll(_framesNotInLabels);
 			v.frameDG.selectedIndex = -1;
 		}
 	}
@@ -424,23 +430,32 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function handler_renameBTNClick($evt:MouseEvent):void
 	{
-		var __item:Object = _labelAL.getItemAt(v.labelList.selectedIndex);
-		__item.name = v.labelInput.text;
-		_labelAL.setItemAt(__item, v.labelList.selectedIndex);
+		var __selectedIndex:int = v.labelDDL.selectedIndex;
+		var __labelName:String = v.labelDDL.selectedItem as String;
+		var __item:Object = _labelAL.getItemAt(v.labelDDL.selectedIndex);
+		__item.name = v.labelDDL.selectedItem;
+		_labelAL.setItemAt(__item, v.labelDDL.selectedIndex);
 	}
 	
 	protected function handler_addLabelBTNclick($event:MouseEvent):void
 	{
-		//trace(frameDG.selectedIndex, frameDG.selectedItem, frameDG.selectedItems);
+		trace(v.frameDG.selectedIndex, v.frameDG.selectedItem, v.frameDG.selectedItems, v.labelDDL.selectedItem);
+		var __selectedIndex:int = v.labelDDL.selectedIndex;
+		var __labelName:String = v.labelDDL.selectedItem as String
+		if(__selectedIndex != -3 || !__labelName)
+		{
+			Funs.alert("请输入帧名称");
+			return;
+		}
 		if(!v.frameDG.selectedItem)
 		{
-			Funs.alert('请先选择帧！');
+			Funs.alert('请先选择要加入Label的帧！');
 			v.addLabelBTN.enabled = false;
 			return;
 		}
 		for (var i:int = 0; i < _labelAL.length; i++) 
 		{
-			if(LabelVO(_labelAL.getItemAt(i)).name == v.labelInput.text)
+			if(LabelVO(_labelAL.getItemAt(i)).name == __labelName)
 			{
 				Funs.alert('Label不允许重复！');
 				return;
@@ -458,18 +473,15 @@ public class FramesAndLabelMediator extends Mediator
 			var __item:FrameVO = __framesInLabel.shift() as FrameVO;
 			__al.addItem(__item);
 			trace('向Label添加帧：', __item.frameNum);
-			//删除_framesNotInLabels中的帧，ArrayCollection没有removeItem，真杯具
-			var __itemIndex:int = _framesNotInLabels.getItemIndex(__item);
-			_framesNotInLabels.removeItemAt(__itemIndex);
 		}
-		_labelAL.addItem(new LabelVO(v.labelInput.text, __al));
-		v.labelList.selectedIndex = _labelAL.length - 1;
+		_labelAL.addItem(new LabelVO(v.labelDDL.selectedItem, __al));
+		v.labelDDL.selectedIndex = _labelAL.length - 1;
 		refreshFrameDG();
 	}
 	
 	protected function handler_removeLabelBTNclick($event:MouseEvent):void
 	{
-		var __item:LabelVO = v.labelList.selectedItem as LabelVO;
+		var __item:LabelVO = v.labelDDL.selectedItem as LabelVO;
 		for (var i:int = 0; i < __item.frames.length; i++) 
 		{
 			var __frame:FrameVO = __item.frames.getItemAt(i) as FrameVO;
@@ -497,10 +509,10 @@ public class FramesAndLabelMediator extends Mediator
 			ssModel.adjustedSheet.removeFrameAt(__delItem.frameNum);
 			trace('删除Sheet与adjustedSheet中的帧，删除后：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
 			//若选择了Label，在labelVO中删除
-			if(v.labelCB.selected && v.labelList.selectedIndex!=-1)
+			if(v.labelCB.selected && v.labelDDL.selectedIndex!=-1)
 			{
 				//删除labelVO中的当前帧
-				LabelVO(v.labelList.selectedItem).frames.removeItem(__delItem);
+				LabelVO(v.labelDDL.selectedItem).frames.removeItem(__delItem);
 			}
 				//如果没有选择label，就在_frameNotInLabels中删除
 			else

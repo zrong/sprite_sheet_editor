@@ -12,8 +12,13 @@
 			<s:Button id="openPreviewBTN" label="打开预览窗口" height="40"/>
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
 			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
-			<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969"/>
-			<comps:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969"/>
+			<s:VGroup gap="0" width="100%">
+				<s:TabBar width="100%" dataProvider="{vs}"/>
+				<mx:ViewStack id="vs" creationPolicy="all" width="100%">
+					<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969" label="保存SpriteSheet"/>
+					<comps:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969" label="保存序列"/>
+				</mx:ViewStack>
+			</s:VGroup>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>

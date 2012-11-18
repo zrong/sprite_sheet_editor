@@ -16,7 +16,7 @@
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
-	<s:Label id="frameLabel" fontWeight="bold" text="{labelList.selectedItem?('LABEL('+labelList.selectedItem.name+')中的帧:'+_frameAC.length):'所有可用帧:'+_frameAC.length}"/>
+	<s:Label id="frameLabel" fontWeight="bold" text="{frameDG.dataProvider?'所有可用帧:'+frameDG.dataProvider.length:'没有可用的帧'}"/>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
 		<s:Button id="addSSBTN" width="100%" label="增加SpriteSheet"
 				  toolTip="添加一个或多个SpriteSheet到当前Sheet的末尾。规则如下：&#13;1.所有帧会增加到当前Sheet的末尾；&#13;2.若label重名，则被导入Sheet中的label不导入，但依然会导入该lable的所有帧；&#13;3.若name重名，则被导入的Sheet中该name对应的重名帧不会被导入；&#13;4.若原始Sheet中包含name，但被导入Sheet中不含name，则会自动为被导入的Sheet中的所有帧命名。"/>
@@ -28,12 +28,12 @@
 				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
 		<s:Button id="prevBTN" label="上帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
 				  click="prevFrame();"/>
-		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;_frameAC.length-1}" 
+		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameDG.dataProvider.length-1}" 
 				  click="nextFrame();"/>
-		<s:Button id="allBTN" width="100%" label="全选" enabled="{_frameAC&amp;&amp;_frameAC.length>0}"
+		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameDG.dataProvider&amp;&amp;frameDG.dataProvider.length>0}"
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
-	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{_frameAC}"
+	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{frameDG.dataProvider}"
 				selectionMode="multipleRows" sortableColumns="false">
 		<s:columns>
 			<s:ArrayList>
@@ -46,22 +46,32 @@
 	</s:DataGrid>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:CheckBox id="labelCB" label="使用Label"/>
-		<s:TextInput id="labelInput" includeIn="frameAndLabel" width="100%"
-					 text="{labelList.selectedItem.label}"
-					 toolTip="label格式：英文+数字"/>
+		<s:DropDownList id="labelDDL" includeIn="frameAndLabel" width="100%" labelField="name" itemCreationPolicy="immediate" requireSelection="true"
+						enabled="{labelDDL.dataProvider &amp;&amp;labelDDL.dataProvider.length>0}"/>
+		<s:TextInput id="labelInput" prompt="输入Label" toolTip="label格式：英文+数字" width="100" />
 	</s:HGroup>
+	<s:Label id="labelLabel" fontWeight="bold" text="{labelDDL.selectedItem?('LABEL('+labelDDL.selectedItem.name+')中的帧:'+frameInLabelDG.dataProvider.length):'没有选择Label'}"/>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
 		<s:Button id="addLabelBTN" width="100%" label="加Label"
 				  enabled="{frameDG.selectedItem &amp;&amp; labelInput.text}" toolTip="添加一个Label到列表中"/>
 		<s:Button id="removeLabelBTN" width="100%" label="删Label"
-				  enabled="{labelList.selectedItem}"
+				  enabled="{labelDDL.selectedItem}"
 				  toolTip="删除选中的Label"/>
 		<s:Button id="renameBTN" width="100%" label="改Label" 
-				  enabled="{labelInput.text&amp;&amp;labelList.selectedItem}" toolTip="修改Label名称"/>
-		<s:Button id="cancelBTN" width="100%" label="取消选择" enabled="{labelList.selectedItem}" 
-				  click="labelList.selectedIndex=-1;"/>
+				  enabled="{labelDDL.selectedItem}" toolTip="修改Label名称"/>
+		<s:Button id="cancelBTN" width="100%" label="取消选择" enabled="{labelDDL.selectedItem}" 
+				  click="labelDDL.selectedIndex=-1;"/>
 	</s:HGroup>
-	<s:List id="labelList" width="100%" height="100%" minHeight="150" labelField="name" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
+	<s:DataGrid id="frameInLabelDG" width="100%" height="100%" minHeight="150" sortableColumns="false" includeIn="frameAndLabel">
+		<s:columns>
+			<s:ArrayList>
+				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
+				<s:GridColumn headerText="名称" width="60" dataField="frameName"/>
+				<s:GridColumn headerText="修剪尺寸" dataField="frameSize"/>
+				<s:GridColumn headerText="原始尺寸" dataField="originSize"/>
+			</s:ArrayList>
+		</s:columns>
+	</s:DataGrid>
 	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
@@ -93,7 +103,6 @@
 		import vo.LabelListVO;
 		import vo.LabelVO;
 		
-		[Bindable] private var _frameAC:ArrayCollection;
 		[Bindable] public var playing:Boolean;	//是否正在播放动画。如果是播放动画状态，那么valueCommit的时候，就不更新selectedFrameIndices的值
 		
 		//frameDG中选择的索引
@@ -109,37 +118,23 @@
 			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 		}
 		
-		public function addFrameItemAt():void
-		{
-			
-		}
-		
-		public function newFrameAC():void
-		{
-			_frameAC = new ArrayCollection();
-		}
-		
 		public function refreshFrame():void
 		{
-			_frameAC.refresh();
+			ArrayCollection(frameDG.dataProvider).refresh();
 		}
 		
 		public function getFrameItemAt($index:int):FrameVO
 		{
-			return _frameAC.getItemAt($index) as FrameVO;
+			return frameDG.dataProvider.getItemAt($index) as FrameVO;
 		}
 		
-		public function addFrameAll($addList:IList):void
-		{
-			_frameAC.addAll($addList);
-		}
 		
 		public function destroy():void
 		{
 			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			trace('FrameAndLabels.destroy');
-			if(_frameAC) _frameAC.removeAll();
-			_frameAC = null;
+			if(frameDG.dataProvider) frameDG.dataProvider.removeAll();
+			frameDG.dataProvider = null;
 		}
 		
 		public function get selectedFrameIndex():int
@@ -155,10 +150,10 @@
 		public function findFrameByPoint($point:Point):void
 		{
 			if(playing) return;
-			if(_frameAC.length>0)
+			if(frameDG.dataProvider && frameDG.dataProvider.length>0)
 			{
 				var __frame:FrameVO;
-				for (var i:int = 0; i < _frameAC.length; i++) 
+				for (var i:int = 0; i < frameDG.dataProvider.length; i++) 
 				{
 					__frame = getFrameItemAt(i);
 					if(__frame.frameRect.containsPoint($point))
@@ -196,10 +191,10 @@
 			}
 			else
 			{
-				if(frameDG.selectedIndex < _frameAC.length-1)
+				if(frameDG.selectedIndex < frameDG.dataProvider.length-1)
 					frameDG.selectedIndex ++;
 				else
-					frameDG.selectedIndex = _frameAC.length-1;
+					frameDG.selectedIndex = frameDG.dataProvider.length-1;
 			}
 			
 		}
@@ -243,7 +238,7 @@
 		protected function handler_allBTNclick($event:MouseEvent):void
 		{
 			var __indics:Vector.<int> = new Vector.<int>;
-			for (var i:int = 0; i < _frameAC.length; i++) 
+			for (var i:int = 0; i < frameDG.dataProvider.length; i++) 
 			{
 				__indics[i] = i;
 			}
