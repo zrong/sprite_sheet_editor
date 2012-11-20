@@ -34,7 +34,7 @@
 				  click="handler_allBTNclick(event)"/>
 	</s:HGroup>
 	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{frameDG.dataProvider}"
-				selectionMode="multipleRows" sortableColumns="false">
+				selectionMode="multipleRows" sortableColumns="false" gridMouseDown="handler_frameDGgridMouseDown(event)" gridMouseDrag="handler_frameDGgridMouseDrag(event)">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
@@ -58,9 +58,7 @@
 				  enabled="{labelDDL.selectedItem}"
 				  toolTip="删除选中的Label"/>
 		<s:Button id="renameBTN" width="100%" label="改Label" 
-				  enabled="{labelDDL.selectedItem}" toolTip="修改Label名称"/>
-		<s:Button id="cancelBTN" width="100%" label="取消选择" enabled="{labelDDL.selectedItem}" 
-				  click="labelDDL.selectedIndex=-1;"/>
+				  enabled="{labelDDL.selectedItem &amp;&amp; labelInput.text &amp;&amp; labelInput.text != labelDDL.selectedItem.name}" toolTip="修改Label名称"/>
 	</s:HGroup>
 	<s:DataGrid id="frameInLabelDG" width="100%" height="100%" minHeight="150" sortableColumns="false" includeIn="frameAndLabel">
 		<s:columns>
@@ -82,7 +80,11 @@
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
+		import mx.core.DragSource;
+		import mx.events.DragEvent;
 		import mx.events.FlexEvent;
+		import mx.managers.DragManager;
+		import mx.skins.halo.DefaultDragImage;
 		
 		import org.zengrong.assets.Assets;
 		import org.zengrong.assets.AssetsEvent;
@@ -94,6 +96,7 @@
 		
 		import spark.collections.Sort;
 		import spark.collections.SortField;
+		import spark.events.GridEvent;
 		import spark.events.IndexChangeEvent;
 		
 		import utils.Funs;
@@ -291,6 +294,23 @@
 			if(this.height < this.contentGroup.height) this.height = this.contentGroup.height;
 			this.removeEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
 		}
+		
+		protected function handler_frameDGgridMouseDown($evt:GridEvent):void
+		{
+			trace($evt.type);
+			var __ds:DragSource = new DragSource();
+			var __img:DefaultDragImage = new DefaultDragImage();
+			__img.graphics.beginFill(0x333333, .3);
+			__img.graphics.drawRect(0,0,100, 20);
+			__img.graphics.endFill();
+			DragManager.doDrag($evt.grid, __ds, $evt, __img, frameDG.mouseX, frameDG.mouseY);
+		}
+		
+		protected function handler_frameDGgridMouseDrag($evt:GridEvent):void
+		{
+			trace($evt.type);
+		}
+		
 	]]>
 	</fx:Script>
 </s:BorderContainer>

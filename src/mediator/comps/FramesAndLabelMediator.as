@@ -369,7 +369,6 @@ public class FramesAndLabelMediator extends Mediator
 		//若选择的是label，就显示该Label中的所有帧
 		if(v.labelCB.selected)
 		{
-			//-1是没有选择，-3是出于输入Label状态
 			if(v.labelDDL.selectedIndex < 0)
 			{
 				v.frameInLabelDG.dataProvider = null;
@@ -377,21 +376,14 @@ public class FramesAndLabelMediator extends Mediator
 			else
 			{
 				var __selectedLabel:* = v.labelDDL.selectedItem;
-				if(__selectedLabel is LabelVO)
+				var __framesInLabel:ArrayList = LabelVO(__selectedLabel).frames;
+				v.frameInLabelDG.dataProvider = __framesInLabel;
+				var __indices:Vector.<int> = new Vector.<int>;
+				for (var j:int = 0; j < __framesInLabel.length; j++) 
 				{
-					var __framesInLabel:ArrayList = LabelVO(__selectedLabel).frames;
-					v.frameInLabelDG.dataProvider = __framesInLabel;
-					var __indices:Vector.<int> = new Vector.<int>;
-					for (var j:int = 0; j < __framesInLabel.length; j++) 
-					{
-						__indices[j] = j;
-					}
-					v.frameInLabelDG.selectedIndices = __indices;
+					__indices[j] = j;
 				}
-				else if(__selectedLabel is String)
-				{
-					trace(__selectedLabel);
-				}
+				v.frameInLabelDG.selectedIndices = __indices;
 			}
 		}
 		else
@@ -431,18 +423,16 @@ public class FramesAndLabelMediator extends Mediator
 	private function handler_renameBTNClick($evt:MouseEvent):void
 	{
 		var __selectedIndex:int = v.labelDDL.selectedIndex;
-		var __labelName:String = v.labelDDL.selectedItem as String;
 		var __item:Object = _labelAL.getItemAt(v.labelDDL.selectedIndex);
-		__item.name = v.labelDDL.selectedItem;
+		__item.name = v.labelInput.text;
 		_labelAL.setItemAt(__item, v.labelDDL.selectedIndex);
 	}
 	
 	protected function handler_addLabelBTNclick($event:MouseEvent):void
 	{
 		trace(v.frameDG.selectedIndex, v.frameDG.selectedItem, v.frameDG.selectedItems, v.labelDDL.selectedItem);
-		var __selectedIndex:int = v.labelDDL.selectedIndex;
-		var __labelName:String = v.labelDDL.selectedItem as String
-		if(__selectedIndex != -3 || !__labelName)
+		var __labelName:String = v.labelInput.text;
+		if(!__labelName)
 		{
 			Funs.alert("请输入帧名称");
 			return;
@@ -474,7 +464,7 @@ public class FramesAndLabelMediator extends Mediator
 			__al.addItem(__item);
 			trace('向Label添加帧：', __item.frameNum);
 		}
-		_labelAL.addItem(new LabelVO(v.labelDDL.selectedItem, __al));
+		_labelAL.addItem(new LabelVO(v.labelInput.text, __al));
 		v.labelDDL.selectedIndex = _labelAL.length - 1;
 		refreshFrameDG();
 	}
@@ -482,11 +472,6 @@ public class FramesAndLabelMediator extends Mediator
 	protected function handler_removeLabelBTNclick($event:MouseEvent):void
 	{
 		var __item:LabelVO = v.labelDDL.selectedItem as LabelVO;
-		for (var i:int = 0; i < __item.frames.length; i++) 
-		{
-			var __frame:FrameVO = __item.frames.getItemAt(i) as FrameVO;
-			_framesNotInLabels.addItem(__frame);
-		}
 		_labelAL.removeItem(__item);
 		refreshFrameDG();
 	}
