@@ -24,17 +24,15 @@
 				  toolTip="添加多个图像文件。每个图像作为一帧增加到当前Sheet的末尾。"/>
 	</s:HGroup>
 	<s:HGroup id="naviGRP" verticalAlign="middle" width="100%">
-		<s:Button id="delBTN" label="删帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing}" 
+		<s:Button id="delFrameBTN" label="删帧" width="100%" 
 				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
-		<s:Button id="prevBTN" label="上帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex>0}" 
-				  click="prevFrame();"/>
-		<s:Button id="nextBTN" label="下帧" width="100%" enabled="{frameDG.selectedItem&amp;&amp;!playing&amp;&amp;frameDG.selectedIndex&lt;frameDG.dataProvider.length-1}" 
-				  click="nextFrame();"/>
-		<s:Button id="allBTN" width="100%" label="全选" enabled="{frameDG.dataProvider&amp;&amp;frameDG.dataProvider.length>0}"
+		<s:Button id="selectAllFrameBTN" width="100%" label="全选" 
 				  click="handler_allBTNclick(event)"/>
+		<s:Button id="upFrameBTN" label="上移" toolTip="移动帧的位置，移动后帧的编号也会发生变化。" />
+		<s:Button id="downFrameBTN" label="下移" toolTip="移动帧的位置，移动后帧的编号也会发生变化。" />
 	</s:HGroup>
 	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{frameDG.dataProvider}"
-				selectionMode="multipleRows" sortableColumns="false" gridMouseDown="handler_frameDGgridMouseDown(event)" gridMouseDrag="handler_frameDGgridMouseDrag(event)">
+				selectionMode="multipleRows" sortableColumns="false" >
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
@@ -48,19 +46,25 @@
 		<s:CheckBox id="labelCB" label="使用Label"/>
 		<s:DropDownList id="labelDDL" includeIn="frameAndLabel" width="100%" labelField="name" itemCreationPolicy="immediate" requireSelection="true"
 						enabled="{labelDDL.dataProvider &amp;&amp;labelDDL.dataProvider.length>0}"/>
-		<s:TextInput id="labelInput" prompt="输入Label" toolTip="label格式：英文+数字" width="100" />
+		<s:TextInput id="labelNameInput" prompt="输入Label" toolTip="label格式：英文+数字" width="100" includeIn="frameAndLabel" />
 	</s:HGroup>
 	<s:Label id="labelLabel" fontWeight="bold" text="{labelDDL.selectedItem?('LABEL('+labelDDL.selectedItem.name+')中的帧:'+frameInLabelDG.dataProvider.length):'没有选择Label'}"/>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
 		<s:Button id="addLabelBTN" width="100%" label="加Label"
-				  enabled="{frameDG.selectedItem &amp;&amp; labelInput.text}" toolTip="添加一个Label到列表中"/>
+				  enabled="{frameDG.selectedItem &amp;&amp; labelNameInput.text}" toolTip="添加一个Label到列表中"/>
 		<s:Button id="removeLabelBTN" width="100%" label="删Label"
 				  enabled="{labelDDL.selectedItem}"
 				  toolTip="删除选中的Label"/>
 		<s:Button id="renameBTN" width="100%" label="改Label" 
-				  enabled="{labelDDL.selectedItem &amp;&amp; labelInput.text &amp;&amp; labelInput.text != labelDDL.selectedItem.name}" toolTip="修改Label名称"/>
+				  enabled="{labelDDL.selectedItem &amp;&amp; labelNameInput.text &amp;&amp; labelNameInput.text != labelDDL.selectedItem.name}" toolTip="修改Label名称"/>
 	</s:HGroup>
-	<s:DataGrid id="frameInLabelDG" width="100%" height="100%" minHeight="150" sortableColumns="false" includeIn="frameAndLabel">
+	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
+		<s:Button id="addFrameToLabelBTN" label="加入帧"/>
+		<s:Button id="removeFrameFromLabelBTN" label="移除帧"/>
+		<s:Button id="upFrameInLabelBTN" label="上移"/>
+		<s:Button id="downFrameInLabelBTN" label="下移"/>
+	</s:HGroup>
+	<s:DataGrid id="frameInLabelDG" width="100%" height="100%" minHeight="150" sortableColumns="false" includeIn="frameAndLabel" valueCommit="handler_frameInLabelDGvalueCommit(event)">
 		<s:columns>
 			<s:ArrayList>
 				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
@@ -81,6 +85,7 @@
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
 		import mx.core.DragSource;
+		import mx.core.SpriteAsset;
 		import mx.events.DragEvent;
 		import mx.events.FlexEvent;
 		import mx.managers.DragManager;
@@ -110,7 +115,7 @@
 		
 		//frameDG中选择的索引
 		[Bindable] public var selectedFrameIndices:Vector.<int>;
-
+		
 		/**
 		 * 当前正在播放的帧在selectedFrameIndices中的索引
 		 */
@@ -130,7 +135,6 @@
 		{
 			return frameDG.dataProvider.getItemAt($index) as FrameVO;
 		}
-		
 		
 		public function destroy():void
 		{
@@ -168,7 +172,6 @@
 			}
 		}
 
-		
 		public function play($play:Boolean):void
 		{
 			playing = $play;
@@ -202,27 +205,7 @@
 			
 		}
 		
-		//----------------------------------------
-		// 内部方法
-		//----------------------------------------
 
-		/**
-		 * 将帧信息中保存的大于$frameNum的帧的索引减1
-		 */
-		public function refreshFrameNum($list:IList, $frameNum:int):void
-		{
-			trace('refreshFrameNum:', $list.length, $frameNum);
-			//删除了1帧，就要将帧信息中保存的大于此帧索引的帧的索引减1
-			for (var i:int = 0; i < $list.length; i++) 
-			{
-				var __item:FrameVO = $list.getItemAt(i) as FrameVO;
-				if(__item.frameNum>$frameNum)
-				{
-					__item.frameNum --;
-					$list.setItemAt(__item, i);
-				}
-			}
-		}
 		
 		//----------------------------------------
 		// handler
@@ -280,11 +263,16 @@
 			this.minHeight = 640;
 			//更新容器实际高度
 			this.addEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
+			//更新一次frame管理按钮的状态
+			updateFrameBTNS();
+			//更新一次Label管理按钮的状态
+			handler_frameInLabelDGvalueCommit(null);
 		}
 		
 		protected function handler_frameEnterState($evt:FlexEvent):void
 		{
 			this.minHeight = 440;
+			updateFrameBTNS();
 		}
 		
 		protected function handler_updateComp($evt:FlexEvent):void
@@ -295,22 +283,56 @@
 			this.removeEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
 		}
 		
-		protected function handler_frameDGgridMouseDown($evt:GridEvent):void
+		/**
+		 * 更新与Frame相关的按钮状态
+		 */
+		public function updateFrameBTNS():void
 		{
-			trace($evt.type);
-			var __ds:DragSource = new DragSource();
-			var __img:DefaultDragImage = new DefaultDragImage();
-			__img.graphics.beginFill(0x333333, .3);
-			__img.graphics.drawRect(0,0,100, 20);
-			__img.graphics.endFill();
-			DragManager.doDrag($evt.grid, __ds, $evt, __img, frameDG.mouseX, frameDG.mouseY);
+			//选中的帧中包含顶部或者底部帧的时候，禁止上移或者下移
+			var __indices:Vector.<int> = frameDG.selectedIndices;
+			if(__indices.length > 0)
+			{
+				var __inTop:Boolean = false;
+				var __inBottom:Boolean = false;
+				for (var i:int = 0; i < __indices.length; i++) 
+				{
+					if(__indices[i] == 0)
+						__inTop = true;
+					if(__indices[i] == frameDG.dataProvider.length-1)
+						__inBottom = true;
+				}
+				upFrameBTN.enabled = !__inTop;
+				downFrameBTN.enabled = !__inBottom;
+				delFrameBTN.enabled = !playing;
+				//允许加入帧到label中
+				addFrameToLabelBTN.enabled = labelCB.selected && labelDDL.selectedItem;
+			}
+			else
+			{
+				upFrameBTN.enabled = false;
+				downFrameBTN.enabled = false;
+				delFrameBTN.enabled = false;
+				selectAllFrameBTN.enabled = false;
+			}
+			selectAllFrameBTN.enabled = frameDG.dataProviderLength > 0;
 		}
 		
-		protected function handler_frameDGgridMouseDrag($evt:GridEvent):void
+		protected function handler_frameInLabelDGvalueCommit($evt:FlexEvent):void
 		{
-			trace($evt.type);
+			var __index:int = frameInLabelDG.selectedIndex;
+			if(__index > -1)
+			{
+				removeFrameFromLabelBTN.enabled = true;
+				upFrameInLabelBTN.enabled = __index > 0;
+				downFrameInLabelBTN.enabled = __index < (frameInLabelDG.dataProvider.length - 1);
+			}
+			else
+			{
+				removeFrameFromLabelBTN.enabled = false;
+				upFrameInLabelBTN.enabled = false;
+				downFrameInLabelBTN.enabled = false;
+			}
 		}
-		
 	]]>
 	</fx:Script>
 </s:BorderContainer>
