@@ -7,9 +7,6 @@
 				   borderColor="0x696969"
 				   minWidth="320"
 				   title="位图动画预览">
-	<fx:Declarations>
-		<s:RadioButtonGroup id="frameCropDisplayRBG" />
-	</fx:Declarations>
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
@@ -17,14 +14,8 @@
 					   showTransformTool="{resizeOriginCB.selected}"/>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label id="frameLabel" width="50" />
-		<s:ToggleButton id="playBTN" label="{playBTN.selected?'暂停':'播放'}" width="100%"/>
-		<s:Spacer width="100%" height="20"/>
-		<s:RadioButton id="disCropRB" width="100%" label="修剪"
-					   groupName="frameCropDisplayRBG" selected="true" value="true"
-					   toolTip="显示修剪空白后的帧的宽高"/>
-		<s:RadioButton id="disOriginRB" width="100%" label="原始"
-					   groupName="frameCropDisplayRBG" value="false"
-					   toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
+		<s:Spacer width="100%"/>
+		<s:ToggleButton id="playBTN" label="{playBTN.selected?'暂停':'播放'}"/>
 	</s:HGroup>
 	<s:HGroup horizontalAlign="center" width="100%">
 		<s:CheckBox id="resizeOriginCB" label="调整帧原始大小(x,y,w,h)" enabled="{!ani.scaleContent}"

@@ -9,7 +9,6 @@
 				   xmlns:comps="view.comps.*">
 	<s:BorderContainer id="leftPanelBG" width="320" height="100%" borderColor="0x878787" backgroundAlpha="0" enabled="false">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" horizontalAlign="center">
-			<s:Button id="openPreviewBTN" label="打开预览窗口" height="40"/>
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
 			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
 			<s:VGroup gap="0" width="100%">

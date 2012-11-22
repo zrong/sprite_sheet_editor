@@ -2,6 +2,7 @@
 <!-- zengrong.net -->
 <!-- 创建者:zrong(zrongzrong@gmail.com) -->
 <!-- 创建时间：2011-8-17 -->
+<!-- 修改时间：2012-11-22 -->
 <!-- 管理帧和Label -->
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark"
@@ -9,6 +10,10 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="frameCropDisplayRBG" />
+		<s:RadioButtonGroup id="frameOrLabelRBG" />
+	</fx:Declarations>
 	<fx:Metadata>
 		[Event(name="frameAndLabelChange", type="events.SSEvent")]
 	</fx:Metadata>
@@ -16,6 +21,30 @@
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
+	
+	<!-- 预览窗口相关的界面 -->
+	<s:HGroup width="100%">
+		<s:Button id="openPreviewBTN" label="打开预览窗口" height="40" enabled="{frameDG.selectedItem}"/>
+		<s:Spacer width="100%" height="40"/>
+		<s:VGroup id="frameOrLabelGRP" width="80">
+			<s:RadioButton id="useFrameRB" width="100%" label="使用帧"
+						   groupName="frameOrLabelRBG" selected="true" value="true"
+						   toolTip="播放选中的帧的动画"/>
+			<s:RadioButton id="useLabelRB" width="100%" label="使用Label"
+						   groupName="frameOrLabelRBG" value="false"
+						   toolTip="播放选中的Label的动画"/>
+		</s:VGroup>
+		<s:VGroup width="100%" enabled="{frameDG.selectedItem}">
+			<s:RadioButton id="disCropRB" width="100%" label="修剪"
+						   groupName="frameCropDisplayRBG" selected="true" value="true"
+						   toolTip="显示修剪空白后的帧的宽高"/>
+			<s:RadioButton id="disOriginRB" width="100%" label="原始"
+						   groupName="frameCropDisplayRBG" value="false"
+						   toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
+		</s:VGroup>
+	</s:HGroup>
+	
+	<!-- 以下是帧相关的界面 -->
 	<s:Label id="frameLabel" fontWeight="bold" text="{frameDG.dataProvider?'所有可用帧:'+frameDG.dataProvider.length:'没有可用的帧'}"/>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
 		<s:Button id="addSSBTN" width="100%" label="增加SpriteSheet"
@@ -31,24 +60,16 @@
 		<s:Button id="upFrameBTN" label="上移" toolTip="移动帧的位置，移动后帧的编号也会发生变化。" />
 		<s:Button id="downFrameBTN" label="下移" toolTip="移动帧的位置，移动后帧的编号也会发生变化。" />
 	</s:HGroup>
-	<s:DataGrid id="frameDG" width="100%" height="100%" minHeight="200" dataProvider="{frameDG.dataProvider}"
-				selectionMode="multipleRows" sortableColumns="false" >
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
-				<s:GridColumn headerText="名称" width="60" dataField="frameName"/>
-				<s:GridColumn headerText="修剪尺寸" dataField="frameSize"/>
-				<s:GridColumn headerText="原始尺寸" dataField="originSize"/>
-			</s:ArrayList>
-		</s:columns>
-	</s:DataGrid>
+	<comps:FrameDataGrid id="frameDG"  minHeight="200" dataProvider="{frameDG.dataProvider}" selectionMode="multipleRows" />
+	
+	<!-- 下面是Label相关的界面 -->
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:CheckBox id="labelCB" label="使用Label"/>
 		<s:DropDownList id="labelDDL" includeIn="frameAndLabel" width="100%" labelField="name" itemCreationPolicy="immediate" requireSelection="true"
-						enabled="{labelDDL.dataProvider &amp;&amp;labelDDL.dataProvider.length>0}"/>
+						enabled="{labelDDL.dataProvider &amp;&amp;labelDDL.dataProvider.length>0}" />
 		<s:TextInput id="labelNameInput" prompt="输入Label" toolTip="label格式：英文+数字" width="100" includeIn="frameAndLabel" />
 	</s:HGroup>
-	<s:Label id="labelLabel" fontWeight="bold" text="{labelDDL.selectedItem?('LABEL('+labelDDL.selectedItem.name+')中的帧:'+frameInLabelDG.dataProvider.length):'没有选择Label'}"/>
+	<s:Label id="labelLabel" fontWeight="bold" text="{labelDDL.selectedItem?('LABEL('+labelDDL.selectedItem.name+')中的帧:'+frameInLabelDG.dataProvider.length):'没有选择Label'}" includeIn="frameAndLabel"/>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
 		<s:Button id="addLabelBTN" width="100%" label="加Label"
 				  enabled="{frameDG.selectedItem &amp;&amp; labelNameInput.text}" toolTip="添加一个Label到列表中"/>
@@ -59,21 +80,14 @@
 				  enabled="{labelDDL.selectedItem &amp;&amp; labelNameInput.text &amp;&amp; labelNameInput.text != labelDDL.selectedItem.name}" toolTip="修改Label名称"/>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
-		<s:Button id="addFrameToLabelBTN" label="加入帧"/>
-		<s:Button id="removeFrameFromLabelBTN" label="移除帧"/>
-		<s:Button id="upFrameInLabelBTN" label="上移"/>
-		<s:Button id="downFrameInLabelBTN" label="下移"/>
+		<s:Button id="addFrameToLabelBTN" label="加入帧" click="handler_addFrameToLabelBTNClick(event)"/>
+		<s:Button id="removeFrameFromLabelBTN" label="移除帧" click="handler_removeFrameFromLabelBTNClick(event)"/>
+		<s:Button id="upFrameInLabelBTN" label="上移" click="handler_upFrameInLabelBTNClick(event)"/>
+		<s:Button id="downFrameInLabelBTN" label="下移" click="handler_downFrameInLabelBTNClick(event)"/>
 	</s:HGroup>
-	<s:DataGrid id="frameInLabelDG" width="100%" height="100%" minHeight="150" sortableColumns="false" includeIn="frameAndLabel" valueCommit="handler_frameInLabelDGvalueCommit(event)">
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
-				<s:GridColumn headerText="名称" width="60" dataField="frameName"/>
-				<s:GridColumn headerText="修剪尺寸" dataField="frameSize"/>
-				<s:GridColumn headerText="原始尺寸" dataField="originSize"/>
-			</s:ArrayList>
-		</s:columns>
-	</s:DataGrid>
+	<comps:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
+	
+	<!-- 用于改变高度的按钮 -->
 	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
@@ -144,10 +158,24 @@
 			frameDG.dataProvider = null;
 		}
 		
+		public function get selectedLabelList():ArrayList
+		{
+			if(labelDDL.selectedItem)
+				return LabelVO(labelDDL.selectedItem).frames;
+			return null;
+		}
+		
 		public function get selectedFrameIndex():int
 		{
 			if(frameDG.selectedItem)
 				return FrameVO(frameDG.selectedItem).frameNum;
+			return -1;
+		}
+		
+		public function get selectedFrameInLabelIndex():int
+		{
+			if(frameInLabelDG.selectedItem)
+				return FrameVO(frameInLabelDG.selectedItem).frameNum;
 			return -1;
 		}
 		
@@ -178,16 +206,11 @@
 			_currentIndex = playing ? 0 : -1;
 		}
 		
-		public function prevFrame():void
-		{
-			if(frameDG.selectedIndex > 0)
-				frameDG.selectedIndex --;
-		}
-		
-		public function nextFrame():void
+		private function nextFrame():void
 		{
 			trace('nextFrame:', playing, frameDG.selectedIndex, selectedFrameIndices);
-			if(playing)
+	
+			if(frameOrLabelRBG.selectedValue)
 			{
 				frameDG.selectedIndex = selectedFrameIndices[_currentIndex];
 				if(_currentIndex == -1 || _currentIndex == selectedFrameIndices.length-1)
@@ -197,12 +220,13 @@
 			}
 			else
 			{
-				if(frameDG.selectedIndex < frameDG.dataProvider.length-1)
-					frameDG.selectedIndex ++;
+				frameInLabelDG.selectedIndex = _currentIndex;
+				if(_currentIndex == -1 || _currentIndex == frameInLabelDG.dataProvider.length-1)
+					_currentIndex = 0;
 				else
-					frameDG.selectedIndex = frameDG.dataProvider.length-1;
+					_currentIndex ++;
+				
 			}
-			
 		}
 		
 
@@ -266,13 +290,16 @@
 			//更新一次frame管理按钮的状态
 			updateFrameBTNS();
 			//更新一次Label管理按钮的状态
-			handler_frameInLabelDGvalueCommit(null);
+			updateFrameInLabelBTNS();
+			//更新一次帧的状态
+			updateFrameOrLabelGRP();
 		}
 		
 		protected function handler_frameEnterState($evt:FlexEvent):void
 		{
 			this.minHeight = 440;
 			updateFrameBTNS();
+			updateFrameOrLabelGRP();
 		}
 		
 		protected function handler_updateComp($evt:FlexEvent):void
@@ -281,6 +308,15 @@
 			//若不更新，可能会出现容器内容被遮挡的情况
 			if(this.height < this.contentGroup.height) this.height = this.contentGroup.height;
 			this.removeEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
+		}
+		
+		//有可用Label的时候，才允许选择Frame或者Label显示
+		public function updateFrameOrLabelGRP():void
+		{
+			var __enabled:Boolean = labelCB.selected && labelDDL.selectedItem;
+			 frameOrLabelGRP.enabled= __enabled;
+			 //不可选择的时候，返回默认选项
+			 if(!__enabled) frameOrLabelRBG.selectedValue = true;
 		}
 		
 		/**
@@ -312,12 +348,12 @@
 				upFrameBTN.enabled = false;
 				downFrameBTN.enabled = false;
 				delFrameBTN.enabled = false;
-				selectAllFrameBTN.enabled = false;
+				addFrameToLabelBTN.enabled = false;
 			}
 			selectAllFrameBTN.enabled = frameDG.dataProviderLength > 0;
 		}
 		
-		protected function handler_frameInLabelDGvalueCommit($evt:FlexEvent):void
+		public function updateFrameInLabelBTNS():void
 		{
 			var __index:int = frameInLabelDG.selectedIndex;
 			if(__index > -1)
@@ -332,6 +368,49 @@
 				upFrameInLabelBTN.enabled = false;
 				downFrameInLabelBTN.enabled = false;
 			}
+		}
+		
+		//向上移动label中的帧
+		private function handler_upFrameInLabelBTNClick($evt:MouseEvent):void
+		{
+			var __oldIndex:int = frameInLabelDG.selectedIndex;
+			var __framesInLabel:ArrayList = selectedLabelList;
+			__framesInLabel.addItemAt(__framesInLabel.removeItemAt(__oldIndex), __oldIndex-1);
+			refreshFrame();
+			frameInLabelDG.selectedIndex = __oldIndex -1;
+			updateFrameInLabelBTNS();
+		}
+		
+		//向下移动label中的帧
+		private function handler_downFrameInLabelBTNClick($evt:MouseEvent):void
+		{
+			var __oldIndex:int = frameInLabelDG.selectedIndex;
+			var __framesInLabel:ArrayList = selectedLabelList;
+			__framesInLabel.addItemAt(__framesInLabel.removeItemAt(__oldIndex), __oldIndex+1);
+			frameInLabelDG.selectedIndex = __oldIndex +1;
+			updateFrameInLabelBTNS();
+		}
+		
+		//从label中移除帧
+		private function handler_removeFrameFromLabelBTNClick($evt:MouseEvent):void
+		{
+			var __frames:ArrayList = selectedLabelList;
+			var __delItem:FrameVO = __frames.getItemAt(frameInLabelDG.selectedIndex) as FrameVO;
+			__frames.removeItem(__delItem);
+			updateFrameInLabelBTNS();
+		}
+		
+		//向label中添加帧
+		private function handler_addFrameToLabelBTNClick($evt:MouseEvent):void
+		{
+			var __frames:Vector.<Object> = frameDG.selectedItems;
+			var __framesInLabel:ArrayList = selectedLabelList;
+			for each(var __frame:FrameVO in __frames)
+			{
+				__framesInLabel.addItem(__frame);
+			}
+			updateFrameBTNS();
+			updateFrameInLabelBTNS();
 		}
 	]]>
 	</fx:Script>

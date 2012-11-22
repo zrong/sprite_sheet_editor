@@ -25,7 +25,6 @@ public class SSPreviewMediator extends Mediator
 	{
 		eventMap.mapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.mapListener(v.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
-		eventMap.mapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		eventMap.mapListener(v.resizeOriginCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
 		addViewListener(SSPreview.EVENT_FRAME_SIZE_CHANGE, handler_frameSizeChange);
 		
@@ -33,6 +32,7 @@ public class SSPreviewMediator extends Mediator
 		addContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
 		addContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_framesAndLabelsChange);
 		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
+		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSCropChange);
 		
 		v.init();
 		setPlayEnable();
@@ -42,7 +42,6 @@ public class SSPreviewMediator extends Mediator
 	{
 		eventMap.unmapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.unmapListener(v.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
-		eventMap.unmapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		eventMap.unmapListener(v.resizeOriginCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
 		removeViewListener(SSPreview.EVENT_FRAME_SIZE_CHANGE, handler_frameSizeChange);
 		
@@ -50,6 +49,7 @@ public class SSPreviewMediator extends Mediator
 		removeContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
 		removeContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_framesAndLabelsChange);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
+		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSCropChange);
 		
 		v.destroy();
 		handler_playBTNclick(null);
@@ -58,8 +58,6 @@ public class SSPreviewMediator extends Mediator
 	protected function handler_optimizeSheet($evt:SSEvent):void
 	{
 		v.destroyAni();
-		//显示优化过的Frame
-		v.frameCropDisplayRBG.selectedValue = true;
 	}
 	
 	protected function handler_playBTNclick($event:MouseEvent):void
@@ -78,12 +76,9 @@ public class SSPreviewMediator extends Mediator
 		v.showBmd($evt.info.bmd);
 	}
 	
-	private function handler_frameDisChange($evt:FlexEvent):void
+	private function handler_previewSSCropChange($evt:SSEvent):void
 	{
-		ssModel.displayCrop = v.frameCropDisplayRBG.selectedValue;
 		updateFrame();
-		v.frameLabel.text = ssModel.selectedFrmaeNum.toString();
-		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
 	}
 	
 	private function handler_resizeOriginCBChange($evt:FlexEvent):void
@@ -117,7 +112,14 @@ public class SSPreviewMediator extends Mediator
 	
 	private function setPlayEnable():void
 	{
-		v.playBTN.enabled = ssModel.selectedFrameIndices && ssModel.selectedFrameIndices.length>1;
+		if(ssModel.displayFrame)
+		{
+			v.playBTN.enabled = ssModel.selectedFrameIndices && ssModel.selectedFrameIndices.length>1;
+		}
+		else
+		{
+			v.playBTN.enabled = true;
+		}
 	}
 }
 }

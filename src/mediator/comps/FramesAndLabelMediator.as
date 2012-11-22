@@ -18,7 +18,9 @@ import mx.collections.ArrayList;
 import mx.collections.IList;
 import mx.collections.Sort;
 import mx.collections.SortField;
+import mx.events.CloseEvent;
 import mx.events.FlexEvent;
+import mx.managers.PopUpManager;
 
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.assets.Assets;
@@ -32,6 +34,7 @@ import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
 import utils.Funs;
 
 import view.comps.FramesAndLabels;
+import view.comps.SSPreview;
 
 import vo.FrameVO;
 import vo.LabelListVO;
@@ -76,6 +79,7 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		
 		eventMap.mapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
+		eventMap.mapListener(v.frameInLabelDG, FlexEvent.VALUE_COMMIT, handler_frameInLabelDGValueCommit);
 		eventMap.mapListener(v.upFrameBTN, MouseEvent.CLICK,  handler_upFrameBTNclick);
 		eventMap.mapListener(v.downFrameBTN, MouseEvent.CLICK,  handler_downFrameBTNclick);
 		
@@ -84,10 +88,9 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.mapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
 		eventMap.mapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
 		
-		eventMap.mapListener(v.addFrameToLabelBTN, MouseEvent.CLICK, handler_addFrameToLabelBTNClick);
-		eventMap.mapListener(v.removeFrameFromLabelBTN, MouseEvent.CLICK, handler_removeFrameFromLabelBTNClick);
-		eventMap.mapListener(v.upFrameInLabelBTN, MouseEvent.CLICK, handler_upFrameInLabelBTNClick);
-		eventMap.mapListener(v.downFrameInLabelBTN, MouseEvent.CLICK, handler_downFrameInLabelBTNClick);
+		eventMap.mapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
+		eventMap.mapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
+		eventMap.mapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameOrLabelChange);
 		
 		addContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
@@ -96,18 +99,27 @@ public class FramesAndLabelMediator extends Mediator
 		
 		init();
 	}
-
 	
+
 	override public function onRemove():void
 	{
 		eventMap.unmapListener(v.delFrameBTN,  MouseEvent.CLICK,handler_delFrameBTNclick);
 		eventMap.unmapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.unmapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
-		eventMap.unmapListener(v.labelDDL, FlexEvent.VALUE_COMMIT,  handler_labelDDLvalueComit);
+		
 		eventMap.unmapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
+		eventMap.unmapListener(v.frameInLabelDG, FlexEvent.VALUE_COMMIT, handler_frameInLabelDGValueCommit);
+		eventMap.unmapListener(v.upFrameBTN, MouseEvent.CLICK,  handler_upFrameBTNclick);
+		eventMap.unmapListener(v.downFrameBTN, MouseEvent.CLICK,  handler_downFrameBTNclick);
+		
+		eventMap.unmapListener(v.labelDDL, FlexEvent.VALUE_COMMIT,  handler_labelDDLvalueComit);
 		eventMap.unmapListener(v.addLabelBTN, MouseEvent.CLICK, handler_addLabelBTNclick);
 		eventMap.unmapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
 		eventMap.unmapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
+		
+		eventMap.unmapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
+		eventMap.unmapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
+		eventMap.unmapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameOrLabelChange);
 		
 		removeContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
@@ -184,6 +196,7 @@ public class FramesAndLabelMediator extends Mediator
 		selectFrameChange();
 		v.destroy();
 		play(false);
+		destroySSPreview();
 	}
 	
 	private function play($play:Boolean):void
@@ -399,9 +412,8 @@ public class FramesAndLabelMediator extends Mediator
 			selectFrameChange();
 		}
 		selectedFrameNum = v.frameDG.selectedIndex==-1? -1 : FrameVO(v.frameDG.selectedItem).frameNum;
-		trace('dgValueCommit:', selectedFrameNum);
+		trace('frameDGValueCommit:', selectedFrameNum);
 		
-		//Lable修改的时候更新动画预览
 		ssModel.selectedFrameIndex = v.selectedFrameIndex;
 		ssModel.selectedFrmaeNum = selectedFrameNum;
 		if(v.selectedFrameIndex > -1)
@@ -410,6 +422,21 @@ public class FramesAndLabelMediator extends Mediator
 		}
 		v.updateFrameBTNS();
 	}
+	
+	private function handler_frameInLabelDGValueCommit($evt:FlexEvent):void
+	{
+		selectedFrameNum = v.frameInLabelDG.selectedIndex==-1? -1 : FrameVO(v.frameInLabelDG.selectedItem).frameNum;
+		trace('frameInLabelDGValueCommit:', selectedFrameNum);
+		
+		ssModel.selectedFrameIndex = v.selectedFrameInLabelIndex;
+		ssModel.selectedFrmaeNum = selectedFrameNum;
+		if(v.selectedFrameIndex > -1)
+		{
+			dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+		}
+		v.updateFrameInLabelBTNS();
+	}
+	
 	
 	private function handler_renameBTNClick($evt:MouseEvent):void
 	{
@@ -565,6 +592,7 @@ public class FramesAndLabelMediator extends Mediator
 	private function dispatchOptimize():void
 	{
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
+		v.frameCropDisplayRBG.selectedValue = true;
 	}
 	
 	protected function handler_saveResizeBTNclick($evt:SSEvent):void
@@ -623,31 +651,46 @@ public class FramesAndLabelMediator extends Mediator
 		
 	}
 	
-	//向上移动label中的帧
-	private function handler_upFrameInLabelBTNClick($evt:MouseEvent):void
+	private function handler_frameDisChange($evt:FlexEvent):void
 	{
-		
+		ssModel.displayCrop = v.frameCropDisplayRBG.selectedValue;
+		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
 	}
 	
-	//向下移动label中的帧
-	private function handler_downFrameInLabelBTNClick($evt:MouseEvent):void
+	private function handler_frameOrLabelChange($evt:FlexEvent):void 
 	{
-		
+		ssModel.displayFrame = v.frameOrLabelRBG.selectedValue;
+		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
 	}
 	
-	//从label中移除帧
-	private function handler_removeFrameFromLabelBTNClick($evt:MouseEvent):void
+	private var _ssPreview:SSPreview;
+	
+	private function handler_openPreview($evt:MouseEvent):void
 	{
-		var __frames:ArrayList = LabelVO(v.labelDDL.selectedItem).frames;
-		var __delItem:FrameVO = __frames.getItemAt(v.frameInLabelDG.selectedIndex) as FrameVO;
-		__frames.removeItem(__delItem);
-		//v.frameInLabelDG.dataProvider = __frames;
+		if(_ssPreview) 
+		{
+			PopUpManager.addPopUp(_ssPreview, v.root);
+			PopUpManager.centerPopUp(_ssPreview);
+		}
+		else
+		{
+			_ssPreview = PopUpManager.createPopUp(v.root, SSPreview, false) as SSPreview;
+			PopUpManager.centerPopUp(_ssPreview);
+			_ssPreview.addEventListener(CloseEvent.CLOSE, destroySSPreview);
+		}
+		v.openPreviewBTN.enabled = false;
+		if(!mediatorMap.hasMediatorForView(_ssPreview)) mediatorMap.createMediator(_ssPreview);
 	}
 	
-	//向label中添加帧
-	private function handler_addFrameToLabelBTNClick($evt:MouseEvent):void
+	private function destroySSPreview($evt:CloseEvent=null):void
 	{
-		
+		if(_ssPreview)
+		{
+			PopUpManager.removePopUp(_ssPreview);
+			mediatorMap.removeMediatorByView(_ssPreview);
+			v.openPreviewBTN.enabled = true;
+		}
 	}
+	
 }
 }

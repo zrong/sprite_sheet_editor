@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:DataGrid xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+			xmlns:mx="library://ns.adobe.com/flex/mx" 
+			width="100%" height="100%"
+			sortableColumns="false" >
+	<s:columns>
+		<s:ArrayList>
+			<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
+			<s:GridColumn headerText="名称" width="60" dataField="frameName"/>
+			<s:GridColumn headerText="修剪尺寸" dataField="frameSize"/>
+			<s:GridColumn headerText="原始尺寸" dataField="originSize"/>
+		</s:ArrayList>
+	</s:columns>
+</s:DataGrid>

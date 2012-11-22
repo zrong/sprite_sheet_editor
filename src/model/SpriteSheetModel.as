@@ -114,6 +114,11 @@ public class SpriteSheetModel extends Actor
 	 */
 	public var displayCrop:Boolean;
 	
+	/**
+	 * 为true代表显示选择的Frame，false代表显示Label
+	 */
+	public var displayFrame:Boolean;
+	
 	public var resizeRect:Rectangle;
 	
 	/**

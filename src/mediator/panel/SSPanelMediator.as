@@ -42,8 +42,6 @@ public class SSPanelMediator extends Mediator
 	[Inject] public var stateModel:StateModel;
 	[Inject] public var ssModel:SpriteSheetModel;
 	
-	private var _ssPreview:SSPreview;
-	
 	override public function onRegister():void
 	{
 		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
@@ -58,7 +56,6 @@ public class SSPanelMediator extends Mediator
 		eventMap.mapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
 		eventMap.mapListener(v.optPanel, SSEvent.BUILD, handler_build);
 		eventMap.mapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
-		eventMap.mapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
 		eventMap.mapListener(v.sheetPreview, SSEvent.PREVIEW_CLICK, handler_sheetPreviewClick);
 		
 		enterState();
@@ -79,7 +76,6 @@ public class SSPanelMediator extends Mediator
 		eventMap.unmapListener(v.saveSeq, SSEvent.SAVE_SEQ, handler_saveSeq);
 		eventMap.unmapListener(v.optPanel, SSEvent.BUILD, handler_build);
 		eventMap.unmapListener(v.saveSheet.nameCB, Event.CHANGE, handler_nameCBChange);
-		eventMap.unmapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
 		eventMap.unmapListener(v.sheetPreview, SSEvent.PREVIEW_CLICK, handler_sheetPreviewClick);
 		
 		exitState();
@@ -127,32 +123,7 @@ public class SSPanelMediator extends Mediator
 		enterState();
 	}
 	
-	private function handler_openPreview($evt:MouseEvent):void
-	{
-		if(_ssPreview) 
-		{
-			PopUpManager.addPopUp(_ssPreview, v.root);
-			PopUpManager.centerPopUp(_ssPreview);
-		}
-		else
-		{
-			_ssPreview = PopUpManager.createPopUp(v.root, SSPreview, false) as SSPreview;
-			PopUpManager.centerPopUp(_ssPreview);
-			_ssPreview.addEventListener(CloseEvent.CLOSE, destroySSPreview);
-		}
-		v.openPreviewBTN.enabled = false;
-		if(!mediatorMap.hasMediatorForView(_ssPreview)) mediatorMap.createMediator(_ssPreview);
-	}
-	
-	private function destroySSPreview($evt:CloseEvent=null):void
-	{
-		if(_ssPreview)
-		{
-			PopUpManager.removePopUp(_ssPreview);
-			mediatorMap.removeMediatorByView(_ssPreview);
-			v.openPreviewBTN.enabled = true;
-		}
-	}
+
 	
 	private function enterState():void
 	{
@@ -169,7 +140,6 @@ public class SSPanelMediator extends Mediator
 		ssModel.destroySheet();
 		v.destroy();
 		
-		destroySSPreview();
 		mediatorMap.removeMediatorByView(v.framesAndLabels);
 	}
 	

@@ -28,6 +28,7 @@ public class PreviewSSChangeCmd extends Command
 	 */
 	private function updateFrameDisplay():void
 	{
+		if(ssModel.selectedFrameIndex<0) return;
 		var __frameBmd:BitmapData = null;
 		//根据选择显示原始的或者修剪过的Frame
 		if(ssModel.displayCrop)

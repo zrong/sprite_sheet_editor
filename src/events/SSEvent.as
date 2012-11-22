@@ -60,9 +60,10 @@ public class SSEvent extends Event
 	public static const PREVIEW_SS_SHOW:String = 'previewSSShow';
 	
 	/**
-	 * 要预览的帧信息变化
+	 * 要预览的帧的显示范围变化变化，剪切/原始切换
+	 * 要预览的帧的显示形式变化，帧/Label切换
 	 */
-	public static const PREVIEW_SS_CHANGE:String = 'previewSSDisChange';
+	public static const PREVIEW_SS_CHANGE:String = 'previewSSChange';
 	
 	/**
 	 * 建立或优化SpriteSheet
