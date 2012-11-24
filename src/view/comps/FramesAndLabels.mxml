@@ -125,19 +125,8 @@
 		import vo.LabelListVO;
 		import vo.LabelVO;
 		
-		[Bindable] public var playing:Boolean;	//是否正在播放动画。如果是播放动画状态，那么valueCommit的时候，就不更新selectedFrameIndices的值
-		
-		//frameDG中选择的索引
-		[Bindable] public var selectedFrameIndices:Vector.<int>;
-		
-		/**
-		 * 当前正在播放的帧在selectedFrameIndices中的索引
-		 */
-		private var _currentIndex:int=-1;
-		
 		public function init():void
 		{
-			this.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 		}
 		
 		public function refreshFrame():void
@@ -152,13 +141,14 @@
 		
 		public function destroy():void
 		{
-			this.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 			trace('FrameAndLabels.destroy');
 			if(frameDG.dataProvider) frameDG.dataProvider.removeAll();
 			frameDG.dataProvider = null;
+			if(frameInLabelDG.dataProvider) frameInLabelDG.dataProvider.removeAll();
+			frameInLabelDG.dataProvider = null;
 		}
 		
-		public function get selectedLabelList():ArrayList
+		public function get selectedLabelFrameList():ArrayList
 		{
 			if(labelDDL.selectedItem)
 				return LabelVO(labelDDL.selectedItem).frames;
@@ -179,12 +169,17 @@
 			return -1;
 		}
 		
+		public function get selectedLabel():LabelVO
+		{
+			if(labelDDL.selectedItem) return labelDDL.selectedItem as LabelVO;
+			return null;
+		}
+		
 		/**
 		 * 根据单击的位置找到帧列表中的对应帧
 		 */
 		public function findFrameByPoint($point:Point):void
 		{
-			if(playing) return;
 			if(frameDG.dataProvider && frameDG.dataProvider.length>0)
 			{
 				var __frame:FrameVO;
@@ -200,51 +195,9 @@
 			}
 		}
 
-		public function play($play:Boolean):void
-		{
-			playing = $play;
-			_currentIndex = playing ? 0 : -1;
-		}
-		
-		private function nextFrame():void
-		{
-			trace('nextFrame:', playing, frameDG.selectedIndex, selectedFrameIndices);
-	
-			if(frameOrLabelRBG.selectedValue)
-			{
-				frameDG.selectedIndex = selectedFrameIndices[_currentIndex];
-				if(_currentIndex == -1 || _currentIndex == selectedFrameIndices.length-1)
-					_currentIndex = 0;
-				else
-					_currentIndex ++;
-			}
-			else
-			{
-				frameInLabelDG.selectedIndex = _currentIndex;
-				if(_currentIndex == -1 || _currentIndex == frameInLabelDG.dataProvider.length-1)
-					_currentIndex = 0;
-				else
-					_currentIndex ++;
-				
-			}
-		}
-		
-
-		
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		/**
-		 * 实现帧的动画预览
-		 */
-		private function handler_enterFrame($evt:Event):void
-		{
-			if(playing)
-			{
-				nextFrame();
-			}
-		}
-		
 		protected function handler_allBTNclick($event:MouseEvent):void
 		{
 			var __indics:Vector.<int> = new Vector.<int>;
@@ -322,7 +275,7 @@
 		/**
 		 * 更新与Frame相关的按钮状态
 		 */
-		public function updateFrameBTNS():void
+		public function updateFrameBTNS($playing:Boolean=false):void
 		{
 			//选中的帧中包含顶部或者底部帧的时候，禁止上移或者下移
 			var __indices:Vector.<int> = frameDG.selectedIndices;
@@ -339,7 +292,7 @@
 				}
 				upFrameBTN.enabled = !__inTop;
 				downFrameBTN.enabled = !__inBottom;
-				delFrameBTN.enabled = !playing;
+				delFrameBTN.enabled = !$playing;
 				//允许加入帧到label中
 				addFrameToLabelBTN.enabled = labelCB.selected && labelDDL.selectedItem;
 			}
@@ -353,6 +306,9 @@
 			selectAllFrameBTN.enabled = frameDG.dataProviderLength > 0;
 		}
 		
+		/**
+		 * 更新与label相关按钮的状态
+		 */
 		public function updateFrameInLabelBTNS():void
 		{
 			var __index:int = frameInLabelDG.selectedIndex;
@@ -374,7 +330,7 @@
 		private function handler_upFrameInLabelBTNClick($evt:MouseEvent):void
 		{
 			var __oldIndex:int = frameInLabelDG.selectedIndex;
-			var __framesInLabel:ArrayList = selectedLabelList;
+			var __framesInLabel:ArrayList = selectedLabelFrameList;
 			__framesInLabel.addItemAt(__framesInLabel.removeItemAt(__oldIndex), __oldIndex-1);
 			refreshFrame();
 			frameInLabelDG.selectedIndex = __oldIndex -1;
@@ -385,7 +341,7 @@
 		private function handler_downFrameInLabelBTNClick($evt:MouseEvent):void
 		{
 			var __oldIndex:int = frameInLabelDG.selectedIndex;
-			var __framesInLabel:ArrayList = selectedLabelList;
+			var __framesInLabel:ArrayList = selectedLabelFrameList;
 			__framesInLabel.addItemAt(__framesInLabel.removeItemAt(__oldIndex), __oldIndex+1);
 			frameInLabelDG.selectedIndex = __oldIndex +1;
 			updateFrameInLabelBTNS();
@@ -394,7 +350,7 @@
 		//从label中移除帧
 		private function handler_removeFrameFromLabelBTNClick($evt:MouseEvent):void
 		{
-			var __frames:ArrayList = selectedLabelList;
+			var __frames:ArrayList = selectedLabelFrameList;
 			var __delItem:FrameVO = __frames.getItemAt(frameInLabelDG.selectedIndex) as FrameVO;
 			__frames.removeItem(__delItem);
 			updateFrameInLabelBTNS();
@@ -404,7 +360,7 @@
 		private function handler_addFrameToLabelBTNClick($evt:MouseEvent):void
 		{
 			var __frames:Vector.<Object> = frameDG.selectedItems;
-			var __framesInLabel:ArrayList = selectedLabelList;
+			var __framesInLabel:ArrayList = selectedLabelFrameList;
 			for each(var __frame:FrameVO in __frames)
 			{
 				__framesInLabel.addItem(__frame);

@@ -4,8 +4,6 @@ import events.SSEvent;
 
 import flash.display.BitmapData;
 import flash.events.Event;
-import flash.events.MouseEvent;
-import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
@@ -15,20 +13,15 @@ import model.FileProcessor;
 import model.SpriteSheetModel;
 import model.StateModel;
 
-import mx.events.CloseEvent;
-import mx.managers.PopUpManager;
-
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.display.spritesheet.MaskType;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.utils.BitmapUtil;
-import org.zengrong.utils.MathUtil;
 
 import type.StateType;
 
 import utils.Funs;
 
-import view.comps.SSPreview;
 import view.panel.SSPanel;
 
 import vo.FrameVO;

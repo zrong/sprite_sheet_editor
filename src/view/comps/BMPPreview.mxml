@@ -72,6 +72,7 @@
 			viewerWidth = 0;
 			viewerHeight = 0;
 			sourceInfo = '';
+			clearCanva();
 		}
 		
 		override protected function handler_loadComplete($event:Event):void

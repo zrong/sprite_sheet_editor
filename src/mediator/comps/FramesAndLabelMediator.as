@@ -70,7 +70,19 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private var _labelAL:ArrayList;
 	
+	//是否正在播放动画。如果是播放动画状态，那么valueCommit的时候，就不更新selectedFrameIndices的值
+	private var playing:Boolean;
+	
+	/**
+	 * 当前正在播放的帧在selectedFrameIndices中的索引
+	 */
+	private var _currentIndex:int=-1;
+	
 	public var selectedFrameNum:int;		//当前选择的帧编号
+	
+	//frameDG中选择的索引
+	public var selectedFrameIndices:Vector.<int>;
+	
 	
 	override public function onRegister():void
 	{
@@ -167,9 +179,9 @@ public class FramesAndLabelMediator extends Mediator
 				_labelAL.addItem(new LabelVO(__label, __framesInLabel));
 			}
 		}
-		v.selectedFrameIndices = new Vector.<int>;
+		selectedFrameIndices = new Vector.<int>;
 		refreshFrameDG();
-		v.frameDG.selectedIndices = v.selectedFrameIndices;
+		v.frameDG.selectedIndices = selectedFrameIndices;
 		selectFrameChange();
 		if(!_assets)
 		{
@@ -177,6 +189,7 @@ public class FramesAndLabelMediator extends Mediator
 			_assets.addEventListener(AssetsEvent.COMPLETE, handler_assetsComp);
 			_assets.addEventListener(AssetsEvent.PROGRESS, handler_assetsProgress);
 		}
+		v.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
 		v.init();
 	}
 	
@@ -192,17 +205,19 @@ public class FramesAndLabelMediator extends Mediator
 		}
 		if(_labelAL)	_labelAL.removeAll();
 		_labelAL = null;
-		v.selectedFrameIndices = null;
+		selectedFrameIndices = null;
 		selectFrameChange();
 		v.destroy();
 		play(false);
 		destroySSPreview();
+		v.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 	}
 	
 	private function play($play:Boolean):void
 	{
-		v.play($play);
-		ssModel.playing = v.playing;
+		playing = $play;
+		_currentIndex = playing ? 0 : -1;
+		ssModel.playing = playing;
 	}
 	
 	/**
@@ -253,7 +268,7 @@ public class FramesAndLabelMediator extends Mediator
 	
 	public function selectFrameChange():void
 	{
-		ssModel.selectedFrameIndices = v.selectedFrameIndices;
+		ssModel.selectedFrameIndices = selectedFrameIndices;
 		var __selectedFrames:Vector.<FrameVO> = new Vector.<FrameVO>;
 		for (var i:int = 0; ssModel.selectedFrameIndices && i < ssModel.selectedFrameIndices.length>0; i++) 
 		{
@@ -365,6 +380,38 @@ public class FramesAndLabelMediator extends Mediator
 	}
 	
 	/**
+	 * 实现帧的动画预览
+	 */
+	private function handler_enterFrame($evt:Event):void
+	{
+		if(playing)
+		{
+			nextFrame();
+		}
+	}
+	
+	private function nextFrame():void
+	{
+		trace('nextFrame:', playing, v.frameDG.selectedIndex, selectedFrameIndices);
+		if(v.frameOrLabelRBG.selectedValue)
+		{
+			v.frameDG.selectedIndex = selectedFrameIndices[_currentIndex];
+			if(_currentIndex == -1 || _currentIndex == selectedFrameIndices.length-1)
+				_currentIndex = 0;
+			else
+				_currentIndex ++;
+		}
+		else
+		{
+			v.frameInLabelDG.selectedIndex = _currentIndex;
+			if(_currentIndex == -1 || _currentIndex == v.frameInLabelDG.dataProvider.length-1)
+				_currentIndex = 0;
+			else
+				_currentIndex ++;
+		}
+	}
+	
+	/**
 	 * 根据选择情况刷新frameDG的显示
 	 */
 	public function refreshFrameDG():void
@@ -398,17 +445,19 @@ public class FramesAndLabelMediator extends Mediator
 	protected function handler_labelDDLvalueComit($event:FlexEvent):void
 	{
 		refreshFrameDG();
+		v.updateFrameOrLabelGRP();
+		previewSSChange();
 	}
 	
 	protected function handler_frameDGValueCommit($event:FlexEvent):void
 	{
 		//只有不在播放状态，才更新选择的帧列表
-		if(!v.playing)
+		if(!playing)
 		{
-			v.selectedFrameIndices = v.frameDG.selectedIndices.concat();
+			selectedFrameIndices = v.frameDG.selectedIndices.concat();
 			//获取到的Vector是降序的，倒转它
-			v.selectedFrameIndices.sort(Array.NUMERIC);
-			trace('更新indices:', v.selectedFrameIndices);
+			selectedFrameIndices.sort(Array.NUMERIC);
+			trace('更新indices:', selectedFrameIndices);
 			selectFrameChange();
 		}
 		selectedFrameNum = v.frameDG.selectedIndex==-1? -1 : FrameVO(v.frameDG.selectedItem).frameNum;
@@ -418,9 +467,9 @@ public class FramesAndLabelMediator extends Mediator
 		ssModel.selectedFrmaeNum = selectedFrameNum;
 		if(v.selectedFrameIndex > -1)
 		{
-			dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+			previewSSChange();
 		}
-		v.updateFrameBTNS();
+		v.updateFrameBTNS(playing);
 	}
 	
 	private function handler_frameInLabelDGValueCommit($evt:FlexEvent):void
@@ -432,11 +481,17 @@ public class FramesAndLabelMediator extends Mediator
 		ssModel.selectedFrmaeNum = selectedFrameNum;
 		if(v.selectedFrameIndex > -1)
 		{
-			dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+			previewSSChange();
 		}
 		v.updateFrameInLabelBTNS();
 	}
 	
+	
+	private function previewSSChange():void
+	{
+		ssModel.displayLabel = (v.selectedLabel) ? v.selectedLabel.name: "";
+		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+	}
 	
 	private function handler_renameBTNClick($evt:MouseEvent):void
 	{
@@ -503,9 +558,9 @@ public class FramesAndLabelMediator extends Mediator
 			v.delFrameBTN.enabled = false;
 			return;
 		}
-		while(v.selectedFrameIndices.length>0)
+		while(selectedFrameIndices.length>0)
 		{
-			var __delItem:FrameVO = v.getFrameItemAt(v.selectedFrameIndices.pop());
+			var __delItem:FrameVO = v.getFrameItemAt(selectedFrameIndices.pop());
 			ssModel.originalSheet.removeFrameAt(__delItem.frameNum);
 			ssModel.adjustedSheet.removeFrameAt(__delItem.frameNum);
 			trace('删除Sheet与adjustedSheet中的帧，删除后：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
@@ -527,7 +582,7 @@ public class FramesAndLabelMediator extends Mediator
 			//修改帧列表中帧的编号
 			refreshFrameNum(_frames, __delItem.frameNum);
 		}
-		v.selectedFrameIndices = null;
+		selectedFrameIndices = null;
 		selectFrameChange();
 		//刷新frameDG的显示
 		refreshFrameDG();
@@ -599,16 +654,16 @@ public class FramesAndLabelMediator extends Mediator
 	{
 		//修改选择的帧的初始大小，同时直接重新绘制该帧的bitmapData
 		var __rect:Rectangle = ssModel.resizeRect;
-		if(v.selectedFrameIndices)
+		if(selectedFrameIndices)
 		{
 			var __frame:FrameVO= null;
 			var __bmd:BitmapData = null;
 			var __point:Point = new Point(0,0);
 			var __frameNum:int = 0;
-			for (var i:int = 0; i < v.selectedFrameIndices.length; i++) 
+			for (var i:int = 0; i < selectedFrameIndices.length; i++) 
 			{
 				__bmd = new BitmapData(__rect.width, __rect.height, true, 0x00000000);
-				__frame = v.getFrameItemAt(v.selectedFrameIndices[i]);
+				__frame = v.getFrameItemAt(selectedFrameIndices[i]);
 				//设置frameVO中保存的两个rect的值，frameVO中的两个rect是从adjustedSheet获取而来，而且使用的是引用，因此同时修改了Global中的adjustedSheet的值
 				__frame.frameRect.width = __rect.width;
 				__frame.frameRect.height = __rect.height;
@@ -631,6 +686,7 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function handler_previewClick($evt:SSEvent):void
 	{
+		if(playing) return;
 		v.findFrameByPoint($evt.info as Point);
 	}
 	
@@ -654,13 +710,13 @@ public class FramesAndLabelMediator extends Mediator
 	private function handler_frameDisChange($evt:FlexEvent):void
 	{
 		ssModel.displayCrop = v.frameCropDisplayRBG.selectedValue;
-		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+		previewSSChange();
 	}
 	
 	private function handler_frameOrLabelChange($evt:FlexEvent):void 
 	{
 		ssModel.displayFrame = v.frameOrLabelRBG.selectedValue;
-		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+		previewSSChange();
 	}
 	
 	private var _ssPreview:SSPreview;
@@ -691,6 +747,5 @@ public class FramesAndLabelMediator extends Mediator
 			v.openPreviewBTN.enabled = true;
 		}
 	}
-	
 }
 }
