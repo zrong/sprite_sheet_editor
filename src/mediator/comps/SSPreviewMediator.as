@@ -32,7 +32,7 @@ public class SSPreviewMediator extends Mediator
 		addContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
 		addContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_framesAndLabelsChange);
 		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
-		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSCropChange);
+		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSChange);
 		
 		v.init();
 		setPlayEnable();
@@ -49,7 +49,7 @@ public class SSPreviewMediator extends Mediator
 		removeContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
 		removeContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_framesAndLabelsChange);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
-		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSCropChange);
+		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSChange);
 		
 		v.destroy();
 		handler_playBTNclick(null);
@@ -76,9 +76,10 @@ public class SSPreviewMediator extends Mediator
 		v.showBmd($evt.info.bmd);
 	}
 	
-	private function handler_previewSSCropChange($evt:SSEvent):void
+	private function handler_previewSSChange($evt:SSEvent):void
 	{
 		updateFrame();
+		v.title = ssModel.displayFrame ? "帧动画预览" : "Label("+ssModel.displayLabel+")动画预览";
 	}
 	
 	private function handler_resizeOriginCBChange($evt:FlexEvent):void

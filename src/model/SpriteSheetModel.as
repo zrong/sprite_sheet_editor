@@ -119,6 +119,11 @@ public class SpriteSheetModel extends Actor
 	 */
 	public var displayFrame:Boolean;
 	
+	/**
+	 * 当前选择的Label名称
+	 */
+	public var displayLabel:String;
+	
 	public var resizeRect:Rectangle;
 	
 	/**
