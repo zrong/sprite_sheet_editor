@@ -1,20 +1,24 @@
 package utils
 {
-import flash.desktop.NativeApplication;
-import flash.display.BitmapData;
-import flash.geom.Point;
 import flash.geom.Rectangle;
 
 import mx.managers.PopUpManager;
 
-import org.zengrong.display.spritesheet.SpriteSheet;
-import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+import gnu.as3.gettext.FxGettext;
+import gnu.as3.gettext.ISO_3166;
+import gnu.as3.gettext.ISO_639_1;
+
 import org.zengrong.utils.MathUtil;
 
 import view.comps.Alert;
 
 public class Funs
 {
+	
+	public static function mklocale(iso639:String, iso3166:String):String
+	{
+		return ISO_639_1.codes[iso639]+"_"+ISO_3166.codes[iso3166];
+	}
 	
 	/**
 	 * 根据提供的Rectangle数组计算最终Sheet的宽高以及每帧在Sheet中的位置
@@ -168,20 +172,20 @@ public class Funs
 		$whRect.width += $frameRect.width;
 	}
 	
-	public static function alert($text:String, $title:String='警告'):void
+	public static function alert($text:String, $title:String=null):void
 	{
 		var __alert:Alert = PopUpManager.createPopUp(Global.root, Alert, true) as Alert;
-		__alert.title = $title;
+		__alert.title = $title?FxGettext.gettext($title):FxGettext.gettext("Warning");
 		__alert.text = $text;
 		var __xy:Array = getAlertXY(__alert);
 		__alert.move(__xy[0], __xy[1]);
 	}
 	
-	public static function confirm($text:String, $okHandler:Function, $cancelHandler:Function=null, $title:String="请确认"):void
+	public static function confirm($text:String, $okHandler:Function, $cancelHandler:Function=null, $title:String=null):void
 	{
 		var __alert:Alert = PopUpManager.createPopUp(Global.root, Alert, true) as Alert;
 		__alert.currentState = 'confirm';
-		__alert.title = $title;
+		__alert.title = $title?FxGettext.gettext($title):FxGettext.gettext("Please Confirm");
 		__alert.text = $text;
 		__alert.okHandler = $okHandler;
 		__alert.cancelHandler = $cancelHandler;

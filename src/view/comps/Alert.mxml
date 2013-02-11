@@ -6,8 +6,12 @@
 			   currentState="alert">
 	<s:RichEditableText left="5" right="5" top="5" bottom="35" editable="false" text="{text}"/>
 	<s:HGroup width="100%" horizontalAlign="center" bottom="5">
-		<s:Button id="okBTN" label="确定" click="handler_okBTNclick(event)"/>
-		<s:Button id="cancelBTN" label="取消" includeIn="confirm" click="handler_cancelBTNclick(event)"/>
+		<s:Button id="okBTN" click="handler_okBTNclick(event)">
+			<s:label>{FxGettext.gettext("OK")}</s:label>
+		</s:Button>
+		<s:Button id="cancelBTN" includeIn="confirm" click="handler_cancelBTNclick(event)">
+			<s:label>{FxGettext.gettext("Cancel")}</s:label>
+		</s:Button>
 	</s:HGroup>
 	<s:states>
 		<s:State name="alert"/>
@@ -18,6 +22,8 @@
 		import mx.managers.PopUpManager;
 		
 		[Bindable] public var text:String;
+		import gnu.as3.gettext.FxGettext;
+		
 		public var okHandler:Function;
 		public var cancelHandler:Function;
 		

@@ -5,16 +5,21 @@
 <!-- 管理状态的跳转，可以跳回前一步 -->
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
 				   xmlns:s="library://ns.adobe.com/flex/spark" >
-	<s:Button id="prevBTN" left="5" label="返回上一步" verticalCenter="0" enabled="false"/>
-	<s:Label id="stateNameLabel" horizontalCenter="0" verticalCenter="0" text="开始"/>
+	<s:Button id="prevBTN" left="5" verticalCenter="0" enabled="false">
+		<s:label>{FxGettext.gettext("Back to previous")}</s:label>
+	</s:Button>
+	<s:Label id="stateNameLabel" horizontalCenter="0" verticalCenter="0">
+		<s:text>{FxGettext.gettext("Start")}</s:text>
+	</s:Label>
 	<s:HGroup id="fpsGRP" right="5" verticalAlign="middle"
 			  verticalCenter="0">
 		<s:Label text="FPS:"/>
 		<s:NumericStepper id="fpsNS" maximum="60" minimum="1" value="30"/>
 	</s:HGroup>
 	<fx:Script>
-	<![CDATA[
-	]]>
+		<![CDATA[
+			import gnu.as3.gettext.FxGettext;
+		]]>
 	</fx:Script>
 </s:BorderContainer>
 

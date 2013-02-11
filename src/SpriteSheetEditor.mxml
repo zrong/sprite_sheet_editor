@@ -4,6 +4,7 @@
 					   xmlns:panel="view.panel.*"
 					   backgroundColor="#4D4D4D"
 					   showStatusBar="false"
+					   preinitialize="handler_preinit()"
 					   windowComplete="handler_init(event)"
 					   uncaughtError="handler_unCaughtError(event)"
 					   closing="handler_closing(event)" xmlns:local="*">
@@ -27,29 +28,49 @@
 	<panel:SSPanel id="ss" includeIn="ss" width="100%" height="100%" itemCreationPolicy="immediate"/>
 	<fx:Script>
 	<![CDATA[
-		import mx.binding.utils.ChangeWatcher;
+		import mx.events.AIREvent;
+		
+		import gnu.as3.gettext.FxGettext;
+		import gnu.as3.gettext.ISO_3166;
+		import gnu.as3.gettext.ISO_639_1;
+		import gnu.as3.gettext.Locale;
+		import gnu.as3.gettext.services.IGettextService;
+		import gnu.as3.gettext.services.URLLoaderService;
 		
 		import org.zengrong.air.utils.getDesc;
 		
-		import mx.events.AIREvent;
-		import mx.events.FlexEvent;
-		import mx.events.PropertyChangeEvent;
-		import mx.states.State;
-		
-		import type.StateType;
-		
 		import utils.Funs;
-		import utils.Global;
+		
+		protected function handler_preinit():void
+		{
+			//Locale.setlocale(Locale.LC_MESSAGES, Funs.mklocale(ISO_639_1.ZH, ISO_3166.CN));
+			//初始化locale
+            var __service:IGettextService = new URLLoaderService("assets");
+            __service.addEventListener(Event.COMPLETE, handler_getTextServiceComplete);
+            __service.addEventListener(IOErrorEvent.IO_ERROR, handler_localeError);
+			FxGettext.bindtextdomain("main", null, __service);
+			FxGettext.textdomain("main");
+		}
 		
 		protected function handler_init(event:AIREvent):void
 		{
 			this.title = getDesc('name') +' v' + getDesc('versionNumber');
 		}
 		
+		private function handler_getTextServiceComplete($evt:Event):void
+		{
+			trace("load getText done");
+		}
+		
+        private function handler_localeError(event:IOErrorEvent):void
+        {
+            trace(event);
+        }
+		
 		protected function handler_closing($event:Event):void
 		{
 			$event.preventDefault();
-			Funs.confirm('要关闭程序么？', 
+			Funs.confirm(FxGettext.gettext("Do you want to exit Sprite Sheet Editor?"),
 				function():void
 				{
 					nativeApplication.exit();
@@ -59,6 +80,7 @@
 		
 		protected function handler_unCaughtError($event:UncaughtErrorEvent):void
 		{
+			return;
 			var __str:String = '';
 			if($event.error is Error)
 				__str = Error($event.error).message;

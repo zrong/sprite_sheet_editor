@@ -1,0 +1,87 @@
+# English translations for main package.
+# Copyright (C) 2013 THE main'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the main package.
+# Automatically generated, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: main 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-11 23:39+0800\n"
+"PO-Revision-Date: 2013-02-11 23:43+0800\n"
+"Last-Translator: zrong <zrongzrong@gmail.com>\n"
+"Language-Team: none\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: ../src/SpriteSheetEditor.mxml:71
+msgid "Do you want to exit Sprite Sheet Editor?"
+msgstr "Do you want to exit Sprite Sheet Editor?"
+
+#: ../src/utils/Funs.as:171
+msgid "Warning"
+msgstr ""
+
+#: ../src/utils/Funs.as:181
+msgid "Please Confirm"
+msgstr "Please Confirm"
+
+#: ../src/view/comps/Alert.mxml:10
+msgid "OK"
+msgstr ""
+
+#: ../src/view/comps/Alert.mxml:13
+msgid "Cancel"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:9
+msgid "Open a swf file"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:10
+msgid "Convert a swf file to Sprite Sheet in sequential frame."
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:13
+msgid "Import image file"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:14
+msgid "Convert a set of file to a Sprite Sheet."
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:18
+msgid "Open a Sprite Sheet"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:19
+msgid "Open a Sprite Sheet for edit and optimize."
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:24
+msgid "Check update"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:28
+msgid "About"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:33
+msgid "Visit zrong's blog"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:34
+msgid "Visit www.zengrong.net"
+msgstr ""
+
+#: ../src/view/panel/TopPanel.mxml:9
+msgid "Back to previous"
+msgstr ""
+
+#: ../src/view/panel/TopPanel.mxml:12
+msgid "Start"
+msgstr ""
