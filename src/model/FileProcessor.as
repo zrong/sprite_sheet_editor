@@ -43,7 +43,7 @@ public class FileProcessor extends Actor
 	 * 要打开的图像文件类型
 	 */	
 	public static const PNG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("PNG image"), '*.png');
-	public static const JPG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPG image"), '*.jpg;*.jpeg');
+	public static const JPG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPEG image"), '*.jpg;*.jpeg');
 	public static const JPEG_XR_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPEG-XR image"), '*.wdp;*.hdp');
 	public static const SWF_FILTER:FileFilter = new FileFilter(FxGettext.gettext("SWF animation"), '*.swf');
 	

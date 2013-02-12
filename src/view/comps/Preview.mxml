@@ -3,7 +3,8 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   implements="interf.IPreview"
-				   xmlns:comps="view.comps.*">
+				   xmlns:comps="view.comps.*"
+				   creationComplete="handler_creationComplete(event)">
 	<fx:Metadata>
 		[Event(name="previewLoadComplete", type="events.SSEvent")]
 	</fx:Metadata>
@@ -20,18 +21,21 @@
 		<s:Label text="{sourceInfo}"/>
 		<s:Spacer width="100%"/>
 		<s:CheckBox id="showAllCB" change="handler_showAll(event)"/>
-		<s:DropDownList id="BGDDL" change="handler_bgSelect(event)" width="90" requireSelection="true"/>
+		<s:DropDownList id="BGDDL" change="handler_bgSelect(event)" width="140"  requireSelection="true"/>
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
 		import mx.collections.ArrayList;
+		import mx.events.FlexEvent;
+		
+		import gnu.as3.gettext.FxGettext;
 		
 		import utils.Global;
 		
-		public static const LABEL_SHOW_ALL:String = '显示全部';
-		public static const LABEL_CHESS:String = '方格背景';
-		public static const LABEL_WHITE:String = '白色背景';
-		public static const LABEL_BLACK:String = '黑色背景';
+		public static var LABEL_SHOW_ALL:String;
+		public static var LABEL_CHESS:String;
+		public static var LABEL_WHITE:String;
+		public static var LABEL_BLACK:String;
 		
 		[Bindable] public var showTransformTool:Boolean;
 		[Bindable] public var scaleContent:Boolean;
@@ -55,9 +59,12 @@
 		
 		[Bindable] public var sourceInfo:String;
 		
-		override protected function createChildren():void
+		protected function handler_creationComplete($evt:FlexEvent):void
 		{
-			super.createChildren();
+			LABEL_SHOW_ALL = FxGettext.gettext("Show all");
+			LABEL_CHESS = FxGettext.gettext("Chess background");
+			LABEL_WHITE = FxGettext.gettext("White background");
+			LABEL_BLACK = FxGettext.gettext("Black background");
 			init();
 		}
 		
@@ -109,6 +116,8 @@
 		{
 			return null;
 		}
+		
+		
 	]]>
 	</fx:Script>
 </s:BorderContainer>

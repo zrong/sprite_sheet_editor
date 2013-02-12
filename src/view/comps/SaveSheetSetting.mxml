@@ -51,8 +51,6 @@
 		
 		import type.ExtendedNameType;
 		
-		import utils.Global;
-		
 		override protected function createChildren():void
 		{
 			super.createChildren();

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-12 15:23+0800\n"
+"POT-Creation-Date: 2013-02-13 00:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/model/FileProcessor.as:45
+#: ../src/mediator/comps/SSPreviewMediator.as:82
+msgid "Frame animation preview"
+msgstr ""
+
+#: ../src/mediator/comps/SSPreviewMediator.as:82
+msgid "animation preview"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:45 ../src/view/comps/ImageTypeSetting.mxml:9
 msgid "PNG image"
 msgstr ""
 
-#: ../src/model/FileProcessor.as:46
-msgid "JPG image"
+#: ../src/model/FileProcessor.as:46 ../src/view/comps/ImageTypeSetting.mxml:12
+msgid "JPEG image"
 msgstr ""
 
-#: ../src/model/FileProcessor.as:47
+#: ../src/model/FileProcessor.as:47 ../src/view/comps/ImageTypeSetting.mxml:15
 msgid "JPEG-XR image"
 msgstr ""
 
@@ -166,6 +174,227 @@ msgstr ""
 
 #: ../src/view/comps/BuildSetting.mxml:64
 msgid "Optimize"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:11
+msgid "File list"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:19
+msgid "File name"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:22
+msgid "File size"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:29
+msgid ""
+"Add multiple files. If you select items in the list, add the file will "
+"appear in the option above."
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:32
+msgid "Delete the selected file from the list."
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:35
+msgid "Move to top"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:38
+msgid "move to bottom"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:41
+#: ../src/view/comps/FramesAndLabels.mxml:81
+#: ../src/view/comps/FramesAndLabels.mxml:130
+msgid "Move up"
+msgstr ""
+
+#: ../src/view/comps/FileManager.mxml:44
+#: ../src/view/comps/FramesAndLabels.mxml:85
+#: ../src/view/comps/FramesAndLabels.mxml:133
+msgid "Move down"
+msgstr ""
+
+#: ../src/view/comps/FrameDataGrid.mxml:10
+msgid "Frame number"
+msgstr ""
+
+#: ../src/view/comps/FrameDataGrid.mxml:13
+msgid "Frame name"
+msgstr ""
+
+#: ../src/view/comps/FrameDataGrid.mxml:16
+msgid "Trimmed size"
+msgstr ""
+
+#: ../src/view/comps/FrameDataGrid.mxml:19
+msgid "Original size"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:28
+msgid "Open preview windows"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:34
+msgid "Use frame"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:35
+msgid "Play the animation of selected frames"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:39
+msgid "Use label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:40
+msgid "Play the animation of selected label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:47
+msgid "Trim"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:48
+msgid "Display width and height of trimmed frame."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:52
+msgid "Original"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:53
+msgid ""
+"Display the width and height of trimmed. In order to reduce file size, we "
+"could trim the blank. If the file does not trim, the original size and the "
+"trimmed size is same."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:60
+msgid "All available frames:"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:60
+msgid "The frames are not available."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:64
+msgid "Add Sprite Sheet"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:65
+msgid ""
+"Add one or more Sprite Sheet to the end of the current Sprite Sheet. The "
+"rules are as follows:\n"
+"1. All frames will be added to the Sprite Sheet at the end of current;\n"
+"2. If the label is the same name, the label in the Sprite Sheet do not "
+"import, but all frames in the label will be imported;\n"
+"3. If the name is the same name, the name in the Sprite Sheet do not "
+"import;\n"
+"4. If original Sprite Sheet contains frame name, but imported Sprite Sheet "
+"does not, all frame in the Sprite Sheet will be automatically named."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:68
+msgid "Add image frame"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:69
+msgid ""
+"Add multiple image file. One frame added to the end of the current Sprite "
+"Sheet as a frame."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:74
+msgid "Remove frame"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:75
+msgid "Remove a frame from the list. Update the Sprite Sheet immediately."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:78
+msgid "Selecte all"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:82
+#: ../src/view/comps/FramesAndLabels.mxml:86
+msgid "Move the frame's position, the frmae Numbers will change after moving."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:94
+msgid "use label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:99
+msgid "Enter label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:100
+msgid "Label format: letters + Numbers"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:104
+msgid "Number of frame:"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:104
+msgid "No selected label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:109
+msgid "Add label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:110
+msgid "Add a label to the list."
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:114
+msgid "Remove label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:115
+msgid "Remove the selected label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:119
+msgid "Modify label"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:124
+msgid "Add frame"
+msgstr ""
+
+#: ../src/view/comps/FramesAndLabels.mxml:127
+msgid "Reset frame"
+msgstr ""
+
+#: ../src/view/comps/ImageTypeSetting.mxml:19
+msgid "Compress:"
+msgstr ""
+
+#: ../src/view/comps/ImageTypeSetting.mxml:22
+msgid "For JPEG, bigger is better;For JPEG-XR, smaller is better."
+msgstr ""
+
+#: ../src/view/comps/Preview.mxml:64
+msgid "Show all"
+msgstr ""
+
+#: ../src/view/comps/Preview.mxml:65
+msgid "Chess background"
+msgstr ""
+
+#: ../src/view/comps/Preview.mxml:66
+msgid "White background"
+msgstr ""
+
+#: ../src/view/comps/Preview.mxml:67
+msgid "Black background"
 msgstr ""
 
 #: ../src/view/panel/PicPanel.mxml:20 ../src/view/panel/SwfPanel.mxml:15

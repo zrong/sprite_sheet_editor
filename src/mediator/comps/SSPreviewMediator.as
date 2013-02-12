@@ -1,15 +1,15 @@
 package mediator.comps
 {
-import events.SSEvent;
-
 import flash.events.Event;
 import flash.events.MouseEvent;
 
-import model.SpriteSheetModel;
-
-import mx.events.CloseEvent;
 import mx.events.FlexEvent;
-import mx.managers.PopUpManager;
+
+import events.SSEvent;
+
+import gnu.as3.gettext.FxGettext;
+
+import model.SpriteSheetModel;
 
 import org.robotlegs.mvcs.Mediator;
 
@@ -79,7 +79,7 @@ public class SSPreviewMediator extends Mediator
 	private function handler_previewSSChange($evt:SSEvent):void
 	{
 		updateFrame();
-		v.title = ssModel.displayFrame ? "帧动画预览" : "Label("+ssModel.displayLabel+")动画预览";
+		v.title = ssModel.displayFrame ? FxGettext.gettext("Frame animation preview") : ("Label("+ssModel.displayLabel+")" + FxGettext.gettext("animation preview"));
 	}
 	
 	private function handler_resizeOriginCBChange($evt:FlexEvent):void

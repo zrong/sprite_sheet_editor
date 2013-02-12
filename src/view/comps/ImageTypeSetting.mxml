@@ -5,12 +5,22 @@
 	<fx:Declarations>
 		<s:RadioButtonGroup id="formatRBG" valueCommit="handler_formatRBGvalueCommit(event)"/>
 	</fx:Declarations>
-	<s:RadioButton id="pngRB" groupName="formatRBG" label="PNG格式"  selected="true"/>
-	<s:RadioButton id="jpgRB" groupName="formatRBG" label="JPEG格式" />
-	<s:RadioButton id="jpgxrRB" groupName="formatRBG" label="JPEG-XR格式" />
+	<s:RadioButton id="pngRB" groupName="formatRBG" selected="true">
+		<s:label>{FxGettext.gettext("PNG image")}</s:label>
+	</s:RadioButton>
+	<s:RadioButton id="jpgRB" groupName="formatRBG">
+		<s:label>{FxGettext.gettext("JPEG image")}</s:label>
+	</s:RadioButton>
+	<s:RadioButton id="jpgxrRB" groupName="formatRBG">
+		<s:label>{FxGettext.gettext("JPEG-XR image")}</s:label>
+	</s:RadioButton>
 	<s:HGroup verticalAlign="middle" visible="{jpgRB.selected||jpgxrRB.selected}">
-		<s:Label text="压缩:"/>
-		<s:NumericStepper id="qualityNS" minimum="1" maximum="100" value="70" maxChars="3" width="100%" toolTip="JPEG格式越大越好；JPEG-XR格式越小越好。"/>
+		<s:Label>
+			<s:text>{FxGettext.gettext("Compress:")}</s:text>
+		</s:Label>
+		<s:NumericStepper id="qualityNS" minimum="1" maximum="100" value="70" maxChars="3" width="100%">
+			<s:toolTip>{FxGettext.gettext("For JPEG, bigger is better;For JPEG-XR, smaller is better.")}</s:toolTip>
+		</s:NumericStepper>
 	</s:HGroup>
 	<fx:Metadata>
 		[Event(name="change", type="flash.events.Event")]

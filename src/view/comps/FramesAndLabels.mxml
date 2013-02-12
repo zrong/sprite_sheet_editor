@@ -24,66 +24,114 @@
 	
 	<!-- 预览窗口相关的界面 -->
 	<s:HGroup width="100%">
-		<s:Button id="openPreviewBTN" label="打开预览窗口" height="40" enabled="{frameDG.selectedItem}"/>
+		<s:Button id="openPreviewBTN" height="40" enabled="{frameDG.selectedItem}">
+			<s:label>{FxGettext.gettext("Open preview windows")}</s:label>
+		</s:Button>
 		<s:Spacer width="100%" height="40"/>
 		<s:VGroup id="frameOrLabelGRP" width="80">
-			<s:RadioButton id="useFrameRB" width="100%" label="使用帧"
-						   groupName="frameOrLabelRBG" selected="true" value="true"
-						   toolTip="播放选中的帧的动画"/>
-			<s:RadioButton id="useLabelRB" width="100%" label="使用Label"
-						   groupName="frameOrLabelRBG" value="false"
-						   toolTip="播放选中的Label的动画"/>
+			<s:RadioButton id="useFrameRB" width="100%"
+						   groupName="frameOrLabelRBG" selected="true" value="true">
+				<s:label>{FxGettext.gettext("Use frame")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Play the animation of selected frames")}</s:toolTip>
+			</s:RadioButton>
+			<s:RadioButton id="useLabelRB" width="100%"
+						   groupName="frameOrLabelRBG" value="false">
+				<s:label>{FxGettext.gettext("Use label")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Play the animation of selected label")}</s:toolTip>
+			</s:RadioButton>
+			
 		</s:VGroup>
 		<s:VGroup width="100%" enabled="{frameDG.selectedItem}">
-			<s:RadioButton id="disCropRB" width="100%" label="修剪"
-						   groupName="frameCropDisplayRBG" selected="true" value="true"
-						   toolTip="显示修剪空白后的帧的宽高"/>
-			<s:RadioButton id="disOriginRB" width="100%" label="原始"
-						   groupName="frameCropDisplayRBG" value="false"
-						   toolTip="显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"/>
+			<s:RadioButton id="disCropRB" width="100%"
+						   groupName="frameCropDisplayRBG" selected="true" value="true" >
+				<s:label>{FxGettext.gettext("Trim")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Display width and height of trimmed frame.")}</s:toolTip>
+			</s:RadioButton>
+			<s:RadioButton id="disOriginRB" width="100%"
+						   groupName="frameCropDisplayRBG" value="false">
+				<s:label>{FxGettext.gettext("Original")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Display the width and height of trimmed. In order to reduce file size, we could trim the blank. If the file does not trim, the original size and the trimmed size is same.")}</s:toolTip>
+			</s:RadioButton>
 		</s:VGroup>
 	</s:HGroup>
 	
 	<!-- 以下是帧相关的界面 -->
-	<s:Label id="frameLabel" fontWeight="bold" text="{frameDG.dataProvider?'所有可用帧:'+frameDG.dataProvider.length:'没有可用的帧'}"/>
+	<s:Label id="frameLabel" fontWeight="bold" text="">
+		<s:text>{frameDG.dataProvider?FxGettext.gettext("All available frames:")+frameDG.dataProvider.length:FxGettext.gettext("The frames are not available.")}</s:text>
+	</s:Label>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
-		<s:Button id="addSSBTN" width="100%" label="增加SpriteSheet"
-				  toolTip="添加一个或多个SpriteSheet到当前Sheet的末尾。规则如下：&#13;1.所有帧会增加到当前Sheet的末尾；&#13;2.若label重名，则被导入Sheet中的label不导入，但依然会导入该lable的所有帧；&#13;3.若name重名，则被导入的Sheet中该name对应的重名帧不会被导入；&#13;4.若原始Sheet中包含name，但被导入Sheet中不含name，则会自动为被导入的Sheet中的所有帧命名。"/>
-		<s:Button id="addPicBTN" width="100%" label="增加图像帧"
-				  toolTip="添加多个图像文件。每个图像作为一帧增加到当前Sheet的末尾。"/>
+		<s:Button id="addSSBTN" width="100%">
+				<s:label>{FxGettext.gettext("Add Sprite Sheet")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Add one or more Sprite Sheet to the end of the current Sprite Sheet. The rules are as follows:\n1. All frames will be added to the Sprite Sheet at the end of current;\n2. If the label is the same name, the label in the Sprite Sheet do not import, but all frames in the label will be imported;\n3. If the name is the same name, the name in the Sprite Sheet do not import;\n4. If original Sprite Sheet contains frame name, but imported Sprite Sheet does not, all frame in the Sprite Sheet will be automatically named.")}</s:toolTip>
+		</s:Button>
+		<s:Button id="addPicBTN" width="100%" >
+				<s:label>{FxGettext.gettext("Add image frame")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Add multiple image file. One frame added to the end of the current Sprite Sheet as a frame.")}</s:toolTip>
+		</s:Button>
 	</s:HGroup>
 	<s:HGroup id="naviGRP" verticalAlign="middle" width="100%">
-		<s:Button id="delFrameBTN" label="删帧" width="100%" 
-				  toolTip="从帧列表中删除一帧。删除后会立即更新Sheet。"/>
-		<s:Button id="selectAllFrameBTN" width="100%" label="全选" 
-				  click="handler_allBTNclick(event)"/>
-		<s:Button id="upFrameBTN" label="上移" toolTip="移动帧的位置，移动后帧的编号也会发生变化。" />
-		<s:Button id="downFrameBTN" label="下移" toolTip="移动帧的位置，移动后帧的编号也会发生变化。" />
+		<s:Button id="delFrameBTN" width="100%">
+				<s:label>{FxGettext.gettext("Remove frame")}</s:label>
+				<s:toolTip>{FxGettext.gettext("Remove a frame from the list. Update the Sprite Sheet immediately.")}</s:toolTip>
+		</s:Button>
+		<s:Button id="selectAllFrameBTN" width="100%" click="handler_allBTNclick(event)">
+				<s:label>{FxGettext.gettext("Selecte all")}</s:label>
+		</s:Button>
+		<s:Button id="upFrameBTN">
+			<s:label>{FxGettext.gettext("Move up")}</s:label>
+			<s:toolTip>{FxGettext.gettext("Move the frame's position, the frmae Numbers will change after moving.")}</s:toolTip>
+		</s:Button>
+		<s:Button id="downFrameBTN">
+			<s:label>{FxGettext.gettext("Move down")}</s:label>
+			<s:toolTip>{FxGettext.gettext("Move the frame's position, the frmae Numbers will change after moving.")}</s:toolTip>
+		</s:Button>
 	</s:HGroup>
 	<comps:FrameDataGrid id="frameDG"  minHeight="200" dataProvider="{frameDG.dataProvider}" selectionMode="multipleRows" />
 	
 	<!-- 下面是Label相关的界面 -->
 	<s:HGroup width="100%" verticalAlign="middle">
-		<s:CheckBox id="labelCB" label="使用Label"/>
+		<s:CheckBox id="labelCB">
+			<s:label>{FxGettext.gettext("use label")}</s:label>
+		</s:CheckBox>
 		<s:DropDownList id="labelDDL" includeIn="frameAndLabel" width="100%" labelField="name" itemCreationPolicy="immediate" requireSelection="true"
 						enabled="{labelDDL.dataProvider &amp;&amp;labelDDL.dataProvider.length>0}" />
-		<s:TextInput id="labelNameInput" prompt="输入Label" toolTip="label格式：英文+数字" width="100" includeIn="frameAndLabel" />
+		<s:TextInput id="labelNameInput" width="100" includeIn="frameAndLabel">
+			<s:prompt>{FxGettext.gettext("Enter label")}</s:prompt>
+			<s:toolTip>{FxGettext.gettext("Label format: letters + Numbers")}</s:toolTip>
+		</s:TextInput>
 	</s:HGroup>
-	<s:Label id="labelLabel" fontWeight="bold" text="{labelDDL.selectedItem?('LABEL('+labelDDL.selectedItem.name+')中的帧:'+frameInLabelDG.dataProvider.length):'没有选择Label'}" includeIn="frameAndLabel"/>
+	<s:Label id="labelLabel" fontWeight="bold" includeIn="frameAndLabel">
+		<s:text>{labelDDL.selectedItem ? ("LABEL("+labelDDL.selectedItem.name+"),"+FxGettext.gettext("Number of frame:") + frameInLabelDG.dataProvider.length) : FxGettext.gettext("No selected label")}</s:text>
+	</s:Label>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
-		<s:Button id="addLabelBTN" width="100%" label="加Label"
-				  enabled="{frameDG.selectedItem &amp;&amp; labelNameInput.text}" toolTip="添加一个Label到列表中"/>
-		<s:Button id="removeLabelBTN" width="100%" label="删Label"
-				  enabled="{labelDDL.selectedItem}"
-				  toolTip="删除选中的Label"/>
-		<s:Button id="renameBTN" width="100%" label="改Label" 
-				  enabled="{labelDDL.selectedItem &amp;&amp; labelNameInput.text &amp;&amp; labelNameInput.text != labelDDL.selectedItem.name}" toolTip="修改Label名称"/>
+		<s:Button id="addLabelBTN" width="100%"
+				  enabled="{frameDG.selectedItem &amp;&amp; labelNameInput.text}">
+			<s:label>{FxGettext.gettext("Add label")}</s:label>
+			<s:toolTip>{FxGettext.gettext("Add a label to the list.")}</s:toolTip>
+		</s:Button>
+		<s:Button id="removeLabelBTN" width="100%"
+				  enabled="{labelDDL.selectedItem}">
+			<s:label>{FxGettext.gettext("Remove label")}</s:label>
+			<s:toolTip>{FxGettext.gettext("Remove the selected label")}</s:toolTip>
+		</s:Button>
+		<s:Button id="renameBTN" width="100%"
+				  enabled="{labelDDL.selectedItem &amp;&amp; labelNameInput.text &amp;&amp; labelNameInput.text != labelDDL.selectedItem.name}">
+			<s:label>{FxGettext.gettext("Modify label")}</s:label>
+		</s:Button>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
-		<s:Button id="addFrameToLabelBTN" label="加入帧" click="handler_addFrameToLabelBTNClick(event)"/>
-		<s:Button id="removeFrameFromLabelBTN" label="移除帧" click="handler_removeFrameFromLabelBTNClick(event)"/>
-		<s:Button id="upFrameInLabelBTN" label="上移" click="handler_upFrameInLabelBTNClick(event)"/>
-		<s:Button id="downFrameInLabelBTN" label="下移" click="handler_downFrameInLabelBTNClick(event)"/>
+		<s:Button id="addFrameToLabelBTN" click="handler_addFrameToLabelBTNClick(event)">
+			<s:label>{FxGettext.gettext("Add frame")}</s:label>
+		</s:Button>
+		<s:Button id="removeFrameFromLabelBTN" click="handler_removeFrameFromLabelBTNClick(event)">
+			<s:label>{FxGettext.gettext("Reset frame")}</s:label>
+		</s:Button>
+		<s:Button id="upFrameInLabelBTN" click="handler_upFrameInLabelBTNClick(event)">
+			<s:label>{FxGettext.gettext("Move up")}</s:label>
+		</s:Button>
+		<s:Button id="downFrameInLabelBTN" click="handler_downFrameInLabelBTNClick(event)">
+			<s:label>{FxGettext.gettext("Move down")}</s:label>
+		</s:Button>
 	</s:HGroup>
 	<comps:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
 	
@@ -91,10 +139,6 @@
 	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
-		import events.SSEvent;
-		
-		import model.FileProcessor;
-		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
@@ -105,6 +149,17 @@
 		import mx.managers.DragManager;
 		import mx.skins.halo.DefaultDragImage;
 		
+		import spark.collections.Sort;
+		import spark.collections.SortField;
+		import spark.events.GridEvent;
+		import spark.events.IndexChangeEvent;
+		
+		import events.SSEvent;
+		
+		import gnu.as3.gettext.FxGettext;
+		
+		import model.FileProcessor;
+		
 		import org.zengrong.assets.Assets;
 		import org.zengrong.assets.AssetsEvent;
 		import org.zengrong.assets.AssetsProgressVO;
@@ -112,11 +167,6 @@
 		import org.zengrong.display.spritesheet.SpriteSheet;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 		import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
-		
-		import spark.collections.Sort;
-		import spark.collections.SortField;
-		import spark.events.GridEvent;
-		import spark.events.IndexChangeEvent;
 		
 		import utils.Funs;
 		import utils.Global;

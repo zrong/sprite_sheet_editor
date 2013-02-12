@@ -6,10 +6,23 @@
 			sortableColumns="false" >
 	<s:columns>
 		<s:ArrayList>
-			<s:GridColumn headerText="帧号" width="40" dataField="frameNum"/>
-			<s:GridColumn headerText="名称" width="60" dataField="frameName"/>
-			<s:GridColumn headerText="修剪尺寸" dataField="frameSize"/>
-			<s:GridColumn headerText="原始尺寸" dataField="originSize"/>
+			<s:GridColumn width="40" dataField="frameNum">
+				<s:headerText>{FxGettext.gettext("Frame number")}</s:headerText>
+			</s:GridColumn>
+			<s:GridColumn width="60" dataField="frameName">
+				<s:headerText>{FxGettext.gettext("Frame name")}</s:headerText>
+			</s:GridColumn>
+			<s:GridColumn dataField="frameSize">
+				<s:headerText>{FxGettext.gettext("Trimmed size")}</s:headerText>
+			</s:GridColumn>
+			<s:GridColumn dataField="originSize">
+				<s:headerText>{FxGettext.gettext("Original size")}</s:headerText>
+			</s:GridColumn>
 		</s:ArrayList>
 	</s:columns>
+	<fx:Script>
+		<![CDATA[
+			import gnu.as3.gettext.FxGettext;
+		]]>
+	</fx:Script>
 </s:DataGrid>

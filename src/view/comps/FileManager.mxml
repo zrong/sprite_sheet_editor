@@ -7,28 +7,47 @@
 		[Event(name="selectionChanging", type="events.SSEvent")]
 		[Event(name="select", type="flash.events.Event")]
 	</fx:Metadata>
-	<s:Label top="0" fontWeight="bold" horizontalCenter="0" text="文件列表"/>
+	<s:Label top="0" fontWeight="bold" horizontalCenter="0">
+		<s:text>{FxGettext.gettext("File list")}</s:text>
+	</s:Label>
 	<s:DataGrid id="fileDG" left="0" right="0" top="45" bottom="0" 
 				dataProvider="{fileList}" selectionChange="selectionChange()" selectionMode="multipleRows"
 				selectionChanging="selectionChanging()">
 		<s:columns>
 			<s:ArrayList>
-				<s:GridColumn headerText="文件名" width="150"  dataField="file.name"/>
-				<s:GridColumn headerText="大小" dataField="file.size"/>
+				<s:GridColumn width="150"  dataField="file.name">
+					<s:headerText>{FxGettext.gettext("File name")}</s:headerText>
+				</s:GridColumn>
+				<s:GridColumn dataField="file.size">
+					<s:headerText>{FxGettext.gettext("File size")}</s:headerText>
+				</s:GridColumn>
 			</s:ArrayList>
 		</s:columns>
 	</s:DataGrid>
 	<s:HGroup right="0" top="20" width="100%" verticalAlign="middle">
-		<s:Button id="addFile" width="100%" label="+" toolTip="添加多个文件。如果列表中有选择项，添加的文件会出现在选择项的上方。" click="handler_addFileclick(event)"/>
-		<s:Button id="delFile" width="100%" label="x" toolTip="从列表中删除选择的文件" enabled="{fileDG.selectedItem}" click="handler_delFileclick(event)"/>
-		<s:Button id="topFile" width="100%" label="┬" toolTip="移动到顶部" enabled="{upFile.enabled}" click="handler_topAndBottomFileClick(event)"/>
-		<s:Button id="bottomFile" width="100%" label="┴" toolTip="移动到底部" enabled="{downFile.enabled}" click="handler_topAndBottomFileClick(event)"/>
-		<s:Button id="upFile" width="100%" label="↑" toolTip="将选择的文件上移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex>0}" click="handler_upAndDownFileclick(event)"/>
-		<s:Button id="downFile" width="100%" label="↓" toolTip="将选择的文件下移" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex&lt;(fileList.length-1)}" click="handler_upAndDownFileclick(event)"/>
+		<s:Button id="addFile" width="100%" label="+" click="handler_addFileclick(event)">
+			<s:toolTip>{FxGettext.gettext("Add multiple files. If you select items in the list, add the file will appear in the option above.")}</s:toolTip>
+		</s:Button>
+		<s:Button id="delFile" width="100%" label="x" enabled="{fileDG.selectedItem}" click="handler_delFileclick(event)">
+			<s:toolTip>{FxGettext.gettext("Delete the selected file from the list.")}</s:toolTip>
+		</s:Button>
+		<s:Button id="topFile" width="100%" label="┬" enabled="{upFile.enabled}" click="handler_topAndBottomFileClick(event)">
+			<s:toolTip>{FxGettext.gettext("Move to top")}</s:toolTip>
+		</s:Button>
+		<s:Button id="bottomFile" width="100%" label="┴" enabled="{downFile.enabled}" click="handler_topAndBottomFileClick(event)">
+			<s:toolTip>{FxGettext.gettext("move to bottom")}</s:toolTip>
+		</s:Button>
+		<s:Button id="upFile" width="100%" label="↑" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex>0}" click="handler_upAndDownFileclick(event)">
+			<s:toolTip>{FxGettext.gettext("Move up")}</s:toolTip>
+		</s:Button>
+		<s:Button id="downFile" width="100%" label="↓" enabled="{fileDG.selectedItem&amp;&amp;fileDG.selectedIndex&lt;(fileList.length-1)}" click="handler_upAndDownFileclick(event)">
+			<s:toolTip>{FxGettext.gettext("Move down")}</s:toolTip>
+		</s:Button>
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
+		import gnu.as3.gettext.FxGettext;
 		
 		import model.FileProcessor;
 		
