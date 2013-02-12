@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-11 23:39+0800\n"
+"POT-Creation-Date: 2013-02-12 15:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,63 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/SpriteSheetEditor.mxml:71
+#: ../src/model/FileProcessor.as:45
+msgid "PNG image"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:46
+msgid "JPG image"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:47
+msgid "JPEG-XR image"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:48
+msgid "SWF animation"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:77
+msgid "All compatible image"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:93
+msgid "Select a swf file"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:99 ../src/model/FileProcessor.as:112
+msgid "Select image file"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:106
+msgid "Select a Sprite Sheet file"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:128
+msgid "Select the save path of Sprite Sheet file"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:132
+msgid "Select the save path of metadata"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:136
+msgid "Select the save path of the image sequence"
+msgstr ""
+
+#: ../src/model/FileProcessor.as:140
+msgid "Select the save path of image and metedata"
+msgstr ""
+
+#: ../src/SpriteSheetEditor.mxml:72
 msgid "Do you want to exit Sprite Sheet Editor?"
 msgstr ""
 
-#: ../src/utils/Funs.as:171
+#: ../src/utils/Funs.as:206
 msgid "Warning"
 msgstr ""
 
-#: ../src/utils/Funs.as:181
+#: ../src/utils/Funs.as:216
 msgid "Please Confirm"
 msgstr ""
 
@@ -35,6 +83,105 @@ msgstr ""
 
 #: ../src/view/comps/Alert.mxml:13
 msgid "Cancel"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:17
+msgid "Build Sprite Sheet"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:18
+msgid "Optimize Sprite Sheet"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:22
+msgid "Smooth"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:25
+msgid "Transparent"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:30
+msgid "Background"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:33
+msgid ""
+"Select width or height of the SpriteSheet. Another dimension needed to "
+"automatically calculate."
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:35
+msgid "Width"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:36
+msgid "Height"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:45
+msgid "Trim blank"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:46
+msgid ""
+"If selected, then in the top left corner of the pixel color as a benchmark, "
+"cutting off the edge of the redundant blank."
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:49
+msgid "Reset frame size"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:50
+msgid ""
+"If selected, reset the original frame to the size after pruning blank. In "
+"metadata, the trimmed frame size and the original frame size is same. "
+"Otherwise, it has only use in the trimmed size which has been saved Sprite "
+"Sheet, and save the original frame size and trimmed frame size in the "
+"metadata."
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:54
+msgid "Power of 2"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:55
+msgid "If selected, then output size are power of 2(e.g., 256,512)"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:58
+msgid "Square"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:59
+msgid ""
+"If selected, then output file is square,  width and height are automatic "
+"identification"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:63
+msgid "Build"
+msgstr ""
+
+#: ../src/view/comps/BuildSetting.mxml:64
+msgid "Optimize"
+msgstr ""
+
+#: ../src/view/panel/PicPanel.mxml:20 ../src/view/panel/SwfPanel.mxml:15
+msgid "frame(x,y,w,h)"
+msgstr ""
+
+#: ../src/view/panel/PicPanel.mxml:23 ../src/view/panel/SwfPanel.mxml:18
+msgid "Original size of the frame"
+msgstr ""
+
+#: ../src/view/panel/SSPanel.mxml:18
+msgid "Save a Sprite Sheet"
+msgstr ""
+
+#: ../src/view/panel/SSPanel.mxml:21
+msgid "Save a sequence"
 msgstr ""
 
 #: ../src/view/panel/StartPanel.mxml:9
@@ -69,18 +216,38 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: ../src/view/panel/StartPanel.mxml:33
+#: ../src/view/panel/StartPanel.mxml:31
 msgid "Visit zrong's blog"
 msgstr ""
 
-#: ../src/view/panel/StartPanel.mxml:34
+#: ../src/view/panel/StartPanel.mxml:32
 msgid "Visit www.zengrong.net"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:37
+msgid "Language:"
+msgstr ""
+
+#: ../src/view/panel/StartPanel.mxml:107
+msgid "Language change sucessfully. Please exit and restart it."
+msgstr ""
+
+#: ../src/view/panel/SwfPanel.mxml:28
+msgid "The first frame(zero-based):"
+msgstr ""
+
+#: ../src/view/panel/SwfPanel.mxml:32
+msgid "Total frames:"
 msgstr ""
 
 #: ../src/view/panel/TopPanel.mxml:9
 msgid "Back to previous"
 msgstr ""
 
-#: ../src/view/panel/TopPanel.mxml:12
+#: ../src/view/panel/TopPanel.mxml:12 ../src/view/panel/TopPanel.mxml:28
 msgid "Start"
+msgstr ""
+
+#: ../src/view/panel/TopPanel.mxml:27
+msgid "Back to previouse"
 msgstr ""

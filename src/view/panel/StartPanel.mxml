@@ -31,15 +31,51 @@
 		<s:label>{FxGettext.gettext("Visit zrong's blog")}</s:label>
 		<s:toolTip>{FxGettext.gettext("Visit www.zengrong.net")}</s:toolTip>
 	</s:Button>
+	<s:Spacer width="100" height="30"/>
+	<s:HGroup width="160" verticalAlign="middle">
+		<s:Label>
+			<s:text>{FxGettext.gettext("Language:")}</s:text>
+		</s:Label>
+		<s:DropDownList id="langDDL" width="100%" change="handler_langDDLchange(event)">
+			<s:ArrayList>
+				<fx:Object data="zh_CN" label="简体中文"/>
+				<fx:Object data="en_US" label="English"/>
+			</s:ArrayList>
+		</s:DropDownList>
+	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
 		import flash.net.navigateToURL;
 		
+		import spark.events.IndexChangeEvent;
+		
 		import gnu.as3.gettext.FxGettext;
+		
+		import org.zengrong.utils.SOUtil;
+		
+		import utils.Funs;
 		
 		import view.About;
 		
 		private var _about:About;
+		
+		override protected function createChildren():void
+		{
+			super.createChildren();
+			setLang(SOUtil.getSOUtil("sse").get("lang"));
+		}
+		
+		public function setLang($code:String):void
+		{
+			for (var i:int = 0; i < langDDL.dataProvider.length; i++) 
+			{
+				if($code == langDDL.dataProvider.getItemAt(i).data)
+				{
+					langDDL.selectedIndex = i;
+					return;
+				}
+			}
+		}
 		
 		protected function handler_aboutBTNclick($event:MouseEvent):void
 		{
@@ -57,14 +93,19 @@
 		
 		protected function handler_newBTNclick($event:MouseEvent):void
 		{
-			navigateToURL(new URLRequest('http://www.zengrong.net/sprite_sheet_editor'));
+			navigateToURL(new URLRequest('http://zengrong.net/sprite_sheet_editor'));
 		}
 		
 		protected function handler_visitBTNclick($event:MouseEvent):void
 		{
-			navigateToURL(new URLRequest('http://www.zengrong.net/'));
+			navigateToURL(new URLRequest('http://zengrong.net/'));
 		}
 		
+		protected function handler_langDDLchange($evt:IndexChangeEvent):void
+		{
+			SOUtil.getSOUtil("sse").save(langDDL.selectedItem.data, "lang");
+			Funs.alert(FxGettext.gettext("Language change sucessfully. Please exit and restart it."));
+		}
 	]]>
 	</fx:Script>
 </s:BorderContainer>

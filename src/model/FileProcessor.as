@@ -10,7 +10,6 @@ import flash.display.BitmapData;
 import flash.display.JPEGEncoderOptions;
 import flash.display.JPEGXREncoderOptions;
 import flash.display.PNGEncoderOptions;
-import flash.errors.IOError;
 import flash.events.Event;
 import flash.events.FileListEvent;
 import flash.events.IOErrorEvent;
@@ -20,6 +19,8 @@ import flash.filesystem.FileStream;
 import flash.net.FileFilter;
 import flash.utils.ByteArray;
 
+import gnu.as3.gettext.FxGettext;
+
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.net.SpriteSheetLoader;
 
@@ -27,7 +28,6 @@ import type.ExtendedNameType;
 import type.StateType;
 
 import utils.Funs;
-import utils.Global;
 
 import vo.SaveVO;
 
@@ -42,10 +42,10 @@ public class FileProcessor extends Actor
 	/**
 	 * 要打开的图像文件类型
 	 */	
-	public static const PNG_FILTER:FileFilter = new FileFilter('PNG图像', '*.png');
-	public static const JPG_FILTER:FileFilter = new FileFilter('JPG图像', '*.jpg;*.jpeg');
-	public static const JPEG_XR_FILTER:FileFilter = new FileFilter('JPEG-XR图像', '*.wdp;*.hdp');
-	public static const SWF_FILTER:FileFilter = new FileFilter('SWF动画', '*.swf');
+	public static const PNG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("PNG image"), '*.png');
+	public static const JPG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPG image"), '*.jpg;*.jpeg');
+	public static const JPEG_XR_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPEG-XR image"), '*.wdp;*.hdp');
+	public static const SWF_FILTER:FileFilter = new FileFilter(FxGettext.gettext("SWF animation"), '*.swf');
 	
 	public function FileProcessor()
 	{
@@ -74,7 +74,7 @@ public class FileProcessor extends Actor
 	
 	private function initFilter():void
 	{
-		_allPicFilter = new FileFilter('全部支持图像', PNG_FILTER.extension+';'+JPG_FILTER.extension+';'+JPEG_XR_FILTER.extension);
+		_allPicFilter = new FileFilter(FxGettext.gettext("All compatible image"), PNG_FILTER.extension+';'+JPG_FILTER.extension+';'+JPEG_XR_FILTER.extension);
 		_allPicArr = [_allPicFilter, PNG_FILTER, JPG_FILTER, JPEG_XR_FILTER];
 	}
 	
@@ -90,26 +90,26 @@ public class FileProcessor extends Actor
 	public function openSwf():void
 	{
 		_openState = StateType.SWF;
-		_file.browseForOpen('选择一个swf文件', [SWF_FILTER]);
+		_file.browseForOpen(FxGettext.gettext("Select a swf file"), [SWF_FILTER]);
 	}
 	
 	public function openPics($callBack:Function=null):void
 	{
 		_openState = StateType.PIC;
-		_file.browseForOpenMultiple('选择图像文件', _allPicArr);
+		_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
 		_callBack = $callBack;
 	}
 	
 	public function openSS():void
 	{
 		_openState = StateType.SS;
-		_file.browseForOpen('选择一个SpriteSheet文件', _allPicArr);
+		_file.browseForOpen(FxGettext.gettext("Select a Sprite Sheet file"), _allPicArr);
 	}
 	
 	public function addToSS($callBack:Function=null):void
 	{
 		_openState = StateType.ADD_TO_SS;
-		_file.browseForOpenMultiple('选择图像文件', _allPicArr);
+		_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
 		_callBack = $callBack;
 	}
 	
@@ -125,19 +125,19 @@ public class FileProcessor extends Actor
 		switch(_saveData.type)
 		{
 			case StateType.SAVE_SHEET_PIC:
-				__title = '选择SpriteSheet的保存路径';
+				__title = FxGettext.gettext("Select the save path of Sprite Sheet file");
 				_file.browseForSave(__title);
 				break;
 			case StateType.SAVE_META:
-				__title = '选择元数据的保存路径';
+				__title = FxGettext.gettext("Select the save path of metadata");
 				_file.browseForSave(__title);
 				break;
 			case StateType.SAVE_SEQ:
-				__title = '选择图像序列的保存路径';
+				__title = FxGettext.gettext("Select the save path of the image sequence");
 				_file.browseForDirectory(__title);
 				break;
 			case StateType.SAVE_ALL:
-				__title = '选择图像和元数据的保存路径';
+				__title = FxGettext.gettext("Select the save path of image and metedata");
 				_file.browseForSave(__title);
 				break;
 		}

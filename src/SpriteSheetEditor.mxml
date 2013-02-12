@@ -31,8 +31,6 @@
 		import mx.events.AIREvent;
 		
 		import gnu.as3.gettext.FxGettext;
-		import gnu.as3.gettext.ISO_3166;
-		import gnu.as3.gettext.ISO_639_1;
 		import gnu.as3.gettext.Locale;
 		import gnu.as3.gettext.services.IGettextService;
 		import gnu.as3.gettext.services.URLLoaderService;
@@ -43,8 +41,9 @@
 		
 		protected function handler_preinit():void
 		{
-			//Locale.setlocale(Locale.LC_MESSAGES, Funs.mklocale(ISO_639_1.ZH, ISO_3166.CN));
 			//初始化locale
+			var __lang:String = Funs.getLang();
+			Locale.setlocale(Locale.LC_MESSAGES, __lang);
             var __service:IGettextService = new URLLoaderService("assets");
             __service.addEventListener(Event.COMPLETE, handler_getTextServiceComplete);
             __service.addEventListener(IOErrorEvent.IO_ERROR, handler_localeError);

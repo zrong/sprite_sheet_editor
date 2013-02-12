@@ -14,8 +14,12 @@
 			<s:VGroup gap="0" width="100%">
 				<s:TabBar width="100%" dataProvider="{vs}"/>
 				<mx:ViewStack id="vs" creationPolicy="all" width="100%">
-					<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969" label="保存SpriteSheet"/>
-					<comps:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969" label="保存序列"/>
+					<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969">
+						<comps:label>{FxGettext.gettext("Save a Sprite Sheet")}</comps:label>
+					</comps:SaveSheetSetting>
+					<comps:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969">
+						<comps:label>{FxGettext.gettext("Save a sequence")}</comps:label>
+					</comps:SaveSeqSetting>
 				</mx:ViewStack>
 			</s:VGroup>
 		</s:VGroup>
@@ -24,6 +28,8 @@
 	<comps:BMPPreview id="sheetPreview" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
 	<fx:Script>
 	<![CDATA[
+		import gnu.as3.gettext.FxGettext;
+		
 		public function init($bmd:BitmapData, $hasName:Boolean):void
 		{
 			//从SpriteSheet中初始化Label和Frame

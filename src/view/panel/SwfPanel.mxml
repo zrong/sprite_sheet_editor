@@ -11,8 +11,12 @@
 			<s:layout>
 				<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 			</s:layout>
-			<s:Label text="帧设置(x,y,w,h)"/>
-			<s:CheckBox id="useOriginalSizeCB" label="使用帧的原始大小"/>
+			<s:Label>
+				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
+			</s:Label>
+			<s:CheckBox id="useOriginalSizeCB">
+				<s:label>{FxGettext.gettext("Original size of the frame")}</s:label>
+			</s:CheckBox>
 			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
 				<s:NumericStepper id="frameX" width="100%" value="@{swf.transf.x}" minimum="0" maximum="{swf.sourceWidth-1}"/>
 				<s:NumericStepper id="frameY" width="100%" value="@{swf.transf.y}" minimum="0" maximum="{swf.sourceHeight-1}"/>
@@ -20,9 +24,13 @@
 				<s:NumericStepper id="frameH" width="100%" value="@{swf.transf.height}" minimum="1" maximum="{swf.sourceHeight}"/>
 			</s:HGroup>
 			<s:HGroup width="100%" verticalAlign="middle">
-				<s:Label text="第一帧(0基)："/>
+				<s:Label>
+					<s:text>{FxGettext.gettext("The first frame(zero-based):")}</s:text>
+				</s:Label>
 				<s:NumericStepper id="firstFrameNS" maximum="1000" minimum="0" stepSize="1" width="100%"/>
-				<s:Label text="总帧数："/>
+				<s:Label>
+					<s:text>{FxGettext.gettext("Total frames:")}</s:text>
+				</s:Label>
 				<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100%"/>
 			</s:HGroup>
 		</s:BorderContainer>
@@ -37,21 +45,11 @@
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
-		
-		import flash.utils.setTimeout;
-		
-		import model.FileProcessor;
-		
-		import mx.binding.utils.ChangeWatcher;
-		import mx.events.FlexEvent;
-		import mx.events.PropertyChangeEvent;
-		
-		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+		import gnu.as3.gettext.FxGettext;
 		
 		import type.StateType;
 		
 		import utils.Funs;
-		import utils.Global;
 		
 		//保存选择的swf文件的路径
 		private var _frameNum:int;					//当前正在播放的帧的索引

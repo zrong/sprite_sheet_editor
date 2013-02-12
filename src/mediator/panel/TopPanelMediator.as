@@ -12,8 +12,6 @@ import org.zengrong.utils.SOUtil;
 
 import type.StateType;
 
-import utils.Funs;
-
 import view.panel.TopPanel;
 
 public class TopPanelMediator extends Mediator
@@ -33,7 +31,7 @@ public class TopPanelMediator extends Mediator
 		
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		
-		_so = SOUtil.getSOUtil('sprite_sheet_editor');
+		_so = SOUtil.getSOUtil('sse');
 		showFPS();
 	}	
 	

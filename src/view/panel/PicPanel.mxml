@@ -16,8 +16,12 @@
 			<s:layout>
 				<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 			</s:layout>
-			<s:Label text="帧设置(x,y,w,h)" fontWeight="bold"/>
-			<s:CheckBox id="useOriginalSizeCB" label="使用帧的原始大小"/>
+			<s:Label fontWeight="bold">
+				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
+			</s:Label>
+			<s:CheckBox id="useOriginalSizeCB">
+				<s:label>{FxGettext.gettext("Original size of the frame")}</s:label>
+			</s:CheckBox>
 			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
 				<s:NumericStepper id="frameX" width="100%" value="@{pic.transf.x}" minimum="0" maximum="{pic.viewerWidth-1}"/>
 				<s:NumericStepper id="frameY" width="100%" value="@{pic.transf.y}" minimum="0" maximum="{pic.viewerHeight-1}"/>
@@ -36,15 +40,10 @@
 	<![CDATA[
 		import events.SSEvent;
 		
-		import model.FileProcessor;
-		
-		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-		import org.zengrong.utils.Vec2D;
-		
 		import type.StateType;
+		import gnu.as3.gettext.FxGettext;
 		
 		import utils.Funs;
-		import utils.Global;
 		
 		import vo.NamesVO;
 		

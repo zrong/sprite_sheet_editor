@@ -4,7 +4,7 @@
 <!-- 创建时间：2011-8-5 -->
 <!-- 管理状态的跳转，可以跳回前一步 -->
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
-				   xmlns:s="library://ns.adobe.com/flex/spark" >
+				   xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="handler_creationComplete(event)">
 	<s:Button id="prevBTN" left="5" verticalCenter="0" enabled="false">
 		<s:label>{FxGettext.gettext("Back to previous")}</s:label>
 	</s:Button>
@@ -18,8 +18,16 @@
 	</s:HGroup>
 	<fx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
+			
 			import gnu.as3.gettext.FxGettext;
+			
+			protected function handler_creationComplete($evt:FlexEvent):void
+			{
+				prevBTN.label = FxGettext.gettext("Back to previouse");
+				stateNameLabel.text = FxGettext.gettext("Start");
+			}
+			
 		]]>
 	</fx:Script>
 </s:BorderContainer>
-

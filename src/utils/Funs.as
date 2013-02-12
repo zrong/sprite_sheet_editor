@@ -7,13 +7,41 @@ import mx.managers.PopUpManager;
 import gnu.as3.gettext.FxGettext;
 import gnu.as3.gettext.ISO_3166;
 import gnu.as3.gettext.ISO_639_1;
+import gnu.as3.gettext.Locale;
 
 import org.zengrong.utils.MathUtil;
+import org.zengrong.utils.SOUtil;
 
 import view.comps.Alert;
 
 public class Funs
 {
+	public static function getLang():String
+	{
+		var __so:SOUtil = SOUtil.getSOUtil("sse");
+		//获取已经保存的显示语言
+		var __lang:String = __so.get("lang");
+		//没有设置显示语言，则根据当前系统判断
+		if(!__lang)
+		{
+			var __enus:String = mklocale(ISO_639_1.EN, ISO_3166.US);
+			var __zhcn:String = mklocale(ISO_639_1.ZH, ISO_3166.CN);
+			var __zhtw:String = mklocale(ISO_639_1.ZH, ISO_3166.TW);
+			//若为简中或者繁中系统
+			if( Locale.LANG == __zhcn ||
+				Locale.LANG == __zhtw )
+			{
+				__lang = __zhcn;
+			}
+			//不是简中系统均使用英文
+			else
+			{
+				__lang = __enus;
+			}
+			__so.save(__lang, "lang");
+		}
+		return __lang;
+	}
 	
 	public static function mklocale(iso639:String, iso3166:String):String
 	{
