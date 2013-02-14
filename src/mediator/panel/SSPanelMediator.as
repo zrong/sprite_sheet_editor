@@ -1,11 +1,13 @@
 package mediator.panel
 {
-import events.SSEvent;
-
 import flash.display.BitmapData;
 import flash.events.Event;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+
+import events.SSEvent;
+
+import gnu.as3.gettext.FxGettext;
 
 import mediator.comps.FramesAndLabelMediator;
 
@@ -86,7 +88,9 @@ public class SSPanelMediator extends Mediator
 	
 	private function handler_displayChange($evt:SSEvent):void
 	{
-		v.saveSeq.title = ssModel.displayCrop ? '保存序列(修剪尺寸)':'保存序列(原始尺寸)';
+		v.saveSeq.titleLabel.text = ssModel.displayCrop ? 
+			FxGettext.gettext("trimmed size"):
+			FxGettext.gettext("original size");
 	}
 	
 	private function handler_saveAll($evt:SSEvent):void

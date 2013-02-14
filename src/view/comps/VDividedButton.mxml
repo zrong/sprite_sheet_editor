@@ -10,10 +10,6 @@
 					   releaseOutside="handler_mouseOut(event)">
 	<fx:Script>
 		<![CDATA[
-			import flash.utils.getDefinitionByName;
-			
-			import mx.managers.CursorManager;
-			
 			import utils.Global;
 			private static const W:int = 30;
 			private static const H:int = 10;

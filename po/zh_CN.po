@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-13 00:26+0800\n"
-"PO-Revision-Date: 2013-02-13 00:26+0800\n"
+"POT-Creation-Date: 2013-02-15 00:06+0800\n"
+"PO-Revision-Date: 2013-02-15 00:09+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -26,13 +26,21 @@ msgstr "帧动画预览"
 msgid "animation preview"
 msgstr "动画预览"
 
+#: ../src/mediator/panel/SSPanelMediator.as:92
+msgid "trimmed size"
+msgstr "修剪尺寸"
+
+#: ../src/mediator/panel/SSPanelMediator.as:93
+msgid "original size"
+msgstr "原始尺寸"
+
 #: ../src/model/FileProcessor.as:45 ../src/view/comps/ImageTypeSetting.mxml:9
 msgid "PNG image"
 msgstr "PNG图像"
 
 #: ../src/model/FileProcessor.as:46 ../src/view/comps/ImageTypeSetting.mxml:12
-msgid "JPG image"
-msgstr "JPG图像"
+msgid "JPEG image"
+msgstr "JPEG图像"
 
 #: ../src/model/FileProcessor.as:47 ../src/view/comps/ImageTypeSetting.mxml:15
 msgid "JPEG-XR image"
@@ -77,6 +85,19 @@ msgstr "选择图像和元数据的保存路径"
 #: ../src/SpriteSheetEditor.mxml:72
 msgid "Do you want to exit Sprite Sheet Editor?"
 msgstr "你要退出么？"
+
+#: ../src/type/StateType.as:60 ../src/view/panel/TopPanel.mxml:12
+#: ../src/view/panel/TopPanel.mxml:28
+msgid "Start"
+msgstr "开始"
+
+#: ../src/type/StateType.as:62
+msgid "Edit Sprite Sheet"
+msgstr "编辑Sprite Sheet"
+
+#: ../src/type/StateType.as:64
+msgid "Import swf file"
+msgstr "导入swf文件"
 
 #: ../src/utils/Funs.as:206
 msgid "Warning"
@@ -390,6 +411,10 @@ msgstr "重设帧大小"
 msgid "Compress:"
 msgstr "压缩："
 
+#: ../src/view/comps/ImageTypeSetting.mxml:22
+msgid "For JPEG, bigger is better;For JPEG-XR, smaller is better."
+msgstr "JPEG格式越大越好；JPEG-XR格式越小越好。"
+
 #: ../src/view/comps/Preview.mxml:64
 msgid "Show all"
 msgstr "显示所有"
@@ -405,6 +430,132 @@ msgstr "白色背景"
 #: ../src/view/comps/Preview.mxml:67
 msgid "Black background"
 msgstr "黑色背景"
+
+#: ../src/view/comps/SaveSeqSetting.mxml:17
+msgid "Prefix"
+msgstr "前缀"
+
+#: ../src/view/comps/SaveSeqSetting.mxml:23
+msgid "Start at:"
+msgstr "起始编号："
+
+#: ../src/view/comps/SaveSeqSetting.mxml:29
+msgid "Digits:"
+msgstr "编号位数："
+
+#: ../src/view/comps/SaveSeqSetting.mxml:37
+msgid "File name preview:"
+msgstr "文件名预览："
+
+#: ../src/view/comps/SaveSeqSetting.mxml:42
+msgid "Save"
+msgstr "保存"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:19
+msgid "Sprite Sheet"
+msgstr "Sprite Sheet"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:24
+msgid "Mask:"
+msgstr "蒙版："
+
+#: ../src/view/comps/SaveSheetSetting.mxml:28
+msgid "No mask"
+msgstr "不用蒙版"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:29
+msgid "Horzontial mask"
+msgstr "横向蒙版"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:30
+msgid "Vertical mask"
+msgstr "纵向蒙版"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:37
+msgid "Metedata"
+msgstr "元数据"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:40
+msgid "XML format"
+msgstr "XML格式"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:43
+msgid "JSON format"
+msgstr "JSON格式"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:46
+msgid "TXT format"
+msgstr "TXT格式"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:49
+msgid "Use simple metadata"
+msgstr "使用简单元数据"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:50
+msgid "If selected, coordinate and WH are saved only."
+msgstr "选中后仅保存每帧的坐标和宽高"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:53
+msgid "Include file name"
+msgstr "包含文件名"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:54
+msgid ""
+"If selected, the relationship between the image file name and the frame "
+"index are saved in metadata. Then, you can get the corresponding frame "
+"through the file name."
+msgstr ""
+"选中后将图像文件的主文件名与帧索引的关系保存到meta文件中。在使用的时候，就能"
+"通过主文件名获取对应的帧。"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:60
+msgid "Save image"
+msgstr "保存图像"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:63
+msgid "Save all"
+msgstr "同时保存"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:66
+msgid "Save metadata"
+msgstr "保存元数据"
+
+#: ../src/view/comps/SSPreview.mxml:9
+msgid "Bitmap animation preview"
+msgstr "位图动画预览"
+
+#: ../src/view/comps/SSPreview.mxml:19
+msgid "Pause"
+msgstr "暂停"
+
+#: ../src/view/comps/SSPreview.mxml:19
+msgid "Play"
+msgstr "播放"
+
+#: ../src/view/comps/SSPreview.mxml:24
+msgid "Adjust the original size(x,y,w,h)"
+msgstr "调整帧原始大小(x,y,w,h)"
+
+#: ../src/view/comps/SSPreview.mxml:25
+msgid ""
+"Is selected, the original size is reduced. But you can still be executed "
+"'Trim blank' again on the basis of reduced size."
+msgstr ""
+"选择后，会缩小帧的原始大小。但你依然可以在缩小后的尺寸基础上再次执行“修剪空"
+"白”优化。"
+
+#: ../src/view/comps/SSPreview.mxml:29
+msgid "Do adjusting"
+msgstr "保存调整"
+
+#: ../src/view/comps/SSPreview.mxml:30
+msgid ""
+"Recalculated according to the original size adjusted, and immediate "
+"optimization.\n"
+"This action will directly modify the size of the original size."
+msgstr ""
+"根据调整的原始大小重新计算帧大小，并立即执行优化。\n"
+"此操作会直接修改原始帧的大小。"
 
 #: ../src/view/panel/PicPanel.mxml:20 ../src/view/panel/SwfPanel.mxml:15
 msgid "frame(x,y,w,h)"
@@ -482,13 +633,15 @@ msgstr "第一帧(0基)："
 msgid "Back to previous"
 msgstr "返回上一步"
 
-#: ../src/view/panel/TopPanel.mxml:12 ../src/view/panel/TopPanel.mxml:28
-msgid "Start"
-msgstr "开始"
-
 #: ../src/view/panel/TopPanel.mxml:27
 msgid "Back to previouse"
 msgstr "返回上一步"
+
+#~ msgid "Save sequential image"
+#~ msgstr "保存序列"
+
+#~ msgid "Sequential image's prefix"
+#~ msgstr "序列前缀："
 
 #, fuzzy
 #~ msgid "Remote frame"

@@ -13,42 +13,65 @@
 		[Event(name="saveMeta", type="events.SSEvent")]
 		[Event(name="saveAll", type="events.SSEvent")]
 	</fx:Metadata>
-	<s:Label text="保存Sprite Sheet" fontWeight="bold"/>
 	<s:HGroup width="100%">
 		<s:VGroup width="50%">
-			<s:Label text="保存SpriteSheet" />
+			<s:Label>
+				<s:text>{FxGettext.gettext("Sprite Sheet")}</s:text>
+			</s:Label>
 			<comps:ImageTypeSetting id="imageSetting" width="100%"/>
 			<s:HGroup width="120" verticalAlign="middle">
-				<s:Label text="蒙版:"/>
+				<s:Label>
+					<s:text>{FxGettext.gettext("Mask:")}</s:text>
+				</s:Label>
 				<s:DropDownList id="maskDDL" width="100%" requireSelection="true">
 					<s:ArrayList>
-						<fx:String>不用蒙版</fx:String>
-						<fx:String>横向蒙版</fx:String>
-						<fx:String>纵向蒙版</fx:String>
+						<fx:String>{FxGettext.gettext("No mask")}</fx:String>
+						<fx:String>{FxGettext.gettext("Horzontial mask")}</fx:String>
+						<fx:String>{FxGettext.gettext("Vertical mask")}</fx:String>
 					</s:ArrayList>
 				</s:DropDownList>	
 			</s:HGroup>
 		</s:VGroup>
 		<s:VGroup width="50%">
-			<s:Label text="保存元数据"/>
-			<s:RadioButton id="xmlRB" groupName="metaRBG" label="XML格式" selected="true"/>
-			<s:RadioButton id="jsonRB" groupName="metaRBG" label="JSON格式" />
-			<s:RadioButton id="txtRB" groupName="metaRBG" label="TXT格式" />
-			<s:CheckBox id="simpleCB" label="使用简单元数据" toolTip="选中后仅保存每帧的坐标和宽高"/>
-			<s:CheckBox id="nameCB" label="包含文件名称" toolTip="选中后将图像文件的主文件与帧索引的关系保存到meta文件中。在使用的时候，就能通过主文件名获取对应的帧。" />
+			<s:Label>
+				<s:text>{FxGettext.gettext("Metedata")}</s:text>
+			</s:Label>
+			<s:RadioButton id="xmlRB" groupName="metaRBG" selected="true">
+				<s:label>{FxGettext.gettext("XML format")}</s:label>
+			</s:RadioButton>
+			<s:RadioButton id="jsonRB" groupName="metaRBG">
+				<s:label>{FxGettext.gettext("JSON format")}</s:label>
+			</s:RadioButton>
+			<s:RadioButton id="txtRB" groupName="metaRBG">
+				<s:label>{FxGettext.gettext("TXT format")}</s:label>
+			</s:RadioButton>
+			<s:CheckBox id="simpleCB">
+				<s:label>{FxGettext.gettext("Use simple metadata")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If selected, coordinate and WH are saved only.")}</s:toolTip>
+			</s:CheckBox>
+			<s:CheckBox id="nameCB">
+				<s:label>{FxGettext.gettext("Include file name")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If selected, the relationship between the image file name and the frame index are saved in metadata. Then, you can get the corresponding frame through the file name.")}</s:toolTip>
+			</s:CheckBox>
 		</s:VGroup>
 	</s:HGroup>
 	<s:HGroup width="100%" horizontalAlign="center">
-		<s:Button id="savePicBTN" click="handler_savePicBTNClick(event)" label="保存图像" height="30" width="80"/>
-		<s:Button id="saveAllBTN" click="handler_saveAllBTNClick(event)" label="同时保存" height="30" width="80"/>
-		<s:Button id="saveMetaBTN" click="handler_saveMetaBTNClick(event)" label="保存元数据" height="30" width="80"/>
+		<s:Button id="savePicBTN" click="handler_savePicBTNClick(event)" height="30" width="80">
+			<s:label>{FxGettext.gettext("Save image")}</s:label>
+		</s:Button>
+		<s:Button id="saveAllBTN" click="handler_saveAllBTNClick(event)" height="30" width="80">
+			<s:label>{FxGettext.gettext("Save all")}</s:label>
+		</s:Button>
+		<s:Button id="saveMetaBTN" click="handler_saveMetaBTNClick(event)" height="30" width="80">
+			<s:label>{FxGettext.gettext("Save metadata")}</s:label>
+		</s:Button>
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
 		
-		import org.zengrong.display.spritesheet.SpriteSheetType;
 		
+		import gnu.as3.gettext.FxGettext;
 		import type.ExtendedNameType;
 		
 		override protected function createChildren():void

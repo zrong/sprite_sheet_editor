@@ -30,6 +30,7 @@
 			import mx.events.FlexEvent;
 			
 			import org.zengrong.display.spritesheet.SpriteSheetType;
+			import gnu.as3.gettext.FxGettext;
 			
 			import type.ExtendedNameType;
 			

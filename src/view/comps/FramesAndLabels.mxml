@@ -56,7 +56,7 @@
 	</s:HGroup>
 	
 	<!-- 以下是帧相关的界面 -->
-	<s:Label id="frameLabel" fontWeight="bold" text="">
+	<s:Label id="frameLabel" fontWeight="bold">
 		<s:text>{frameDG.dataProvider?FxGettext.gettext("All available frames:")+frameDG.dataProvider.length:FxGettext.gettext("The frames are not available.")}</s:text>
 	</s:Label>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">

@@ -6,6 +6,8 @@
 
 package type
 {
+import gnu.as3.gettext.FxGettext;
+
 /**
  * 保存State的名称
  * @author zrong
@@ -55,13 +57,13 @@ public class StateType
 		switch($state)
 		{
 			case StateType.START:
-				return '开始 ';
+				return FxGettext.gettext("Start");
 			case StateType.SS:
-				return '编辑SpriteSheet';
+				return FxGettext.gettext("Edit Sprite Sheet");
 			case StateType.SWF:
-				return '导入SWF文件';
+				return FxGettext.gettext("Import swf file");
 		}
-		return '处理图像文件';
+		return FxGettext.gettext("Process image file");
 	}
 	
 	//----------------------------------------

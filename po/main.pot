@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-13 00:30+0800\n"
+"POT-Creation-Date: 2013-02-15 00:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,6 +23,14 @@ msgstr ""
 
 #: ../src/mediator/comps/SSPreviewMediator.as:82
 msgid "animation preview"
+msgstr ""
+
+#: ../src/mediator/panel/SSPanelMediator.as:92
+msgid "trimmed size"
+msgstr ""
+
+#: ../src/mediator/panel/SSPanelMediator.as:93
+msgid "original size"
 msgstr ""
 
 #: ../src/model/FileProcessor.as:45 ../src/view/comps/ImageTypeSetting.mxml:9
@@ -75,6 +83,19 @@ msgstr ""
 
 #: ../src/SpriteSheetEditor.mxml:72
 msgid "Do you want to exit Sprite Sheet Editor?"
+msgstr ""
+
+#: ../src/type/StateType.as:60 ../src/view/panel/TopPanel.mxml:12
+#: ../src/view/panel/TopPanel.mxml:28
+msgid "Start"
+msgstr ""
+
+#: ../src/type/StateType.as:62
+msgid "Edit Sprite Sheet"
+msgstr ""
+
+#: ../src/type/StateType.as:64
+msgid "Import swf file"
 msgstr ""
 
 #: ../src/utils/Funs.as:206
@@ -397,6 +418,126 @@ msgstr ""
 msgid "Black background"
 msgstr ""
 
+#: ../src/view/comps/SaveSeqSetting.mxml:17
+msgid "Prefix"
+msgstr ""
+
+#: ../src/view/comps/SaveSeqSetting.mxml:23
+msgid "Start at:"
+msgstr ""
+
+#: ../src/view/comps/SaveSeqSetting.mxml:29
+msgid "Digits:"
+msgstr ""
+
+#: ../src/view/comps/SaveSeqSetting.mxml:37
+msgid "File name preview:"
+msgstr ""
+
+#: ../src/view/comps/SaveSeqSetting.mxml:42
+msgid "Save"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:19
+msgid "Sprite Sheet"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:24
+msgid "Mask:"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:28
+msgid "No mask"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:29
+msgid "Horzontial mask"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:30
+msgid "Vertical mask"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:37
+msgid "Metedata"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:40
+msgid "XML format"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:43
+msgid "JSON format"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:46
+msgid "TXT format"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:49
+msgid "Use simple metadata"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:50
+msgid "If selected, coordinate and WH are saved only."
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:53
+msgid "Include file name"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:54
+msgid ""
+"If selected, the relationship between the image file name and the frame "
+"index are saved in metadata. Then, you can get the corresponding frame "
+"through the file name."
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:60
+msgid "Save image"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:63
+msgid "Save all"
+msgstr ""
+
+#: ../src/view/comps/SaveSheetSetting.mxml:66
+msgid "Save metadata"
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:9
+msgid "Bitmap animation preview"
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:19
+msgid "Pause"
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:19
+msgid "Play"
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:24
+msgid "Adjust the original size(x,y,w,h)"
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:25
+msgid ""
+"Is selected, the original size is reduced. But you can still be executed "
+"'Trim blank' again on the basis of reduced size."
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:29
+msgid "Do adjusting"
+msgstr ""
+
+#: ../src/view/comps/SSPreview.mxml:30
+msgid ""
+"Recalculated according to the original size adjusted, and immediate "
+"optimization.\n"
+"This action will directly modify the size of the original size."
+msgstr ""
+
 #: ../src/view/panel/PicPanel.mxml:20 ../src/view/panel/SwfPanel.mxml:15
 msgid "frame(x,y,w,h)"
 msgstr ""
@@ -471,10 +612,6 @@ msgstr ""
 
 #: ../src/view/panel/TopPanel.mxml:9
 msgid "Back to previous"
-msgstr ""
-
-#: ../src/view/panel/TopPanel.mxml:12 ../src/view/panel/TopPanel.mxml:28
-msgid "Start"
 msgstr ""
 
 #: ../src/view/panel/TopPanel.mxml:27
