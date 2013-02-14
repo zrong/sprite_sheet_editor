@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-15 00:06+0800\n"
-"PO-Revision-Date: 2013-02-15 00:09+0800\n"
+"POT-Creation-Date: 2013-02-15 00:19+0800\n"
+"PO-Revision-Date: 2013-02-15 00:19+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -98,6 +98,10 @@ msgstr "编辑Sprite Sheet"
 #: ../src/type/StateType.as:64
 msgid "Import swf file"
 msgstr "导入swf文件"
+
+#: ../src/type/StateType.as:66
+msgid "Process image file"
+msgstr "处理图像文件"
 
 #: ../src/utils/Funs.as:206
 msgid "Warning"
@@ -610,8 +614,8 @@ msgid "Visit zrong's blog"
 msgstr "访问作者博客"
 
 #: ../src/view/panel/StartPanel.mxml:32
-msgid "Visit www.zengrong.net"
-msgstr "访问 www.zengrong.net"
+msgid "Visit zengrong.net"
+msgstr "访问 zengrong.net"
 
 #: ../src/view/panel/StartPanel.mxml:37
 msgid "Language:"
@@ -622,20 +626,19 @@ msgid "Language change sucessfully. Please exit and restart it."
 msgstr "语言切换成功，请退出并重启。"
 
 #: ../src/view/panel/SwfPanel.mxml:28
-msgid "The first frame(zero-based):"
+msgid "1st frame(zero-based):"
 msgstr "第一帧(0基)："
 
 #: ../src/view/panel/SwfPanel.mxml:32
 msgid "Total frames:"
-msgstr "第一帧(0基)："
+msgstr "所有帧："
 
-#: ../src/view/panel/TopPanel.mxml:9
+#: ../src/view/panel/TopPanel.mxml:9 ../src/view/panel/TopPanel.mxml:27
 msgid "Back to previous"
 msgstr "返回上一步"
 
-#: ../src/view/panel/TopPanel.mxml:27
-msgid "Back to previouse"
-msgstr "返回上一步"
+#~ msgid "Back to previouse"
+#~ msgstr "返回上一步"
 
 #~ msgid "Save sequential image"
 #~ msgstr "保存序列"

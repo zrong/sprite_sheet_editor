@@ -25,7 +25,7 @@
 			</s:HGroup>
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label>
-					<s:text>{FxGettext.gettext("The first frame(zero-based):")}</s:text>
+					<s:text>{FxGettext.gettext("1st frame(zero-based):")}</s:text>
 				</s:Label>
 				<s:NumericStepper id="firstFrameNS" maximum="1000" minimum="0" stepSize="1" width="100%"/>
 				<s:Label>

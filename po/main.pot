@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-15 00:06+0800\n"
+"POT-Creation-Date: 2013-02-15 00:19+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,6 +96,10 @@ msgstr ""
 
 #: ../src/type/StateType.as:64
 msgid "Import swf file"
+msgstr ""
+
+#: ../src/type/StateType.as:66
+msgid "Process image file"
 msgstr ""
 
 #: ../src/utils/Funs.as:206
@@ -591,7 +595,7 @@ msgid "Visit zrong's blog"
 msgstr ""
 
 #: ../src/view/panel/StartPanel.mxml:32
-msgid "Visit www.zengrong.net"
+msgid "Visit zengrong.net"
 msgstr ""
 
 #: ../src/view/panel/StartPanel.mxml:37
@@ -603,17 +607,13 @@ msgid "Language change sucessfully. Please exit and restart it."
 msgstr ""
 
 #: ../src/view/panel/SwfPanel.mxml:28
-msgid "The first frame(zero-based):"
+msgid "1st frame(zero-based):"
 msgstr ""
 
 #: ../src/view/panel/SwfPanel.mxml:32
 msgid "Total frames:"
 msgstr ""
 
-#: ../src/view/panel/TopPanel.mxml:9
+#: ../src/view/panel/TopPanel.mxml:9 ../src/view/panel/TopPanel.mxml:27
 msgid "Back to previous"
-msgstr ""
-
-#: ../src/view/panel/TopPanel.mxml:27
-msgid "Back to previouse"
 msgstr ""

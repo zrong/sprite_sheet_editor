@@ -24,7 +24,7 @@
 			
 			protected function handler_creationComplete($evt:FlexEvent):void
 			{
-				prevBTN.label = FxGettext.gettext("Back to previouse");
+				prevBTN.label = FxGettext.gettext("Back to previous");
 				stateNameLabel.text = FxGettext.gettext("Start");
 			}
 			
