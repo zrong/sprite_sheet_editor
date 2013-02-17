@@ -10,18 +10,12 @@
 		  creationComplete="handler_create(event)">
 	<fx:Script>
 	<![CDATA[
-		import flashx.textLayout.conversion.ConversionType;
-		
-		import org.zengrong.air.utils.getDesc;
+		import mx.events.FlexEvent;
 		
 		import flashx.textLayout.conversion.TextConverter;
 		import flashx.textLayout.elements.TextFlow;
-		import flashx.textLayout.events.FlowElementMouseEvent;
-		import flashx.textLayout.events.FlowOperationEvent;
 		
-		import mx.events.FlexEvent;
-		
-		import utils.Funs;
+		import org.zengrong.air.utils.getDesc;
 		[Embed(source="assets/about.txt",mimeType="application/octet-stream")] 
 		private static const TXT:Class;
 		
@@ -36,6 +30,7 @@
 		protected function handler_create($event:FlexEvent):void
 		{
 			_tf = TextConverter.importToFlow(new TXT().toString(), TextConverter.TEXT_FIELD_HTML_FORMAT);
+			htmlHelpRET.textFlow = _tf;
 			var __str:String =  '<p align="center"><b>' + getDesc('name') + ' v'+ getDesc('versionNumber') +'</b></p>'
 				+'<p>Author: zrong(<a href="mailto:zrongzrong@gmail.com">zrongzrong@gmail.com</a>)<br>Blog:　<a href="http://www.zengrong.net">http://www.zengrong.net</a></p>';
 			infoLabel.textFlow = TextConverter.importToFlow(__str, TextConverter.TEXT_FIELD_HTML_FORMAT);
@@ -44,6 +39,6 @@
 	]]>
 	</fx:Script>
 	<s:RichText id="infoLabel" top="10" left="10" right="10"/>
-	<s:RichEditableText id="txt" left="5" right="25" top="90" bottom="5" textFlow="{_tf}"/>
-	<s:VScrollBar viewport="{txt}" top="90" right="5" bottom="5"/>
+	<s:RichEditableText id="htmlHelpRET" left="5" right="25" top="90" bottom="5" editable="false" lineHeight="14"/>
+	<s:VScrollBar viewport="{htmlHelpRET}" top="90" right="5" bottom="5"/>
 </s:Window>
