@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-15 00:19+0800\n"
-"PO-Revision-Date: 2013-02-15 00:19+0800\n"
+"POT-Creation-Date: 2013-02-17 23:27+0800\n"
+"PO-Revision-Date: 2013-02-17 23:27+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -17,6 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
+
+#: ../src/mediator/comps/FramesAndLabelMediator.as:511
+msgid "Please enter label's name!"
+msgstr "请输入Label名称！"
+
+#: ../src/mediator/comps/FramesAndLabelMediator.as:516
+msgid "Please select the frame to add the label!"
+msgstr "请选择要加入label的帧！"
+
+#: ../src/mediator/comps/FramesAndLabelMediator.as:524
+msgid "Duplicate label's name is't allowed!"
+msgstr "Label名称不允许重复！"
+
+#: ../src/mediator/comps/FramesAndLabelMediator.as:558
+msgid "Please select the frame to remove."
+msgstr "请选择要删除的帧。"
 
 #: ../src/mediator/comps/SSPreviewMediator.as:82
 msgid "Frame animation preview"
@@ -127,47 +143,47 @@ msgstr "建立Sprite Sheet"
 msgid "Optimize Sprite Sheet"
 msgstr "优化Sprite Sheet"
 
-#: ../src/view/comps/BuildSetting.mxml:22
+#: ../src/view/comps/BuildSetting.mxml:23
 msgid "Smooth"
 msgstr "平滑"
 
-#: ../src/view/comps/BuildSetting.mxml:25
+#: ../src/view/comps/BuildSetting.mxml:26
 msgid "Transparent"
 msgstr "透明"
 
-#: ../src/view/comps/BuildSetting.mxml:30
+#: ../src/view/comps/BuildSetting.mxml:31
 msgid "Background"
 msgstr "背景"
 
-#: ../src/view/comps/BuildSetting.mxml:33
+#: ../src/view/comps/BuildSetting.mxml:37
 msgid ""
 "Select width or height of the SpriteSheet. Another dimension needed to "
 "automatically calculate."
 msgstr "选择生成的SpriteSheet的宽度或者高度。另一个维度根据需要自动计算。"
 
-#: ../src/view/comps/BuildSetting.mxml:35
+#: ../src/view/comps/BuildSetting.mxml:39
 msgid "Width"
 msgstr "宽"
 
-#: ../src/view/comps/BuildSetting.mxml:36
+#: ../src/view/comps/BuildSetting.mxml:40
 msgid "Height"
 msgstr "高"
 
-#: ../src/view/comps/BuildSetting.mxml:45
+#: ../src/view/comps/BuildSetting.mxml:50
 msgid "Trim blank"
 msgstr "修剪空白"
 
-#: ../src/view/comps/BuildSetting.mxml:46
+#: ../src/view/comps/BuildSetting.mxml:51
 msgid ""
 "If selected, then in the top left corner of the pixel color as a benchmark, "
 "cutting off the edge of the redundant blank."
 msgstr "选中后，将以左上角的像素颜色为基准，裁切掉边缘的多余空白"
 
-#: ../src/view/comps/BuildSetting.mxml:49
+#: ../src/view/comps/BuildSetting.mxml:54
 msgid "Reset frame size"
 msgstr "重设帧大小"
 
-#: ../src/view/comps/BuildSetting.mxml:50
+#: ../src/view/comps/BuildSetting.mxml:55
 msgid ""
 "If selected, reset the original frame to the size after pruning blank. In "
 "metadata, the trimmed frame size and the original frame size is same. "
@@ -180,29 +196,29 @@ msgstr ""
 "若不选，则仅在保存的Sheet图像中使用修剪后的大小，在metadata中记录原始的帧大小"
 "和修剪的帧大小的数据。"
 
-#: ../src/view/comps/BuildSetting.mxml:54
+#: ../src/view/comps/BuildSetting.mxml:61
 msgid "Power of 2"
 msgstr "2的幂"
 
-#: ../src/view/comps/BuildSetting.mxml:55
+#: ../src/view/comps/BuildSetting.mxml:62
 msgid "If selected, then output size are power of 2(e.g., 256,512)"
 msgstr "选中后，输出尺寸的宽高均为2的幂（如256,512）"
 
-#: ../src/view/comps/BuildSetting.mxml:58
+#: ../src/view/comps/BuildSetting.mxml:65
 msgid "Square"
 msgstr "正方形"
 
-#: ../src/view/comps/BuildSetting.mxml:59
+#: ../src/view/comps/BuildSetting.mxml:66
 msgid ""
 "If selected, then output file is square,  width and height are automatic "
 "identification"
 msgstr "选中后，输出尺寸比例为正方形，宽高自动确定"
 
-#: ../src/view/comps/BuildSetting.mxml:63
+#: ../src/view/comps/BuildSetting.mxml:71
 msgid "Build"
 msgstr "生成"
 
-#: ../src/view/comps/BuildSetting.mxml:64
+#: ../src/view/comps/BuildSetting.mxml:72
 msgid "Optimize"
 msgstr "优化"
 
@@ -237,13 +253,13 @@ msgid "move to bottom"
 msgstr "移动到底部"
 
 #: ../src/view/comps/FileManager.mxml:41
-#: ../src/view/comps/FramesAndLabels.mxml:81
+#: ../src/view/comps/FramesAndLabels.mxml:79
 #: ../src/view/comps/FramesAndLabels.mxml:130
 msgid "Move up"
 msgstr "上移"
 
 #: ../src/view/comps/FileManager.mxml:44
-#: ../src/view/comps/FramesAndLabels.mxml:85
+#: ../src/view/comps/FramesAndLabels.mxml:83
 #: ../src/view/comps/FramesAndLabels.mxml:133
 msgid "Move down"
 msgstr "下移"
@@ -264,39 +280,39 @@ msgstr "修剪尺寸"
 msgid "Original size"
 msgstr "原始尺寸"
 
-#: ../src/view/comps/FramesAndLabels.mxml:28
+#: ../src/view/comps/FramesAndLabels.mxml:26
 msgid "Open preview windows"
 msgstr "打开预览窗口"
 
-#: ../src/view/comps/FramesAndLabels.mxml:34
+#: ../src/view/comps/FramesAndLabels.mxml:32
 msgid "Use frame"
 msgstr "使用帧"
 
-#: ../src/view/comps/FramesAndLabels.mxml:35
+#: ../src/view/comps/FramesAndLabels.mxml:33
 msgid "Play the animation of selected frames"
 msgstr "播放选中的帧的动画"
 
-#: ../src/view/comps/FramesAndLabels.mxml:39
+#: ../src/view/comps/FramesAndLabels.mxml:37
 msgid "Use label"
 msgstr "使用Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:40
+#: ../src/view/comps/FramesAndLabels.mxml:38
 msgid "Play the animation of selected label"
 msgstr "播放选中Label的动画"
 
-#: ../src/view/comps/FramesAndLabels.mxml:47
+#: ../src/view/comps/FramesAndLabels.mxml:44
 msgid "Trim"
 msgstr "修剪"
 
-#: ../src/view/comps/FramesAndLabels.mxml:48
+#: ../src/view/comps/FramesAndLabels.mxml:45
 msgid "Display width and height of trimmed frame."
 msgstr "显示修剪空白后的帧的宽高"
 
-#: ../src/view/comps/FramesAndLabels.mxml:52
+#: ../src/view/comps/FramesAndLabels.mxml:49
 msgid "Original"
 msgstr "原始"
 
-#: ../src/view/comps/FramesAndLabels.mxml:53
+#: ../src/view/comps/FramesAndLabels.mxml:50
 msgid ""
 "Display the width and height of trimmed. In order to reduce file size, we "
 "could trim the blank. If the file does not trim, the original size and the "
@@ -305,19 +321,19 @@ msgstr ""
 "显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文"
 "件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:60
+#: ../src/view/comps/FramesAndLabels.mxml:56
 msgid "All available frames:"
 msgstr "所有可用帧："
 
-#: ../src/view/comps/FramesAndLabels.mxml:60
+#: ../src/view/comps/FramesAndLabels.mxml:56
 msgid "The frames are not available."
 msgstr "没有可用帧。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:64
+#: ../src/view/comps/FramesAndLabels.mxml:60
 msgid "Add Sprite Sheet"
 msgstr "增加Sprite Sheet"
 
-#: ../src/view/comps/FramesAndLabels.mxml:65
+#: ../src/view/comps/FramesAndLabels.mxml:61
 msgid ""
 "Add one or more Sprite Sheet to the end of the current Sprite Sheet. The "
 "rules are as follows:\n"
@@ -336,78 +352,78 @@ msgstr ""
 "4.若原始Sheet中包含name，但被导入Sheet中不含name，则会自动为被导入的Sheet中的"
 "所有帧命名。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:68
+#: ../src/view/comps/FramesAndLabels.mxml:64
 msgid "Add image frame"
 msgstr "增加图像帧"
 
-#: ../src/view/comps/FramesAndLabels.mxml:69
+#: ../src/view/comps/FramesAndLabels.mxml:65
 msgid ""
 "Add multiple image file. One frame added to the end of the current Sprite "
 "Sheet as a frame."
 msgstr "添加多个图像文件。每个图像作为一帧增加到当前Sprite Sheet的末尾。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:74
+#: ../src/view/comps/FramesAndLabels.mxml:70
 msgid "Remove frame"
 msgstr "删帧"
 
-#: ../src/view/comps/FramesAndLabels.mxml:75
+#: ../src/view/comps/FramesAndLabels.mxml:71
 msgid "Remove a frame from the list. Update the Sprite Sheet immediately."
 msgstr "从帧列表中删除一帧。删除后会立即更新Sprite Sheet。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:78
+#: ../src/view/comps/FramesAndLabels.mxml:74
 msgid "Selecte all"
 msgstr "选择所有"
 
-#: ../src/view/comps/FramesAndLabels.mxml:82
-#: ../src/view/comps/FramesAndLabels.mxml:86
+#: ../src/view/comps/FramesAndLabels.mxml:80
+#: ../src/view/comps/FramesAndLabels.mxml:84
 msgid "Move the frame's position, the frmae Numbers will change after moving."
 msgstr "移动帧的位置，移动后帧的编号也会发生变化。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:94
+#: ../src/view/comps/FramesAndLabels.mxml:92
 msgid "use label"
 msgstr "使用Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:99
+#: ../src/view/comps/FramesAndLabels.mxml:98
 msgid "Enter label"
 msgstr "输入Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:100
+#: ../src/view/comps/FramesAndLabels.mxml:99
 msgid "Label format: letters + Numbers"
 msgstr "label格式：英文字母+数字"
 
-#: ../src/view/comps/FramesAndLabels.mxml:104
+#: ../src/view/comps/FramesAndLabels.mxml:102
 msgid "Number of frame:"
 msgstr "帧数量："
 
-#: ../src/view/comps/FramesAndLabels.mxml:104
+#: ../src/view/comps/FramesAndLabels.mxml:102
 msgid "No selected label"
 msgstr "没有选择的Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:109
+#: ../src/view/comps/FramesAndLabels.mxml:107
 msgid "Add label"
 msgstr "增加Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:110
+#: ../src/view/comps/FramesAndLabels.mxml:108
 msgid "Add a label to the list."
 msgstr "添加一个Label到列表中。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:114
+#: ../src/view/comps/FramesAndLabels.mxml:112
 msgid "Remove label"
 msgstr "删除Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:115
+#: ../src/view/comps/FramesAndLabels.mxml:113
 msgid "Remove the selected label"
 msgstr "删除选择的Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:119
+#: ../src/view/comps/FramesAndLabels.mxml:117
 msgid "Modify label"
 msgstr "修改Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:124
+#: ../src/view/comps/FramesAndLabels.mxml:122
 msgid "Add frame"
 msgstr "插入帧"
 
-#: ../src/view/comps/FramesAndLabels.mxml:127
+#: ../src/view/comps/FramesAndLabels.mxml:125
 msgid "Reset frame"
 msgstr "重设帧大小"
 
@@ -629,7 +645,7 @@ msgstr "语言切换成功，请退出并重启。"
 msgid "1st frame(zero-based):"
 msgstr "第一帧(0基)："
 
-#: ../src/view/panel/SwfPanel.mxml:32
+#: ../src/view/panel/SwfPanel.mxml:35
 msgid "Total frames:"
 msgstr "所有帧："
 

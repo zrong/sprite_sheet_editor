@@ -1,17 +1,11 @@
 package mediator.comps
 {
-import events.SSEvent;
-
 import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
-import flash.ui.Mouse;
-
-import model.FileProcessor;
-import model.SpriteSheetModel;
 
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
@@ -21,6 +15,13 @@ import mx.collections.SortField;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.managers.PopUpManager;
+
+import events.SSEvent;
+
+import gnu.as3.gettext.FxGettext;
+
+import model.FileProcessor;
+import model.SpriteSheetModel;
 
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.assets.Assets;
@@ -507,12 +508,12 @@ public class FramesAndLabelMediator extends Mediator
 		var __labelName:String = v.labelNameInput.text;
 		if(!__labelName)
 		{
-			Funs.alert("请输入帧名称");
+			Funs.alert(FxGettext.gettext("Please enter label's name!"));
 			return;
 		}
 		if(!v.frameDG.selectedItem)
 		{
-			Funs.alert('请先选择要加入Label的帧！');
+			Funs.alert(FxGettext.gettext("Please select the frame to add the label!"));
 			v.addLabelBTN.enabled = false;
 			return;
 		}
@@ -520,7 +521,7 @@ public class FramesAndLabelMediator extends Mediator
 		{
 			if(LabelVO(_labelAL.getItemAt(i)).name == __labelName)
 			{
-				Funs.alert('Label不允许重复！');
+				Funs.alert(FxGettext.gettext("Duplicate label's name is't allowed!"));
 				return;
 			}
 		}
@@ -554,7 +555,7 @@ public class FramesAndLabelMediator extends Mediator
 		if(!v.frameDG.selectedItem)
 		{
 			//spark的组件怎么这么多绑定bug TNND……
-			Funs.alert('请先选择要删除的帧。');
+			Funs.alert(FxGettext.gettext("Please select the frame to remove."));
 			v.delFrameBTN.enabled = false;
 			return;
 		}
