@@ -21,14 +21,12 @@
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
-	
 	<!-- 预览窗口相关的界面 -->
+	<s:Button id="openPreviewBTN" height="40" enabled="{frameDG.selectedItem}">
+		<s:label>{FxGettext.gettext("Open preview windows")}</s:label>
+	</s:Button>
 	<s:HGroup width="100%">
-		<s:Button id="openPreviewBTN" height="40" enabled="{frameDG.selectedItem}">
-			<s:label>{FxGettext.gettext("Open preview windows")}</s:label>
-		</s:Button>
-		<s:Spacer width="100%" height="40"/>
-		<s:VGroup id="frameOrLabelGRP" width="80">
+		<s:VGroup id="frameOrLabelGRP" width="100%">
 			<s:RadioButton id="useFrameRB" width="100%"
 						   groupName="frameOrLabelRBG" selected="true" value="true">
 				<s:label>{FxGettext.gettext("Use frame")}</s:label>
@@ -39,7 +37,6 @@
 				<s:label>{FxGettext.gettext("Use label")}</s:label>
 				<s:toolTip>{FxGettext.gettext("Play the animation of selected label")}</s:toolTip>
 			</s:RadioButton>
-			
 		</s:VGroup>
 		<s:VGroup width="100%" enabled="{frameDG.selectedItem}">
 			<s:RadioButton id="disCropRB" width="100%"
@@ -54,7 +51,6 @@
 			</s:RadioButton>
 		</s:VGroup>
 	</s:HGroup>
-	
 	<!-- 以下是帧相关的界面 -->
 	<s:Label id="frameLabel" fontWeight="bold">
 		<s:text>{frameDG.dataProvider?FxGettext.gettext("All available frames:")+frameDG.dataProvider.length:FxGettext.gettext("The frames are not available.")}</s:text>
@@ -69,7 +65,7 @@
 				<s:toolTip>{FxGettext.gettext("Add multiple image file. One frame added to the end of the current Sprite Sheet as a frame.")}</s:toolTip>
 		</s:Button>
 	</s:HGroup>
-	<s:HGroup id="naviGRP" verticalAlign="middle" width="100%">
+	<s:HGroup id="naviGRP1" verticalAlign="middle" width="100%">
 		<s:Button id="delFrameBTN" width="100%">
 				<s:label>{FxGettext.gettext("Remove frame")}</s:label>
 				<s:toolTip>{FxGettext.gettext("Remove a frame from the list. Update the Sprite Sheet immediately.")}</s:toolTip>
@@ -77,11 +73,13 @@
 		<s:Button id="selectAllFrameBTN" width="100%" click="handler_allBTNclick(event)">
 				<s:label>{FxGettext.gettext("Selecte all")}</s:label>
 		</s:Button>
-		<s:Button id="upFrameBTN">
+	</s:HGroup>
+	<s:HGroup id="naviGRP2" verticalAlign="middle" width="100%">
+		<s:Button id="upFrameBTN" width="100%">
 			<s:label>{FxGettext.gettext("Move up")}</s:label>
 			<s:toolTip>{FxGettext.gettext("Move the frame's position, the frmae Numbers will change after moving.")}</s:toolTip>
 		</s:Button>
-		<s:Button id="downFrameBTN">
+		<s:Button id="downFrameBTN" width="100%">
 			<s:label>{FxGettext.gettext("Move down")}</s:label>
 			<s:toolTip>{FxGettext.gettext("Move the frame's position, the frmae Numbers will change after moving.")}</s:toolTip>
 		</s:Button>
@@ -95,11 +93,11 @@
 		</s:CheckBox>
 		<s:DropDownList id="labelDDL" includeIn="frameAndLabel" width="100%" labelField="name" itemCreationPolicy="immediate" requireSelection="true"
 						enabled="{labelDDL.dataProvider &amp;&amp;labelDDL.dataProvider.length>0}" />
-		<s:TextInput id="labelNameInput" width="100" includeIn="frameAndLabel">
-			<s:prompt>{FxGettext.gettext("Enter label")}</s:prompt>
-			<s:toolTip>{FxGettext.gettext("Label format: letters + Numbers")}</s:toolTip>
-		</s:TextInput>
 	</s:HGroup>
+	<s:TextInput id="labelNameInput" width="100%" includeIn="frameAndLabel">
+		<s:prompt>{FxGettext.gettext("Enter label")}</s:prompt>
+		<s:toolTip>{FxGettext.gettext("Label format: letters + Numbers")}</s:toolTip>
+	</s:TextInput>
 	<s:Label id="labelLabel" fontWeight="bold" includeIn="frameAndLabel">
 		<s:text>{labelDDL.selectedItem ? ("LABEL("+labelDDL.selectedItem.name+"),"+FxGettext.gettext("Number of frame:") + frameInLabelDG.dataProvider.length) : FxGettext.gettext("No selected label")}</s:text>
 	</s:Label>
@@ -120,18 +118,21 @@
 		</s:Button>
 	</s:HGroup>
 	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
-		<s:Button id="addFrameToLabelBTN" click="handler_addFrameToLabelBTNClick(event)">
+		<s:Button id="addFrameToLabelBTN" click="handler_addFrameToLabelBTNClick(event)" width="100%">
 			<s:label>{FxGettext.gettext("Add frame")}</s:label>
 		</s:Button>
-		<s:Button id="removeFrameFromLabelBTN" click="handler_removeFrameFromLabelBTNClick(event)">
+		<s:Button id="removeFrameFromLabelBTN" click="handler_removeFrameFromLabelBTNClick(event)" width="100%">
 			<s:label>{FxGettext.gettext("Reset frame")}</s:label>
 		</s:Button>
-		<s:Button id="upFrameInLabelBTN" click="handler_upFrameInLabelBTNClick(event)">
+	</s:HGroup>
+	<s:HGroup width="100%" verticalAlign="middle" includeIn="frameAndLabel" itemCreationPolicy="immediate">
+		<s:Button id="upFrameInLabelBTN" click="handler_upFrameInLabelBTNClick(event)" width="100%">
 			<s:label>{FxGettext.gettext("Move up")}</s:label>
 		</s:Button>
-		<s:Button id="downFrameInLabelBTN" click="handler_downFrameInLabelBTNClick(event)">
+		<s:Button id="downFrameInLabelBTN" click="handler_downFrameInLabelBTNClick(event)" width="100%">
 			<s:label>{FxGettext.gettext("Move down")}</s:label>
 		</s:Button>
+		
 	</s:HGroup>
 	<comps:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
 	

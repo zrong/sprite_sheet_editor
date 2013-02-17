@@ -19,7 +19,7 @@
 				<s:text>{FxGettext.gettext("Sprite Sheet")}</s:text>
 			</s:Label>
 			<comps:ImageTypeSetting id="imageSetting" width="100%"/>
-			<s:HGroup width="120" verticalAlign="middle">
+			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label>
 					<s:text>{FxGettext.gettext("Mask:")}</s:text>
 				</s:Label>
@@ -56,13 +56,13 @@
 		</s:VGroup>
 	</s:HGroup>
 	<s:HGroup width="100%" horizontalAlign="center">
-		<s:Button id="savePicBTN" click="handler_savePicBTNClick(event)" height="30" width="80">
+		<s:Button id="savePicBTN" click="handler_savePicBTNClick(event)" height="30" width="33%">
 			<s:label>{FxGettext.gettext("Save image")}</s:label>
 		</s:Button>
-		<s:Button id="saveAllBTN" click="handler_saveAllBTNClick(event)" height="30" width="80">
+		<s:Button id="saveAllBTN" click="handler_saveAllBTNClick(event)" height="30" width="33%">
 			<s:label>{FxGettext.gettext("Save all")}</s:label>
 		</s:Button>
-		<s:Button id="saveMetaBTN" click="handler_saveMetaBTNClick(event)" height="30" width="80">
+		<s:Button id="saveMetaBTN" click="handler_saveMetaBTNClick(event)" height="30" width="33%">
 			<s:label>{FxGettext.gettext("Save metadata")}</s:label>
 		</s:Button>
 	</s:HGroup>

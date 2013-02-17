@@ -17,47 +17,55 @@
 		<s:text.build>{FxGettext.gettext("Build Sprite Sheet")}</s:text.build>
 		<s:text.buildAndOpt>{FxGettext.gettext("Optimize Sprite Sheet")}</s:text.buildAndOpt>
 	</s:Label>
-	<s:HGroup width="100%" verticalAlign="middle">
-		<s:CheckBox id="smoothCB">
-			<s:label>{FxGettext.gettext("Smooth")}</s:label>
-		</s:CheckBox>
-		<s:CheckBox id="transparentCB" selected="true">
-			<s:label>{FxGettext.gettext("Transparent")}</s:label>
-		</s:CheckBox>
-		<s:Spacer width="100%" height="20"/>
-		<mx:ColorPicker id="bgColorPicker" enabled="{!transparentCB.selected}"/>
-		<s:Label>
-			<s:text>{FxGettext.gettext("Background")}</s:text>
-		</s:Label>
-		<s:DropDownList id="whDDL" requireSelection="true" width="50">
-			<s:toolTip>{FxGettext.gettext("Select width or height of the SpriteSheet. Another dimension needed to automatically calculate.")}</s:toolTip>
-			<s:ArrayList>
-				<fx:String>{FxGettext.gettext("Width")}</fx:String>
-				<fx:String>{FxGettext.gettext("Height")}</fx:String>
-			</s:ArrayList>
-		</s:DropDownList>
-		<!-- AIR3已经取消了对位图尺寸的限制，但这里还是限制一下 -->
-		<s:NumericStepper id="whNS" width="80" minimum="1" maximum="1000000" maxChars="6" value="200"/>
-		<s:Spacer width="100%" height="20"/>
+	<s:HGroup width="100%">
+		<s:VGroup verticalAlign="middle" width="100%">
+			<s:CheckBox id="smoothCB">
+				<s:label>{FxGettext.gettext("Smooth")}</s:label>
+			</s:CheckBox>
+			<s:CheckBox id="transparentCB" selected="true">
+				<s:label>{FxGettext.gettext("Transparent")}</s:label>
+			</s:CheckBox>
+			<s:HGroup verticalAlign="middle">
+				<mx:ColorPicker id="bgColorPicker" enabled="{!transparentCB.selected}"/>
+				<s:Label>
+					<s:text>{FxGettext.gettext("Background")}</s:text>
+				</s:Label>
+			</s:HGroup>
+		</s:VGroup>
+		<s:VGroup width="100%" >
+			<s:DropDownList id="whDDL" requireSelection="true" width="100%">
+				<s:toolTip>{FxGettext.gettext("Select width or height of the SpriteSheet. Another dimension needed to automatically calculate.")}</s:toolTip>
+				<s:ArrayList>
+					<fx:String>{FxGettext.gettext("Width")}</fx:String>
+					<fx:String>{FxGettext.gettext("Height")}</fx:String>
+				</s:ArrayList>
+			</s:DropDownList>
+			<!-- AIR3已经取消了对位图尺寸的限制，但这里还是限制一下 -->
+			<s:NumericStepper id="whNS" width="100%" minimum="1" maximum="1000000" maxChars="6" value="200"/>
+		</s:VGroup>
 	</s:HGroup>
 	<s:HGroup includeIn="buildAndOpt" width="100%">
-		<s:CheckBox id="trimCB" click="resetRectCB.selected=false;">
-			<s:label>{FxGettext.gettext("Trim blank")}</s:label>
-			<s:toolTip>{FxGettext.gettext("If selected, then in the top left corner of the pixel color as a benchmark, cutting off the edge of the redundant blank.")}</s:toolTip>
-		</s:CheckBox>
-		<s:CheckBox id="resetRectCB" visible="{trimCB.selected}">
-			<s:label>{FxGettext.gettext("Reset frame size")}</s:label>
-			<s:toolTip>{FxGettext.gettext("If selected, reset the original frame to the size after pruning blank. In metadata, the trimmed frame size and the original frame size is same. Otherwise, it has only use in the trimmed size which has been saved Sprite Sheet, and save the original frame size and trimmed frame size in the metadata.")}</s:toolTip>
-		</s:CheckBox>
-		<!--<s:CheckBox id="OptimizedCB" label="优化排列" toolTip="选中后，在排列Sheet的时候，会尽量利用空白区域" visible="false"/>-->
-		<s:CheckBox id="powerOf2CB">
-			<s:label>{FxGettext.gettext("Power of 2")}</s:label>
-			<s:toolTip>{FxGettext.gettext("If selected, then output size are power of 2(e.g., 256,512)")}</s:toolTip>
-		</s:CheckBox>
-		<s:CheckBox id="squareCB">
-			<s:label>{FxGettext.gettext("Square")}</s:label>
-			<s:toolTip>{FxGettext.gettext("If selected, then output file is square,  width and height are automatic identification")}</s:toolTip>
-		</s:CheckBox>
+		<s:VGroup width="100%">
+			<s:CheckBox id="trimCB" click="resetRectCB.selected=false;">
+				<s:label>{FxGettext.gettext("Trim blank")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If selected, then in the top left corner of the pixel color as a benchmark, cutting off the edge of the redundant blank.")}</s:toolTip>
+			</s:CheckBox>
+			<s:CheckBox id="resetRectCB" visible="{trimCB.selected}">
+				<s:label>{FxGettext.gettext("Reset frame size")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If selected, reset the original frame to the size after pruning blank. In metadata, the trimmed frame size and the original frame size is same. Otherwise, it has only use in the trimmed size which has been saved Sprite Sheet, and save the original frame size and trimmed frame size in the metadata.")}</s:toolTip>
+			</s:CheckBox>
+		</s:VGroup>
+		<s:VGroup width="100%">
+			<!--<s:CheckBox id="OptimizedCB" label="优化排列" toolTip="选中后，在排列Sheet的时候，会尽量利用空白区域" visible="false"/>-->
+			<s:CheckBox id="powerOf2CB">
+				<s:label>{FxGettext.gettext("Power of 2")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If selected, then output size are power of 2(e.g., 256,512)")}</s:toolTip>
+			</s:CheckBox>
+			<s:CheckBox id="squareCB">
+				<s:label>{FxGettext.gettext("Square")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If selected, then output file is square,  width and height are automatic identification")}</s:toolTip>
+			</s:CheckBox>
+		</s:VGroup>
 	</s:HGroup>
 	<s:Button id="buildBTN" height="30" width="80" click="this.dispatchEvent(new SSEvent(SSEvent.BUILD))">
 		<s:label.build>{FxGettext.gettext("Build")}</s:label.build>
