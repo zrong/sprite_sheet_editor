@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-02-17 23:27+0800\n"
-"PO-Revision-Date: 2013-02-17 23:27+0800\n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2013-03-27 23:35+0800\n"
+"Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.5\n"
 
 #: ../src/mediator/comps/FramesAndLabelMediator.as:511
 msgid "Please enter label's name!"
@@ -27,7 +28,7 @@ msgstr "Please select the frame to add the label!"
 
 #: ../src/mediator/comps/FramesAndLabelMediator.as:524
 msgid "Duplicate label's name is't allowed!"
-msgstr "Duplicate label's name is't allowed!"
+msgstr "No Duplicate label's name is allowed!"
 
 #: ../src/mediator/comps/FramesAndLabelMediator.as:558
 msgid "Please select the frame to remove."
@@ -43,7 +44,7 @@ msgstr "animation preview"
 
 #: ../src/mediator/panel/SSPanelMediator.as:92
 msgid "trimmed size"
-msgstr "trimmed size"
+msgstr "trim the size"
 
 #: ../src/mediator/panel/SSPanelMediator.as:93
 msgid "original size"
@@ -75,7 +76,7 @@ msgstr "Select a swf file"
 
 #: ../src/model/FileProcessor.as:99 ../src/model/FileProcessor.as:112
 msgid "Select image file"
-msgstr "Select image file"
+msgstr "Select an image file"
 
 #: ../src/model/FileProcessor.as:106
 msgid "Select a Sprite Sheet file"
@@ -83,23 +84,23 @@ msgstr "Select a Sprite Sheet file"
 
 #: ../src/model/FileProcessor.as:128
 msgid "Select the save path of Sprite Sheet file"
-msgstr "Select the save path of Sprite Sheet file"
+msgstr "Select the path to save the Sprite Sheet file"
 
 #: ../src/model/FileProcessor.as:132
 msgid "Select the save path of metadata"
-msgstr "Select the save path of metadata"
+msgstr "Select the path to save the metadata"
 
 #: ../src/model/FileProcessor.as:136
 msgid "Select the save path of the image sequence"
-msgstr "Select the save path of the image sequence"
+msgstr "Select the path to save the image sequence"
 
 #: ../src/model/FileProcessor.as:140
 msgid "Select the save path of image and metedata"
-msgstr "Select the save path of image and metedata"
+msgstr "Select the path to save image and metedata"
 
 #: ../src/SpriteSheetEditor.mxml:72
 msgid "Do you want to exit Sprite Sheet Editor?"
-msgstr "Do you want to exit Sprite Sheet Editor?"
+msgstr "Do you want to exit the Sprite Sheet Editor?"
 
 #: ../src/type/StateType.as:60 ../src/view/panel/TopPanel.mxml:12
 #: ../src/view/panel/TopPanel.mxml:28
@@ -108,15 +109,15 @@ msgstr "Start"
 
 #: ../src/type/StateType.as:62
 msgid "Edit Sprite Sheet"
-msgstr "Edit Sprite Sheet"
+msgstr "Edit a Sprite Sheet"
 
 #: ../src/type/StateType.as:64
 msgid "Import swf file"
-msgstr "Import swf file"
+msgstr "Import a swf file"
 
 #: ../src/type/StateType.as:66
 msgid "Process image file"
-msgstr "Process image file"
+msgstr "Process a  image file"
 
 #: ../src/utils/Funs.as:206
 msgid "Warning"
@@ -136,11 +137,11 @@ msgstr "Cancel"
 
 #: ../src/view/comps/BuildSetting.mxml:17
 msgid "Build Sprite Sheet"
-msgstr "Build Sprite Sheet"
+msgstr "Build the Sprite Sheet"
 
 #: ../src/view/comps/BuildSetting.mxml:18
 msgid "Optimize Sprite Sheet"
-msgstr "Optimize Sprite Sheet"
+msgstr "Optimize the Sprite Sheet"
 
 #: ../src/view/comps/BuildSetting.mxml:23
 msgid "Smooth"
@@ -159,8 +160,8 @@ msgid ""
 "Select width or height of the SpriteSheet. Another dimension needed to "
 "automatically calculate."
 msgstr ""
-"Select width or height of the SpriteSheet. Another dimension needed to "
-"automatically calculate."
+"Select the width or height of the SpriteSheet. Another dimension need to be "
+"automatically calculated."
 
 #: ../src/view/comps/BuildSetting.mxml:39
 msgid "Width"
@@ -172,19 +173,19 @@ msgstr "Height"
 
 #: ../src/view/comps/BuildSetting.mxml:50
 msgid "Trim blank"
-msgstr "Trim blank"
+msgstr "Trim the blank"
 
 #: ../src/view/comps/BuildSetting.mxml:51
 msgid ""
 "If selected, then in the top left corner of the pixel color as a benchmark, "
 "cutting off the edge of the redundant blank."
 msgstr ""
-"If selected, then in the top left corner of the pixel color as a benchmark, "
-"cutting off the edge of the redundant blank."
+"If selected, the blank edge will be cut off using the top left corner of the "
+"pixel color as reference."
 
 #: ../src/view/comps/BuildSetting.mxml:54
 msgid "Reset frame size"
-msgstr "Reset frame size"
+msgstr "Reset the frame size"
 
 #: ../src/view/comps/BuildSetting.mxml:55
 msgid ""
@@ -194,11 +195,10 @@ msgid ""
 "Sheet, and save the original frame size and trimmed frame size in the "
 "metadata."
 msgstr ""
-"If selected, reset the original frame to the size after pruning blank. In "
-"metadata, the trimmed frame size and the original frame size is same. "
-"Otherwise, it has only use in the trimmed size which has been saved Sprite "
-"Sheet, and save the original frame size and trimmed frame size in the "
-"metadata."
+"If selected, reset the trimed frame to the original size. The trimed frame "
+"size in metadata will be the same as the original size. If not selected, the "
+"trimed frame will be only used in the saved Sprite Sheet. The original frame "
+"size and trimed frame size will be both saved in the metadata."
 
 #: ../src/view/comps/BuildSetting.mxml:61
 msgid "Power of 2"
@@ -217,8 +217,8 @@ msgid ""
 "If selected, then output file is square,  width and height are automatic "
 "identification"
 msgstr ""
-"If selected, then output file is square,  width and height are automatic "
-"identification"
+"If selected, then output file will be the square,  width and height will be "
+"automaticlly defined."
 
 #: ../src/view/comps/BuildSetting.mxml:71
 msgid "Build"
@@ -244,9 +244,7 @@ msgstr "File size"
 msgid ""
 "Add multiple files. If you select items in the list, add the file will "
 "appear in the option above."
-msgstr ""
-"Add multiple files. If you select items in the list, add the file will "
-"appear in the option above."
+msgstr "Add multiple files. Selected items will be showed above the options."
 
 #: ../src/view/comps/FileManager.mxml:32
 msgid "Delete the selected file from the list."
@@ -254,11 +252,11 @@ msgstr "Delete the selected file from the list."
 
 #: ../src/view/comps/FileManager.mxml:35
 msgid "Move to top"
-msgstr "Move to top"
+msgstr "Move to the top"
 
 #: ../src/view/comps/FileManager.mxml:38
 msgid "move to bottom"
-msgstr "move to bottom"
+msgstr "move to the bottom"
 
 #: ../src/view/comps/FileManager.mxml:41
 #: ../src/view/comps/FramesAndLabels.mxml:79
@@ -274,11 +272,11 @@ msgstr "Move down"
 
 #: ../src/view/comps/FrameDataGrid.mxml:10
 msgid "Frame number"
-msgstr "Frame number"
+msgstr "Frame numbers"
 
 #: ../src/view/comps/FrameDataGrid.mxml:13
 msgid "Frame name"
-msgstr "Frame name"
+msgstr "Frame names"
 
 #: ../src/view/comps/FrameDataGrid.mxml:16
 msgid "Trimmed size"
@@ -290,23 +288,23 @@ msgstr "Original size"
 
 #: ../src/view/comps/FramesAndLabels.mxml:26
 msgid "Open preview windows"
-msgstr "Open preview windows"
+msgstr "Open the preview window"
 
 #: ../src/view/comps/FramesAndLabels.mxml:32
 msgid "Use frame"
-msgstr "Use frame"
+msgstr "Use the frame"
 
 #: ../src/view/comps/FramesAndLabels.mxml:33
 msgid "Play the animation of selected frames"
-msgstr "Play the animation of selected frames"
+msgstr "Play the animation of the selected frames"
 
 #: ../src/view/comps/FramesAndLabels.mxml:37
 msgid "Use label"
-msgstr "Use label"
+msgstr "Use the label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:38
 msgid "Play the animation of selected label"
-msgstr "Play the animation of selected label"
+msgstr "Play the animation of the selected label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:44
 msgid "Trim"
@@ -314,7 +312,7 @@ msgstr "Trim"
 
 #: ../src/view/comps/FramesAndLabels.mxml:45
 msgid "Display width and height of trimmed frame."
-msgstr "Display width and height of trimmed frame."
+msgstr "Display width and height of the trimmed frame."
 
 #: ../src/view/comps/FramesAndLabels.mxml:49
 msgid "Original"
@@ -326,9 +324,9 @@ msgid ""
 "could trim the blank. If the file does not trim, the original size and the "
 "trimmed size is same."
 msgstr ""
-"Display the width and height of trimmed. In order to reduce file size, we "
-"could trim the blank. If the file does not trim, the original size and the "
-"trimmed size is same."
+"Display the width and height of the untrimmed frame. It will be used the "
+"actual progress. To reduce the file size, we could trime the blank. If the "
+"file is not trimed, the original size will be the same as the trimmed size."
 
 #: ../src/view/comps/FramesAndLabels.mxml:56
 msgid "All available frames:"
@@ -336,11 +334,11 @@ msgstr "All available frames:"
 
 #: ../src/view/comps/FramesAndLabels.mxml:56
 msgid "The frames are not available."
-msgstr "The frames are not available."
+msgstr "No available frame."
 
 #: ../src/view/comps/FramesAndLabels.mxml:60
 msgid "Add Sprite Sheet"
-msgstr "Add Sprite Sheet"
+msgstr "Add a Sprite Sheet"
 
 #: ../src/view/comps/FramesAndLabels.mxml:61
 msgid ""
@@ -356,33 +354,33 @@ msgid ""
 msgstr ""
 "Add one or more Sprite Sheet to the end of the current Sprite Sheet. The "
 "rules are as follows:\n"
-"1. All frames will be added to the Sprite Sheet at the end of current;\n"
-"2. If the label is the same name, the label in the Sprite Sheet do not "
-"import, but all frames in the label will be imported;\n"
-"3. If the name is the same name, the name in the Sprite Sheet do not "
-"import;\n"
-"4. If original Sprite Sheet contains frame name, but imported Sprite Sheet "
-"does not, all frame in the Sprite Sheet will be automatically named."
+"1. All frames will be added to the end of current Sprite Sheet;\n"
+"2. If the label has already existed, it won't be imported. But all frames in "
+"the label will be imported;\n"
+"3. If the name has already existed, it won't be imported;\n"
+"4. If the original Sprite Sheet contains the frame name, all imported frames "
+"without names will be automatically named."
 
 #: ../src/view/comps/FramesAndLabels.mxml:64
 msgid "Add image frame"
-msgstr "Add image frame"
+msgstr "Add the image frame"
 
 #: ../src/view/comps/FramesAndLabels.mxml:65
 msgid ""
 "Add multiple image file. One frame added to the end of the current Sprite "
 "Sheet as a frame."
 msgstr ""
-"Add multiple image file. One frame added to the end of the current Sprite "
-"Sheet as a frame."
+"Add multiple image files. Each image will be added to the end of the current "
+"Sprite Sheet as a frame."
 
 #: ../src/view/comps/FramesAndLabels.mxml:70
 msgid "Remove frame"
-msgstr "Remove frame"
+msgstr "Remove the frame"
 
 #: ../src/view/comps/FramesAndLabels.mxml:71
 msgid "Remove a frame from the list. Update the Sprite Sheet immediately."
-msgstr "Remove a frame from the list. Update the Sprite Sheet immediately."
+msgstr ""
+"Remove a frame from the list. The Sprite Sheet will be updated immediately."
 
 #: ../src/view/comps/FramesAndLabels.mxml:74
 msgid "Selecte all"
@@ -391,15 +389,16 @@ msgstr "Selecte all"
 #: ../src/view/comps/FramesAndLabels.mxml:80
 #: ../src/view/comps/FramesAndLabels.mxml:84
 msgid "Move the frame's position, the frmae Numbers will change after moving."
-msgstr "Move the frame's position, the frmae Numbers will change after moving."
+msgstr ""
+"Change the frame's position, the frmae numbers will changed afterwards."
 
 #: ../src/view/comps/FramesAndLabels.mxml:92
 msgid "use label"
-msgstr "use label"
+msgstr "Use the label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:98
 msgid "Enter label"
-msgstr "Enter label"
+msgstr "Enter a label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:99
 msgid "Label format: letters + Numbers"
@@ -407,15 +406,15 @@ msgstr "Label format: letters + Numbers"
 
 #: ../src/view/comps/FramesAndLabels.mxml:102
 msgid "Number of frame:"
-msgstr "Number of frame:"
+msgstr "Number of the frame:"
 
 #: ../src/view/comps/FramesAndLabels.mxml:102
 msgid "No selected label"
-msgstr "No selected label"
+msgstr "Unselected label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:107
 msgid "Add label"
-msgstr "Add label"
+msgstr "Add the label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:108
 msgid "Add a label to the list."
@@ -423,7 +422,7 @@ msgstr "Add a label to the list."
 
 #: ../src/view/comps/FramesAndLabels.mxml:112
 msgid "Remove label"
-msgstr "Remove label"
+msgstr "Remove the label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:113
 msgid "Remove the selected label"
@@ -431,15 +430,15 @@ msgstr "Remove the selected label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:117
 msgid "Modify label"
-msgstr "Modify label"
+msgstr "Modify the label"
 
 #: ../src/view/comps/FramesAndLabels.mxml:122
 msgid "Add frame"
-msgstr "Add frame"
+msgstr "Add the frame"
 
 #: ../src/view/comps/FramesAndLabels.mxml:125
 msgid "Reset frame"
-msgstr "Reset frame"
+msgstr "Reset the frame"
 
 #: ../src/view/comps/ImageTypeSetting.mxml:19
 msgid "Compress:"
@@ -455,15 +454,15 @@ msgstr "Show all"
 
 #: ../src/view/comps/Preview.mxml:65
 msgid "Chess background"
-msgstr "Chess background"
+msgstr "The chess background"
 
 #: ../src/view/comps/Preview.mxml:66
 msgid "White background"
-msgstr "White background"
+msgstr "The white background"
 
 #: ../src/view/comps/Preview.mxml:67
 msgid "Black background"
-msgstr "Black background"
+msgstr "The black background"
 
 #: ../src/view/comps/SaveSeqSetting.mxml:17
 msgid "Prefix"
@@ -471,7 +470,7 @@ msgstr "Prefix"
 
 #: ../src/view/comps/SaveSeqSetting.mxml:23
 msgid "Start at:"
-msgstr "Start at:"
+msgstr "Start with:"
 
 #: ../src/view/comps/SaveSeqSetting.mxml:29
 msgid "Digits:"
@@ -479,7 +478,7 @@ msgstr "Digits:"
 
 #: ../src/view/comps/SaveSeqSetting.mxml:37
 msgid "File name preview:"
-msgstr "File name preview:"
+msgstr "The file name preview:"
 
 #: ../src/view/comps/SaveSeqSetting.mxml:42
 msgid "Save"
@@ -523,15 +522,15 @@ msgstr "TXT format"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:49
 msgid "Use simple metadata"
-msgstr "Use simple metadata"
+msgstr "Use the simple metadata"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:50
 msgid "If selected, coordinate and WH are saved only."
-msgstr "If selected, coordinate and WH are saved only."
+msgstr "If selected, only save coordinate and WH."
 
 #: ../src/view/comps/SaveSheetSetting.mxml:53
 msgid "Include file name"
-msgstr "Include file name"
+msgstr "Include the file name"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:54
 msgid ""
@@ -540,12 +539,12 @@ msgid ""
 "through the file name."
 msgstr ""
 "If selected, the relationship between the image file name and the frame "
-"index are saved in metadata. Then, you can get the corresponding frame "
-"through the file name."
+"index will be saved in the metadata. And  you can get the corresponding "
+"frame by the image file name."
 
 #: ../src/view/comps/SaveSheetSetting.mxml:60
 msgid "Save image"
-msgstr "Save image"
+msgstr "Save the image"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:63
 msgid "Save all"
@@ -553,7 +552,7 @@ msgstr "Save all"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:66
 msgid "Save metadata"
-msgstr "Save metadata"
+msgstr "Save the metadata"
 
 #: ../src/view/comps/SSPreview.mxml:9
 msgid "Bitmap animation preview"
@@ -576,12 +575,12 @@ msgid ""
 "Is selected, the original size is reduced. But you can still be executed "
 "'Trim blank' again on the basis of reduced size."
 msgstr ""
-"Is selected, the original size is reduced. But you can still be executed "
-"'Trim blank' again on the basis of reduced size."
+"Is selected, the original size will be reduced. But you can still 'Trim the "
+"blank' again on the resized image."
 
 #: ../src/view/comps/SSPreview.mxml:29
 msgid "Do adjusting"
-msgstr "Do adjusting"
+msgstr "Save the adjustment"
 
 #: ../src/view/comps/SSPreview.mxml:30
 msgid ""
@@ -589,9 +588,9 @@ msgid ""
 "optimization.\n"
 "This action will directly modify the size of the original size."
 msgstr ""
-"Recalculated according to the original size adjusted, and immediate "
-"optimization.\n"
-"This action will directly modify the size of the original size."
+"Recalculated the size according to the original one and optimize the image "
+"immediatly.\n"
+"This operation will resize the original size."
 
 #: ../src/view/panel/PicPanel.mxml:20 ../src/view/panel/SwfPanel.mxml:15
 msgid "frame(x,y,w,h)"
@@ -615,11 +614,11 @@ msgstr "Open a swf file"
 
 #: ../src/view/panel/StartPanel.mxml:10
 msgid "Convert a swf file to Sprite Sheet in sequential frame."
-msgstr "Convert a swf file to Sprite Sheet in sequential frame."
+msgstr "Convert a swf file to a Sprite Sheet in frame order."
 
 #: ../src/view/panel/StartPanel.mxml:13
 msgid "Import image file"
-msgstr "Import image file"
+msgstr "Import a image file"
 
 #: ../src/view/panel/StartPanel.mxml:14
 msgid "Convert a set of file to a Sprite Sheet."
@@ -631,11 +630,11 @@ msgstr "Open a Sprite Sheet"
 
 #: ../src/view/panel/StartPanel.mxml:19
 msgid "Open a Sprite Sheet for edit and optimize."
-msgstr "Open a Sprite Sheet for edit and optimize."
+msgstr "Open a Sprite Sheet for editing and optimizing."
 
 #: ../src/view/panel/StartPanel.mxml:24
 msgid "Check update"
-msgstr "Check update"
+msgstr "Check for updates"
 
 #: ../src/view/panel/StartPanel.mxml:28
 msgid "About"
@@ -655,11 +654,11 @@ msgstr "Language:"
 
 #: ../src/view/panel/StartPanel.mxml:107
 msgid "Language change sucessfully. Please exit and restart it."
-msgstr "Language change sucessfully. Please exit and restart it."
+msgstr "Language has been changed. Please exit and restart it."
 
 #: ../src/view/panel/SwfPanel.mxml:28
 msgid "1st frame(zero-based):"
-msgstr "1st frame(zero-based):"
+msgstr "The 1st frame(zero-based):"
 
 #: ../src/view/panel/SwfPanel.mxml:35
 msgid "Total frames:"
@@ -667,4 +666,4 @@ msgstr "Total frames:"
 
 #: ../src/view/panel/TopPanel.mxml:9 ../src/view/panel/TopPanel.mxml:27
 msgid "Back to previous"
-msgstr "Back to previous"
+msgstr "Back to the previous step"
