@@ -85,7 +85,7 @@ public class Funs
 		for (var i:int = 1; i < $frameRects.length; i++) 
 		{
 			__frameRect = $frameRects[i];
-			Funs.updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
+			updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
 			trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
 			$newSizeRects[i] = __rectInSheet.clone();
 		}

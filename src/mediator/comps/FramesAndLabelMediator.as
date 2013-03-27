@@ -157,7 +157,7 @@ public class FramesAndLabelMediator extends Mediator
 			__frame.originRect = __meta.originalFrameRects[i];
 			_frames.addItem(__frame);
 		}
-		v.frameDG.dataProvider = _frames;
+		v.framesData = _frames;
 		
 		_labelAL = new ArrayList();
 		v.labelDDL.dataProvider = _labelAL;
@@ -405,7 +405,7 @@ public class FramesAndLabelMediator extends Mediator
 		else
 		{
 			v.frameInLabelDG.selectedIndex = _currentIndex;
-			if(_currentIndex == -1 || _currentIndex == v.frameInLabelDG.dataProvider.length-1)
+			if(_currentIndex == -1 || _currentIndex == v.framesAndLabelData.length-1)
 				_currentIndex = 0;
 			else
 				_currentIndex ++;
@@ -429,17 +429,18 @@ public class FramesAndLabelMediator extends Mediator
 		{
 			if(v.labelDDL.selectedIndex < 0)
 			{
-				v.frameInLabelDG.dataProvider = null;
+				v.framesAndLabelData = null;
 			}
 			else
 			{
 				var __selectedLabel:LabelVO = v.labelDDL.selectedItem as LabelVO;
-				v.frameInLabelDG.dataProvider = __selectedLabel.frames;
+				v.framesAndLabelData = __selectedLabel.frames;
 			}
 		}
 		else
 		{
-			v.frameDG.selectedIndex = -1;
+			var __selectedIndex:int = (ssModel.selectedFrameIndex >= 0) ? ssModel.selectedFrameIndex : -1;
+			v.frameDG.selectedIndex = __selectedIndex;
 		}
 	}
 	
@@ -564,6 +565,7 @@ public class FramesAndLabelMediator extends Mediator
 			var __delItem:FrameVO = v.getFrameItemAt(selectedFrameIndices.pop());
 			ssModel.originalSheet.removeFrameAt(__delItem.frameNum);
 			ssModel.adjustedSheet.removeFrameAt(__delItem.frameNum);
+			ssModel.selectedFrameIndex = -1;
 			trace('删除Sheet与adjustedSheet中的帧，删除后：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
 			//若选择了Label，在labelVO中删除
 			if(v.labelCB.selected && v.labelDDL.selectedItem)
@@ -608,7 +610,6 @@ public class FramesAndLabelMediator extends Mediator
 			}
 		}
 	}
-	
 	
 	private function handler_ssPreviewPlay($evt:SSEvent):void
 	{
@@ -699,13 +700,27 @@ public class FramesAndLabelMediator extends Mediator
 	//向上移动帧
 	protected function handler_upFrameBTNclick($evt:MouseEvent):void
 	{
-		
+		moveFrame(v.frameDG.selectedIndex, -1);
 	}
 	
 	//向下移动帧
 	protected function handler_downFrameBTNclick($evt:MouseEvent):void
 	{
-		
+		moveFrame(v.frameDG.selectedIndex, 1);
+	}
+	
+	//移动帧
+	private function moveFrame($index:int, $flag:int):void
+	{
+		var __oldFrame:FrameVO = v.getFrameItemAt($index);
+		var __oldBmd:BitmapData = ssModel.originalSheet.getBMDByIndex($index).clone();
+		ssModel.originalSheet.removeFrameAt(__oldFrame.frameNum);
+		ssModel.adjustedSheet.removeFrameAt(__oldFrame.frameNum);
+		ssModel.originalSheet.addFrameAt($index + $flag, __oldBmd, __oldFrame.frameRect, __oldFrame.originRect, __oldFrame.frameName);
+		ssModel.adjustedSheet.addFrameAt($index + $flag, __oldBmd.clone(), __oldFrame.frameRect, __oldFrame.originRect, __oldFrame.frameName);
+		//保存移动之后的index，方便在刷新Frame之后还原
+		ssModel.selectedFrameIndex = $index + $flag;
+		dispatchOptimize();
 	}
 	
 	private function handler_frameDisChange($evt:FlexEvent):void

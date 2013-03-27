@@ -49,10 +49,7 @@ public class FileProcessor extends Actor
 	
 	public function FileProcessor()
 	{
-		_file = File.desktopDirectory;
-		_file.addEventListener(FileListEvent.SELECT_MULTIPLE, handler_selectMulti);
-		_file.addEventListener(Event.SELECT, handler_selectSingle);
-		_file.addEventListener(Event.CANCEL, handler_selectCancel);
+		initFile(File.desktopDirectory);
 		
 		initFilter();
 		
@@ -71,6 +68,20 @@ public class FileProcessor extends Actor
 	private var _ssLoader:SpriteSheetLoader;	//用于载入现有的SpriteSheet
 	
 	private var _saveData:SaveVO;
+	
+	private function initFile($file:File):void
+	{
+		if(_file)
+		{
+			_file.removeEventListener(FileListEvent.SELECT_MULTIPLE, handler_selectMulti);
+			_file.removeEventListener(Event.SELECT, handler_selectSingle);
+			_file.removeEventListener(Event.CANCEL, handler_selectCancel);
+		}
+		_file = $file;
+		_file.addEventListener(FileListEvent.SELECT_MULTIPLE, handler_selectMulti);
+		_file.addEventListener(Event.SELECT, handler_selectSingle);
+		_file.addEventListener(Event.CANCEL, handler_selectCancel);
+	}
 	
 	private function initFilter():void
 	{
@@ -126,6 +137,8 @@ public class FileProcessor extends Actor
 		{
 			case StateType.SAVE_SHEET_PIC:
 				__title = FxGettext.gettext("Select the save path of Sprite Sheet file");
+				//更新一次File的引用，是为了避免File指向老的已经存在的图片，导致AIR的覆盖提示错误
+				initFile(getFile(_saveData.picType));
 				_file.browseForSave(__title);
 				break;
 			case StateType.SAVE_META:
@@ -138,6 +151,8 @@ public class FileProcessor extends Actor
 				break;
 			case StateType.SAVE_ALL:
 				__title = FxGettext.gettext("Select the save path of image and metedata");
+				//更新一次File的引用，是为了避免File指向老的已经存在的图片，导致AIR的覆盖提示错误
+				initFile(getFile(_saveData.picType));
 				_file.browseForSave(__title);
 				break;
 		}
