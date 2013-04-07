@@ -16,8 +16,12 @@ import model.SpriteSheetModel;
 import model.StateModel;
 
 import org.robotlegs.mvcs.Mediator;
+import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 import org.zengrong.display.spritesheet.MaskType;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataJSON;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataTXT;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataXML;
 import org.zengrong.utils.BitmapUtil;
 
 import type.StateType;
@@ -382,7 +386,7 @@ public class SSPanelMediator extends Mediator
 	{
 		//hasName, names, namesIndex, totalFrame, frameRects, originalFrameRects 这几个变量
 		//是在生成Sheet的时候填充的，因此这里不需要更新
-		var __meta:SpriteSheetMetadata = ssModel.adjustedSheet.metadata;
+		var __meta:ISpriteSheetMetadata = ssModel.adjustedSheet.metadata;
 		__meta.type = v.saveSheet.sheetType;
 		__meta.maskType = v.saveSheet.maskDDL.selectedIndex;
 		var __mediator:FramesAndLabelMediator = mediatorMap.retrieveMediator(v.framesAndLabels) as FramesAndLabelMediator;
@@ -395,10 +399,16 @@ public class SSPanelMediator extends Mediator
 	private function getMetadata():String
 	{
 		if(v.saveSheet.jsonRB.selected)
-			return JSON.stringify(ssModel.adjustedSheet.metadata.toObject(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected));
+			return (new SpriteSheetMetadataJSON(ssModel.adjustedSheet.metadata)).objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
 		if(v.saveSheet.xmlRB.selected)
-			return ssModel.adjustedSheet.metadata.toXMLString(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected);
-		return ssModel.adjustedSheet.metadata.toTXT(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected);
+			return (new SpriteSheetMetadataXML(ssModel.adjustedSheet.metadata)).objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
+		if(v.saveSheet.starlingRB.selected)
+		{
+//			return '<?xml version="1.0" encoding="UTF-8"?>' + lineEnding + 
+//				'<!-- Created with SpriteSheetEditor 12.0.0.481 -->' + lineEnding +
+//				'<!-- http://zengrong.net/sprite_sheet_editor -->' + lineEnding +
+		}
+		return (new SpriteSheetMetadataTXT(ssModel.adjustedSheet.metadata)).objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
 	}
 }
 }

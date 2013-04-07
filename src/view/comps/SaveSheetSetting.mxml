@@ -45,6 +45,9 @@
 			<s:RadioButton id="txtRB" groupName="metaRBG">
 				<s:label>{FxGettext.gettext("TXT format")}</s:label>
 			</s:RadioButton>
+			<s:RadioButton id="starlingRB" groupName="metaRBG">
+				<s:label>{FxGettext.gettext("Starling format")}</s:label>
+			</s:RadioButton>
 			<s:CheckBox id="simpleCB">
 				<s:label>{FxGettext.gettext("Use simple metadata")}</s:label>
 				<s:toolTip>{FxGettext.gettext("If selected, coordinate and WH are saved only.")}</s:toolTip>

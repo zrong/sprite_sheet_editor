@@ -40,6 +40,7 @@ import view.comps.SSPreview;
 import vo.FrameVO;
 import vo.LabelListVO;
 import vo.LabelVO;
+import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 
 public class FramesAndLabelMediator extends Mediator
 {
@@ -144,7 +145,7 @@ public class FramesAndLabelMediator extends Mediator
 	
 	public function init():void
 	{
-		var __meta:SpriteSheetMetadata = ssModel.adjustedSheet.metadata;
+		var __meta:ISpriteSheetMetadata = ssModel.adjustedSheet.metadata;
 		_frames = new ArrayCollection();
 		var __frame:FrameVO = null;
 		var i:int=0;
