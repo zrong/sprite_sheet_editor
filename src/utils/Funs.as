@@ -9,6 +9,7 @@ import gnu.as3.gettext.ISO_3166;
 import gnu.as3.gettext.ISO_639_1;
 import gnu.as3.gettext.Locale;
 
+import org.zengrong.air.utils.getDesc;
 import org.zengrong.utils.MathUtil;
 import org.zengrong.utils.SOUtil;
 
@@ -226,5 +227,16 @@ public class Funs
 		return [(Global.root.width-$alert.width)*.5, (Global.root.height-$alert.height)*.5];
 	}
 	
+	public static function getCreatedWith():String
+	{
+		return "Created with " + getDesc("name") + " v" + getDesc("versionNumber");
+	}
+	
+	public static function getXMLHeader($lineEnding:String):String
+	{
+			return '<?xml version="1.0" encoding="UTF-8"?>' +$lineEnding+ 
+				"<!-- " + getCreatedWith() + " -->" + $lineEnding +
+				"<!-- http://zengrong.net/sprite_sheet_editor -->" + $lineEnding;
+	}
 }
 }

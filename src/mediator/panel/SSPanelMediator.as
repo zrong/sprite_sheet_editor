@@ -4,6 +4,7 @@ import flash.display.BitmapData;
 import flash.events.Event;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import flash.text.ReturnKeyLabel;
 
 import events.SSEvent;
 
@@ -20,8 +21,10 @@ import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 import org.zengrong.display.spritesheet.MaskType;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataJSON;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataStarling;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataTXT;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataXML;
+import org.zengrong.file.FileEnding;
 import org.zengrong.utils.BitmapUtil;
 
 import type.StateType;
@@ -398,17 +401,26 @@ public class SSPanelMediator extends Mediator
 	
 	private function getMetadata():String
 	{
+		var __meta:ISpriteSheetMetadata = null;
 		if(v.saveSheet.jsonRB.selected)
-			return (new SpriteSheetMetadataJSON(ssModel.adjustedSheet.metadata)).objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
-		if(v.saveSheet.xmlRB.selected)
-			return (new SpriteSheetMetadataXML(ssModel.adjustedSheet.metadata)).objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
-		if(v.saveSheet.starlingRB.selected)
 		{
-//			return '<?xml version="1.0" encoding="UTF-8"?>' + lineEnding + 
-//				'<!-- Created with SpriteSheetEditor 12.0.0.481 -->' + lineEnding +
-//				'<!-- http://zengrong.net/sprite_sheet_editor -->' + lineEnding +
+			__meta = new SpriteSheetMetadataJSON(ssModel.adjustedSheet.metadata);
 		}
-		return (new SpriteSheetMetadataTXT(ssModel.adjustedSheet.metadata)).objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
+		else if(v.saveSheet.xmlRB.selected)
+		{
+			__meta = new SpriteSheetMetadataXML(ssModel.adjustedSheet.metadata);
+			SpriteSheetMetadataXML(__meta).header = Funs.getXMLHeader(FileEnding.UNIX);
+		}
+		else if(v.saveSheet.starlingRB.selected)
+		{
+			__meta = new SpriteSheetMetadataStarling(ssModel.adjustedSheet.metadata);
+			SpriteSheetMetadataXML(__meta).header = Funs.getXMLHeader(FileEnding.UNIX);
+		}
+		else
+		{
+			__meta = new SpriteSheetMetadataTXT(ssModel.adjustedSheet.metadata);
+		}
+		return __meta.objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
 	}
 }
 }
