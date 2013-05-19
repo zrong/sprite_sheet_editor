@@ -2,6 +2,8 @@
 .flexProperties
 .project
 .settings
+*.as3proj
+*.bat
 bin
 obj
-sprite_sheet_editor.as3proj
+bat

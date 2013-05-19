@@ -25,7 +25,7 @@
   <initialWindow>
     <!-- The main SWF or HTML file of the application. Required. -->
     <!-- Note: In Flash Builder, the SWF reference is set automatically. -->
-    <content>[%e6%ad%a4%e5%80%bc%e5%b0%86%e7%94%b1%20Flash%20Builder%20%e5%9c%a8%e8%be%93%e5%87%ba%20app.xml%20%e4%b8%ad%e8%a6%86%e7%9b%96]</content>
+    <content>SpriteSheetEditor.swf</content>
     <!-- The title of the main window. Optional. -->
     <!-- <title></title> -->
     <!-- The type of system chrome to use (either "standard" or "none"). Optional. Default standard. -->
