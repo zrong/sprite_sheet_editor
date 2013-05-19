@@ -11,7 +11,7 @@ import flash.ui.MouseCursorData;
 
 public class Global
 {
-	[Embed(source="assets/chess.png")]
+	[Embed(source="/assets/chess.png")]
 	public static const BMP_CHESS:Class;
 	
 	//Assets.swf来自于Flex框架 %FLEX_SDK%\frameworks\projects\framework\assets\Assets.swf

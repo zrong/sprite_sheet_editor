@@ -16,7 +16,7 @@
 		import flashx.textLayout.elements.TextFlow;
 		
 		import org.zengrong.air.utils.getDesc;
-		[Embed(source="assets/about.txt",mimeType="application/octet-stream")] 
+		[Embed(source="/assets/about.txt",mimeType="application/octet-stream")] 
 		private static const TXT:Class;
 		
 		[Bindable] private var _tf:TextFlow;
