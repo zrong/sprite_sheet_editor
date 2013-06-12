@@ -7,10 +7,35 @@ global
 {
 	font-size: 12;
 	fontFamily: "Microsoft YaHei,simsun";
+	chrome-color: #333333;
+	color: #CCCCCC;
+	content-background-color: #777777;
+	symbol-color: #000000;
+	roll-over-color: #555555;
+	selection-color: #333333;
+	focus-color: #999999;
+	accent-color: #8C8C8C
+}
+
+s|Application,s|Panel,mx|Panel,mx|TitleWindow,mx|TabNavigator,mx|SwatchPanel
+{
+	background-color: #666666;
+}
+
+s|RichEditableText
+{
+	focusedTextSelectionColor: #333333;
+	unfocusedTextSelectionColor: #333333;
+}
+
+mx|DataGrid
+{
+	alternating-item-colors: #777777, #777777;
 }
 
 mx|ToolTip
 {
 	font-size: 12;
+	color: #000000;
 }
 	
