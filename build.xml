@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Debug and Package the AIR Flex 4 Project -->
+<!-- Author : zrong -->
+<!-- Blog: zengrong.net -->
+<!-- E-mail : zrongzrong@gmail.com -->
+<!-- Creation : 2012-10-29 -->
+<!-- Modification : 2013-06-13 -->
+<project name="airPackager" default="packswf">
+	<property file="build.properties" />
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
+	<if>
+		<or>
+			<istrue value="${standalone}"/>
+			<not>
+				<available property="fd.exists" file="${FD_PROJECT}"/>
+			</not>
+		</or>
+		<!-- 若单独使用，或者找不到FD配置，那么根据变量自动生成 -->
+		<then>
+			<property name="swf.name" value="${MAIN_NAME}.swf"/>
+			<property name="swf.file" value="${BIN_DIR}/${swf.name}"/>
+			<property name="main.name" value="${MAIN_NAME}.mxml"/>
+			<property name="main.file" value="${SRC_DIR}/${MAIN_PATH}${main.name}"/>
+		</then>
+		<!-- 否则读取FD配置的内容 -->
+		<else>
+			<echo>Found the Flash Develop project: ${FD_PROJECT}.</echo>
+			<!-- 读取FD配置，获取FD导出的swf文件，替换原来的变量值 -->
+			<xmlproperty file="${FD_PROJECT}" keeproot="false"/>
+			<!-- 获取Flash Develop项目文件中配置的swf文件 -->
+			<property name="swf.file" value="${basedir}/${output.movie(path)}" />
+			<!-- 不包含目录部分的文件名 -->
+			<propertyregex property="swf.name" input="${swf.file}" regexp=".*\\([\w]*.swf)" select="\1"/>
+			<!-- 获取Flash Develop项目文件中配置的主类文件 -->
+			<property name="main.file" value="${basedir}/${compileTargets.compile(path)}" />
+			<!-- 不包含目录部分的文件名 -->
+			<propertyregex property="main.name" input="${main.file}" regexp=".*\\([\w]*.mxml)" select="\1"/>
+		</else>
+	</if>
+	<echo>main.file:${main.file}</echo>
+	<echo>main.name:${main.name}</echo>
+	<echo>swf.file:${swf.file}</echo>
+	<echo>swf.name:${swf.name}</echo>
+	<echo>FLEX_HOME:${FLEX_HOME}</echo>
+
+	<!-- 清除项目 -->
+	<target name="clearswf">
+		<delete file="${swf.file}"/>
+	</target>
+
+	<!-- 开始打包swf -->
+	<target name="packswf" depends="clearswf">
+		<condition property="var.debug" value="${var.debug}" else="true">
+			<isset property="var.debug" />
+		</condition>
+		<condition property="var.optimize" value="${var.optimize}" else="true">
+			<isset property="var.optimize" />
+		</condition>
+		<condition property="var.swfversion" value="${var.swfversion}" else="17">
+			<isset property="var.swfversion" />
+		</condition>
+		<echo>Building swf file ${swf.file}...</echo>
+		<echo>The main file is ${main.file}.</echo>
+		<echo>debug:${var.debug} optimize:${var.optimize} swfversion:${var.swfversion}</echo>
+		<java jar="${FLEX_HOME}/lib/mxmlc.jar" fork="true" failonerror="true" dir="${FLEX_FRAMEWORKS}">
+			<arg value="-o=${swf.file}"/>
+			<!-- <arg line="-sp=${basedir}/${SRC_DIR}"/> -->
+			<arg value="-load-config=air-config.xml"/>
+			<arg value="-l+=${LIB_DIR}"/>
+			<!--
+			<arg value="-l+=${ANE_DIR}/com.sanguo.ios.ane"/>
+			-->
+			<arg value="-debug=${var.debug}"/>
+			<arg value="-optimize=${var.optimize}"/>
+			<arg value="${main.file}"/>
+		</java>
+	</target>
+
+	<!-- 创建AIR 打包需要的p12文件 -->
+	<target name="createCertificate">
+		<echo>Delete old certificate file.</echo>
+		<delete file="${AIR_CERT_FILE}"/>
+		<echo>Create a new certificate file ${AND_CERT_FILE}.</echo>
+		<java jar="${FLEX_HOME}/lib/adt.jar" fork="true" failonerror="true">
+			<arg value="-certificate" />
+			<arg line="-validityPeriod 25" />
+			<arg line="-cn ${AIR_CERT_NAME}" />
+			<arg value="1024-RSA" /> 
+			<arg value="${AIR_CERT_FILE}" /> 
+			<arg value="${AIR_CERT_PASS}" /> 
+		</java>
+	</target> 
+
+	<!-- 验证app.xml文件中的内容是否合适 -->
+	<target name="replaceAPPXML">
+		<xmlproperty file="${APP_XML}" keeproot="false"/>
+		<echo>Replace the appid from ${id} to ${APP_ID} in ${APP_XML}.</echo>
+		<!-- 将application.xml中的appid替换成配置中的值 -->
+		<replaceregexp file="${APP_XML}" encoding="UTF-8">
+			<regexp pattern="(\x3Cid\x3E).*(\x3C/id\x3E)"/>
+			<substitution expression="\1${APP_ID}\2"/>
+		</replaceregexp>
+		<echo>Replace the content from ${initialWindow.content} to ${swf.name} in ${APP_XML}.</echo>
+		<!-- 将application.xml中的content替换成swf.name的值 -->
+		<replaceregexp file="${APP_XML}" encoding="UTF-8">
+			<regexp pattern="(\x3Ccontent\x3E).*(\x3C/content\x3E)"/>
+			<substitution expression="\1${swf.name}\2"/>
+		</replaceregexp>
+	</target>
+
+	<!-- Copy the assets to temp directory. -->
+	<target name="copyPackageAssets">
+		<mkdir dir="${TEMP_DIR}"/>
+		<echo>Copy assets to ${TEMP_DIR} ${BIN_DIR}</echo>
+		<copy todir="${TEMP_DIR}">
+			<fileset dir="${BIN_DIR}">
+				<include name="assets/**"/>
+				<include name="${swf.name}"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Package a APK or IPA file. -->
+	<target name="packager" depends="copyPackageAssets,replaceAPPXML">
+		<fail unless="var.type"/>
+		<fail unless="var.signing"/>
+		<fail unless="var.output"/>
+		<mkdir dir="${DIST_DIR}"/>
+		<echo>Packager a ${var.type}${var.target}.</echo>
+		<echo>The signing is ${var.signing}.</echo>
+		<echo>The output file is ${var.output}.</echo>
+		<echo>The debug options are ${var.options}.</echo>
+		<java jar="${FLEX_HOME}/lib/adt.jar" fork="true" failonerror="true">
+			<arg value="-package"/>
+			<arg line="-target ${var.type}${var.target}"/>
+			<arg line="${var.options}"/>
+			<arg line="${var.signing}"/>
+			<arg line="${var.output}"/>
+			<arg value="${APP_XML}"/>
+			<arg line="${var.fileordir}"/>
+			<arg line="${ANE_DIR_ARGS}"/>
+		</java>
+		<delete dir="${TEMP_DIR}"/>
+	</target>
+
+	<!-- Start ADL for APP_XML -->
+	<target name="startADL" depends="replaceAPPXML">
+		<property name="ADL" value="${FLEX_HOME}/bin/adl"/>
+		<condition property="var.adl" value="${ADL}.exe" else="${ADL}">
+			<os family="windows"/>
+		</condition>
+		<echo>OS family is ${os.name}. The adl is ${var.adl}.</echo>
+		<exec executable="${FLEX_HOME}/bin/adl.exe">
+			<arg line="${APP_XML} ${BIN_DIR}"/>
+		</exec>
+	</target>
+
+	<!-- Build a debug swf file, and start ADL to debug it. -->
+	<target name="runSimulatorDebug">
+		<echo>runSimulatorDebug ${APP_XML} ${BIN_DIR}</echo>
+		<antcall target="packswf">
+			<param name="var.debug" value="true"/>
+			<param name="var.optimize" value="false"/>
+		</antcall>
+		<antcall target="startADL"/>
+	</target>
+</project>

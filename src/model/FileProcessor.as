@@ -165,7 +165,7 @@ public class FileProcessor extends Actor
 		if(_openState == StateType.SAVE_META)
 		{
 			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata);
+			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName));
 			__stream.close();
 		}
 		else if(_openState == StateType.SAVE_SHEET_PIC)
@@ -179,7 +179,7 @@ public class FileProcessor extends Actor
 		{
 			//使用metadata的扩展名（数组元素1）新建一个File
 			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata);
+			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName));
 			__stream.close();
 			
 			//使用sheet的扩展名（数组元素0）新建一个File

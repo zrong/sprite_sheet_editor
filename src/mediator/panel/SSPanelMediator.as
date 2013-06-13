@@ -103,6 +103,7 @@ public class SSPanelMediator extends Mediator
 	private function handler_saveAll($evt:SSEvent):void
 	{
 		file.save(getAllSave());
+		dispatch(new SSEvent(SSEvent.SAVE, getAllSave()));
 	}
 	
 	protected function handler_saveMeta($event:SSEvent):void
@@ -113,12 +114,12 @@ public class SSPanelMediator extends Mediator
 	protected function handler_savePic($event:SSEvent):void
 	{
 		file.save(getPicSave());
+		
 	}
 	
 	private function handler_saveSeq($evt:SSEvent):void
 	{
 		var __vo:SaveVO = getSeqSave();
-
 		file.save(__vo);
 	}
 
@@ -126,8 +127,6 @@ public class SSPanelMediator extends Mediator
 	{
 		enterState();
 	}
-	
-
 	
 	private function enterState():void
 	{
@@ -192,12 +191,12 @@ public class SSPanelMediator extends Mediator
 		v.sheetPreview.destroy();
 		if(ssModel.originalSheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
 		{
-			Funs.alert('没有帧的信息，不能生成Sheet。');
+			Funs.alert(FxGettext.gettext("No frame info, can not generate the sheet."));
 			v.leftPanelBG.enabled = false;
 			return;
 		}
 		trace('优化帧数：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
-		var __list:Object = getRectsAndBmds();
+		var __list:Object = ssModel.getRectsAndBmds(v.optPanel.trimCB.selected, v.optPanel.resetRectCB.selected);
 		trace('新生成的：', __list.bmd, __list.frame, __list.origin)
 		//保存新计算出的WH
 		var __whRect:Rectangle = new Rectangle();
@@ -221,69 +220,7 @@ public class SSPanelMediator extends Mediator
 		//优化完毕，FramesAndLabel需要更新
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET_DONE));
 	}
-	
-	/**
-	 * 返回生成的原始帧rect尺寸（origin），在大sheet中的rect尺寸（frame），以及所有的BitmapData列表（bmd）
-	 */
-	private function getRectsAndBmds():Object
-	{
-		//所有的BitmapData列表
-		var __bmd:Vector.<BitmapData> = null;
-		//在大sheet中的rect列表
-		var __frame:Vector.<Rectangle> = null;
-		//原始的（在程序中使用的）rect列表
-		var __origin:Vector.<Rectangle> = null; 
-		if(v.optPanel.trimCB.selected)
-		{
-			__bmd = new Vector.<BitmapData>;
-			__frame = new Vector.<Rectangle>;
-			__origin = new Vector.<Rectangle>; 
-			var __sizeRect:Rectangle = null;
-			//用于保存执行trim方法后的结果
-			var __trim:Object = null;
-			for (var i:int=0; i < ssModel.originalSheet.metadata.totalFrame; i++) 
-			{
-				__trim = BitmapUtil.trim(ssModel.originalSheet.getBMDByIndex(i));
-				__sizeRect = ssModel.originalSheet.metadata.originalFrameRects[i];
-				__frame[i] = __trim.rect;
-				//如果重设帧的尺寸，就使用trim过后的帧的宽高建立一个新的Rect尺寸，并更新bmd
-				if(v.optPanel.resetRectCB.selected)
-				{
-					__origin[i] = new Rectangle(0,0,__trim.rect.width,__trim.rect.height);
-					__bmd[i] = __trim.bitmapData;
-				}
-				else
-				{
-					//如果不重设帧的尺寸，就使用原始大小的宽高。同时计算trim后的xy的偏移。
-					//因为获得xy的偏移是基于与原始帧大小的正数，要将其转换为基于trim后的帧的偏移，用0减
-					//不重设尺寸的情况下，不更新bmd，因为原始尺寸没变。SpriteSheet中保存的bmdList，永远都与原始尺寸相同
-					__bmd = ssModel.originalSheet.cloneFrames();
-					__origin[i] = new Rectangle(
-						0-__trim.rect.x,
-						0-__trim.rect.y,
-						__sizeRect.width, 
-						__sizeRect.height);
-				}
-			}
-		}
-		else
-		{
-			//bmdlist永远都是原始尺寸的，因此不需要重新绘制
-			__bmd = ssModel.originalSheet.cloneFrames();
-			__frame = ssModel.originalSheet.metadata.frameRects.concat();
-			__origin = ssModel.originalSheet.metadata.originalFrameRects.concat();
-			//不trim，将以前trim过的信息还原
-			for (var j:int = 0; j < __frame.length; j++) 
-			{
-				__frame[j].width = __origin[j].width;
-				__frame[j].height = __origin[j].height;
-				__origin[j].x = 0;
-				__origin[j].y = 0;
-			}
-		}
-		return {frame:__frame, origin:__origin, bmd:__bmd}
-	}
-	
+		
 	/**
 	 * 获取要保存的metadata和位图
 	 */
@@ -291,18 +228,15 @@ public class SSPanelMediator extends Mediator
 	{
 		updateMetadata();
 		var __vo:SaveVO = new SaveVO();
-		var __bmd:BitmapData = getBitmapDataForSave(
-			ssModel.adjustedSheet.bitmapData,
-			v.saveSheet.maskDDL.selectedIndex,
-			v.optPanel.transparentCB.selected,
-			v.optPanel.bgColorPicker.selectedColor
-		);
+		var __bmd:BitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
 		__vo.bitmapData = __bmd;
 		__vo.metadata = getMetadata();
 		__vo.picType = v.saveSheet.imageSetting.imageType;
 		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
 		__vo.quality = v.saveSheet.imageSetting.qualityValue;
 		__vo.type = StateType.SAVE_ALL;
+		__vo.isSimple = v.isSimple;
+		__vo.includeName = v.includeName;
 		return __vo;
 	}
 	
@@ -313,6 +247,8 @@ public class SSPanelMediator extends Mediator
 		__vo.metadata = getMetadata();
 		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
 		__vo.type = StateType.SAVE_META;
+		__vo.isSimple = v.isSimple;
+		__vo.includeName = v.includeName;
 		return __vo;
 	}
 	
@@ -320,14 +256,9 @@ public class SSPanelMediator extends Mediator
 	{
 		updateMetadata();
 		var __vo:SaveVO = new SaveVO();
-		__vo.bitmapData = getBitmapDataForSave(
-			ssModel.adjustedSheet.bitmapData,
-			v.saveSheet.maskDDL.selectedIndex,
-			v.optPanel.transparentCB.selected,
-			v.optPanel.bgColorPicker.selectedColor
-		);
-		__vo.picType = v.saveSheet.imageSetting.imageType;
-		__vo.quality = v.saveSheet.imageSetting.qualityValue;
+		__vo.bitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
+		__vo.picType = v.imageType;
+		__vo.quality = v.qualityValue;
 		__vo.type = StateType.SAVE_SHEET_PIC;
 		return __vo;
 	}
@@ -336,50 +267,11 @@ public class SSPanelMediator extends Mediator
 	{
 		var __vo:SaveVO = new SaveVO();
 		__vo.fileNameList = v.saveSeq.getFileNames(ssModel.adjustedSheet.metadata.totalFrame);
-		__vo.quality = v.saveSeq.imageSetting.qualityValue;
+		__vo.quality = v.qualityValue;
 		__vo.type = StateType.SAVE_SEQ;
 		//根据显示的帧类型来保存序列
 		__vo.bitmapDataList = ssModel.getBMDList();
 		return __vo;
-	}
-	
-	
-	/**
-	 * 绘制Mask，返回带有Mask的位图（如果有mask的话）
-	 */
-	private function getBitmapDataForSave($bitmapData:BitmapData, $maskType:int, $transparent:Boolean, $bgcolor:uint):BitmapData
-	{
-		if(MaskType.useMask($maskType))
-		{
-			var __sourceRect:Rectangle = new Rectangle(0, 0, $bitmapData.width, $bitmapData.height);
-			var __destRect:Rectangle = new Rectangle(0, 0, $bitmapData.width, $bitmapData.height);
-			var __point:Point = new Point(0,0);
-			//用于Alpha通道部分的背景色
-			var __alphaBG:uint = 0xFF000000;
-			//新建一个带有Mask大小的位图
-			var __saveBmd:BitmapData = null;
-			if($maskType == MaskType.HOR_MASK)
-			{
-				__saveBmd = new BitmapData($bitmapData.width*2, $bitmapData.height, $transparent, $bgcolor);
-				__destRect.x = $bitmapData.width;
-				__point.x = __destRect.x;
-			}
-			else if($maskType == MaskType.VER_MASK)
-			{
-				__saveBmd = new BitmapData($bitmapData.width, $bitmapData.height*2, $transparent, $bgcolor);
-				__destRect.y = $bitmapData.height;
-				__point.y = __destRect.y;
-			}
-			__saveBmd.copyPixels($bitmapData, __sourceRect, new Point(0,0), null, null, true);
-			//为mask填充一个背景色
-			__saveBmd.fillRect(__destRect, __alphaBG);
-			//分别填充红绿蓝通道，这样生成出的透明的部分才是白色
-			__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 1);
-			__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 2);
-			__saveBmd.copyChannel($bitmapData, __sourceRect, __point, 8, 4);
-			return __saveBmd;
-		}
-		return $bitmapData;
 	}
 	
 	/**
@@ -390,7 +282,7 @@ public class SSPanelMediator extends Mediator
 		//hasName, names, namesIndex, totalFrame, frameRects, originalFrameRects 这几个变量
 		//是在生成Sheet的时候填充的，因此这里不需要更新
 		var __meta:ISpriteSheetMetadata = ssModel.adjustedSheet.metadata;
-		__meta.type = v.saveSheet.sheetType;
+		__meta.type = v.sheetType;
 		__meta.maskType = v.saveSheet.maskDDL.selectedIndex;
 		var __mediator:FramesAndLabelMediator = mediatorMap.retrieveMediator(v.framesAndLabels) as FramesAndLabelMediator;
 		var __labelMeta:LabelListVO = __mediator.getLabels();
@@ -399,7 +291,7 @@ public class SSPanelMediator extends Mediator
 		__meta.labelsFrame = __labelMeta.labelsFrame;
 	}
 	
-	private function getMetadata():String
+	private function getMetadata():ISpriteSheetMetadata
 	{
 		var __meta:ISpriteSheetMetadata = null;
 		if(v.saveSheet.jsonRB.selected)
@@ -414,13 +306,13 @@ public class SSPanelMediator extends Mediator
 		else if(v.saveSheet.starlingRB.selected)
 		{
 			__meta = new SpriteSheetMetadataStarling(ssModel.adjustedSheet.metadata);
-			SpriteSheetMetadataXML(__meta).header = Funs.getXMLHeader(FileEnding.UNIX);
+			SpriteSheetMetadataStarling(__meta).header = Funs.getXMLHeader(FileEnding.UNIX);
 		}
 		else
 		{
 			__meta = new SpriteSheetMetadataTXT(ssModel.adjustedSheet.metadata);
 		}
-		return __meta.objectify(v.saveSheet.simpleCB.selected, v.saveSheet.nameCB.selected) as String;
+		return __meta;
 	}
 }
 }

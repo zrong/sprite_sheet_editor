@@ -49,6 +49,55 @@
 			sheetPreview.destroy();
 		}
 		
+		/**
+		 * 生成sheet图的背景色
+		 */
+		public function get bgColor():uint
+		{
+			return optPanel.bgColorPicker.selectedColor;
+		}
+		
+		/**
+		 * 是否透明
+		 */
+		public function get transparent():Boolean
+		{
+			return optPanel.transparentCB.selected;
+		}
+		
+		/**
+		 * 蒙版的类型值
+		 */
+		public function get maskTypeValue():int
+		{
+			return saveSheet.maskDDL.selectedIndex;
+		}
+		
+		public function get imageType():String
+		{
+			return saveSheet.imageSetting.imageType;
+		}
+		
+		public function get sheetType():String
+		{
+			return saveSheet.imageSetting.spriteSheetType;
+		}
+		
+		public function get  qualityValue():int
+		{
+			return saveSeq.imageSetting.qualityValue;
+		}
+		
+		public function get isSimple():Boolean
+		{
+			return saveSheet.simpleCB.selected;
+		}
+		
+		public function get includeName():Boolean
+		{
+			return saveSheet.nameCB.selected;
+		}
+		
 		//----------------------------------------
 		// handler
 		//----------------------------------------

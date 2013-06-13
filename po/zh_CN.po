@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-17 23:27+0800\n"
-"PO-Revision-Date: 2013-02-17 23:27+0800\n"
+"POT-Creation-Date: 2013-06-13 14:18+0800\n"
+"PO-Revision-Date: 2013-06-13 14:19+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:511
+#: ../src/mediator/comps/FramesAndLabelMediator.as:513
 msgid "Please enter label's name!"
 msgstr "请输入Label名称！"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:516
+#: ../src/mediator/comps/FramesAndLabelMediator.as:518
 msgid "Please select the frame to add the label!"
 msgstr "请选择要加入label的帧！"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:524
+#: ../src/mediator/comps/FramesAndLabelMediator.as:526
 msgid "Duplicate label's name is't allowed!"
 msgstr "Label名称不允许重复！"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:558
+#: ../src/mediator/comps/FramesAndLabelMediator.as:560
 msgid "Please select the frame to remove."
 msgstr "请选择要删除的帧。"
 
@@ -42,13 +42,17 @@ msgstr "帧动画预览"
 msgid "animation preview"
 msgstr "动画预览"
 
-#: ../src/mediator/panel/SSPanelMediator.as:92
+#: ../src/mediator/panel/SSPanelMediator.as:99
 msgid "trimmed size"
 msgstr "修剪尺寸"
 
-#: ../src/mediator/panel/SSPanelMediator.as:93
+#: ../src/mediator/panel/SSPanelMediator.as:100
 msgid "original size"
 msgstr "原始尺寸"
+
+#: ../src/mediator/panel/SSPanelMediator.as:195
+msgid "No frame info, can not generate the sheet."
+msgstr "没有帧的信息，不能生成Sheet。"
 
 #: ../src/model/FileProcessor.as:45 ../src/view/comps/ImageTypeSetting.mxml:9
 msgid "PNG image"
@@ -66,35 +70,35 @@ msgstr "JPEG-XR图像"
 msgid "SWF animation"
 msgstr "SWF动画"
 
-#: ../src/model/FileProcessor.as:77
+#: ../src/model/FileProcessor.as:88
 msgid "All compatible image"
 msgstr "所有的支持的图像"
 
-#: ../src/model/FileProcessor.as:93
+#: ../src/model/FileProcessor.as:104
 msgid "Select a swf file"
 msgstr "选择swf文件"
 
-#: ../src/model/FileProcessor.as:99 ../src/model/FileProcessor.as:112
+#: ../src/model/FileProcessor.as:110 ../src/model/FileProcessor.as:123
 msgid "Select image file"
 msgstr "选择图像文件"
 
-#: ../src/model/FileProcessor.as:106
+#: ../src/model/FileProcessor.as:117
 msgid "Select a Sprite Sheet file"
 msgstr "选择Sprite Sheet文件"
 
-#: ../src/model/FileProcessor.as:128
+#: ../src/model/FileProcessor.as:139
 msgid "Select the save path of Sprite Sheet file"
 msgstr "选择Sprite Sheet文件的保存路径"
 
-#: ../src/model/FileProcessor.as:132
+#: ../src/model/FileProcessor.as:145
 msgid "Select the save path of metadata"
 msgstr "选择元数据的保存路径"
 
-#: ../src/model/FileProcessor.as:136
+#: ../src/model/FileProcessor.as:149
 msgid "Select the save path of the image sequence"
 msgstr "选择图像序列的保存路径"
 
-#: ../src/model/FileProcessor.as:140
+#: ../src/model/FileProcessor.as:153
 msgid "Select the save path of image and metedata"
 msgstr "选择图像和元数据的保存路径"
 
@@ -119,11 +123,11 @@ msgstr "导入swf文件"
 msgid "Process image file"
 msgstr "处理图像文件"
 
-#: ../src/utils/Funs.as:206
+#: ../src/utils/Funs.as:207
 msgid "Warning"
 msgstr "警告"
 
-#: ../src/utils/Funs.as:216
+#: ../src/utils/Funs.as:217
 msgid "Please Confirm"
 msgstr "请确认"
 
@@ -363,6 +367,7 @@ msgid ""
 msgstr "添加多个图像文件。每个图像作为一帧增加到当前Sprite Sheet的末尾。"
 
 #: ../src/view/comps/FramesAndLabels.mxml:70
+#: ../src/view/comps/FramesAndLabels.mxml:125
 msgid "Remove frame"
 msgstr "删帧"
 
@@ -422,10 +427,6 @@ msgstr "修改Label"
 #: ../src/view/comps/FramesAndLabels.mxml:122
 msgid "Add frame"
 msgstr "插入帧"
-
-#: ../src/view/comps/FramesAndLabels.mxml:125
-msgid "Reset frame"
-msgstr "重设帧大小"
 
 #: ../src/view/comps/ImageTypeSetting.mxml:19
 msgid "Compress:"
@@ -508,18 +509,22 @@ msgid "TXT format"
 msgstr "TXT格式"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:49
+msgid "Starling format"
+msgstr "Starling格式"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:52
 msgid "Use simple metadata"
 msgstr "使用简单元数据"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:50
+#: ../src/view/comps/SaveSheetSetting.mxml:53
 msgid "If selected, coordinate and WH are saved only."
 msgstr "选中后仅保存每帧的坐标和宽高"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:53
+#: ../src/view/comps/SaveSheetSetting.mxml:56
 msgid "Include file name"
 msgstr "包含文件名"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:54
+#: ../src/view/comps/SaveSheetSetting.mxml:57
 msgid ""
 "If selected, the relationship between the image file name and the frame "
 "index are saved in metadata. Then, you can get the corresponding frame "
@@ -528,15 +533,15 @@ msgstr ""
 "选中后将图像文件的主文件名与帧索引的关系保存到meta文件中。在使用的时候，就能"
 "通过主文件名获取对应的帧。"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:60
+#: ../src/view/comps/SaveSheetSetting.mxml:63
 msgid "Save image"
 msgstr "保存图像"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:63
+#: ../src/view/comps/SaveSheetSetting.mxml:66
 msgid "Save all"
 msgstr "同时保存"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:66
+#: ../src/view/comps/SaveSheetSetting.mxml:69
 msgid "Save metadata"
 msgstr "保存元数据"
 
@@ -652,6 +657,9 @@ msgstr "所有帧："
 #: ../src/view/panel/TopPanel.mxml:9 ../src/view/panel/TopPanel.mxml:27
 msgid "Back to previous"
 msgstr "返回上一步"
+
+#~ msgid "Reset frame"
+#~ msgstr "重设帧大小"
 
 #~ msgid "Back to previouse"
 #~ msgstr "返回上一步"

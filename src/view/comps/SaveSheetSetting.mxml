@@ -85,12 +85,7 @@
 			txtRB.value = ExtendedNameType.TEXT;
 			jsonRB.value = ExtendedNameType.JSON;
 		}
-		
-		public function get sheetType():String
-		{
-			return imageSetting.spriteSheetType;
-		}
-		
+
 		protected function handler_savePicBTNClick(event:MouseEvent):void
 		{
 			dispatchEvent(new SSEvent(SSEvent.SAVE_PIC));
@@ -103,8 +98,6 @@
 		{
 			dispatchEvent(new SSEvent(SSEvent.SAVE_ALL));
 		}
-
-		
 	]]>
 	</fx:Script>
 </s:NavigatorContent>

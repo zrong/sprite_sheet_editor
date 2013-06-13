@@ -30,6 +30,11 @@ public class SSEvent extends Event
 	public static const SAVE_SEQ:String = 'saveSeq';
 	
 	/**
+	 * 所有类型的保存事件
+	 */
+	public static const SAVE:String = "sssave";
+	
+	/**
 	 * 收到此事件的时候开始优化Sheet，一般在删除或者增加帧内容的时候执行
 	 */
 	public static const OPTIMIZE_SHEET:String = 'optimizeSheet';

@@ -1,6 +1,7 @@
 package
 {
 import ctrl.PreviewSSChangeCmd;
+import ctrl.SaveCmd;
 
 import events.SSEvent;
 
@@ -55,6 +56,7 @@ public class SSEContext extends Context
 		mediatorMap.mapView(FramesAndLabels,FramesAndLabelMediator, null, false, false);
 		
 		commandMap.mapEvent(SSEvent.PREVIEW_SS_CHANGE, PreviewSSChangeCmd);
+		commandMap.mapEvent(SSEvent.SAVE, SaveCmd);
 	}
 }
 }

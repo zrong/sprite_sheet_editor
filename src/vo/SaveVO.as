@@ -1,6 +1,7 @@
 package vo
 {
 import flash.display.BitmapData;
+import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 
 /**
  * 在保存执行之前暂存待保存的数据
@@ -16,7 +17,7 @@ public class SaveVO
 	/**
 	 * 要保存元数据
 	 */
-	public var metadata:String;
+	public var metadata:ISpriteSheetMetadata;
 	
 	/**
 	 * 要保存的图像
@@ -50,7 +51,11 @@ public class SaveVO
 	
 	/**
 	 * 见StateType
+	 * @see type.StateType
 	 */
 	public var type:String;
+	
+	public var isSimple:Boolean;
+	public var includeName:Boolean;
 }
 }

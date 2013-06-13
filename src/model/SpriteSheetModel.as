@@ -2,6 +2,8 @@ package model
 {
 import flash.display.BitmapData;
 import flash.geom.Rectangle;
+import org.zengrong.display.spritesheet.MaskType;
+import org.zengrong.utils.BitmapUtil;
 
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.display.spritesheet.SpriteSheet;
@@ -107,6 +109,82 @@ public class SpriteSheetModel extends Actor
 	public function addAdjustedFrameAt($index:int, $bmd:BitmapData, $sizeRect:Rectangle=null, $originalRect:Rectangle=null,$name:String=null):void
 	{
 		_adjustedSheet.addFrameAt($index, $bmd, $sizeRect, $originalRect, $name);
+	}
+	
+		/**
+	 * 绘制Mask，返回带有Mask的位图（如果有mask的话）
+	 */
+	public function getBitmapDataForSave($maskType:int, $transparent:Boolean, $bgcolor:uint):BitmapData
+	{
+		if(MaskType.useMask($maskType))
+		{
+			return BitmapUtil.getBitmapDataWithMask(adjustedSheet.bitmapData, $maskType == MaskType.HOR_MASK, $transparent, $bgcolor);
+		}
+		return adjustedSheet.bitmapData;
+	}
+	
+	/**
+	 * 返回生成的原始帧rect尺寸（origin），在大sheet中的rect尺寸（frame），以及所有的BitmapData列表（bmd）
+	 * @param $trim 是否修剪
+	 * @param $reset 是否重置大小
+	 */
+	public function getRectsAndBmds($trim:Boolean, $reset:Boolean):Object
+	{
+		//所有的BitmapData列表
+		var __bmd:Vector.<BitmapData> = null;
+		//在大sheet中的rect列表
+		var __frame:Vector.<Rectangle> = null;
+		//原始的（在程序中使用的）rect列表
+		var __origin:Vector.<Rectangle> = null; 
+		if($trim)
+		{
+			__bmd = new Vector.<BitmapData>;
+			__frame = new Vector.<Rectangle>;
+			__origin = new Vector.<Rectangle>; 
+			var __sizeRect:Rectangle = null;
+			//用于保存执行trim方法后的结果
+			var __trim:Object = null;
+			for (var i:int=0; i < originalSheet.metadata.totalFrame; i++) 
+			{
+				__trim = BitmapUtil.trim(originalSheet.getBMDByIndex(i));
+				__sizeRect = originalSheet.metadata.originalFrameRects[i];
+				__frame[i] = __trim.rect;
+				//如果重设帧的尺寸，就使用trim过后的帧的宽高建立一个新的Rect尺寸，并更新bmd
+				if($reset)
+				{
+					__origin[i] = new Rectangle(0,0,__trim.rect.width,__trim.rect.height);
+					__bmd[i] = __trim.bitmapData;
+				}
+				else
+				{
+					//如果不重设帧的尺寸，就使用原始大小的宽高。同时计算trim后的xy的偏移。
+					//因为获得xy的偏移是基于与原始帧大小的正数，要将其转换为基于trim后的帧的偏移，用0减
+					//不重设尺寸的情况下，不更新bmd，因为原始尺寸没变。SpriteSheet中保存的bmdList，永远都与原始尺寸相同
+					__bmd = originalSheet.cloneFrames();
+					__origin[i] = new Rectangle(
+						0-__trim.rect.x,
+						0-__trim.rect.y,
+						__sizeRect.width, 
+						__sizeRect.height);
+				}
+			}
+		}
+		else
+		{
+			//bmdlist永远都是原始尺寸的，因此不需要重新绘制
+			__bmd = originalSheet.cloneFrames();
+			__frame = originalSheet.metadata.frameRects.concat();
+			__origin = originalSheet.metadata.originalFrameRects.concat();
+			//不trim，将以前trim过的信息还原
+			for (var j:int = 0; j < __frame.length; j++) 
+			{
+				__frame[j].width = __origin[j].width;
+				__frame[j].height = __origin[j].height;
+				__origin[j].x = 0;
+				__origin[j].y = 0;
+			}
+		}
+		return { frame:__frame, origin:__origin, bmd:__bmd };
 	}
 	
 	/**

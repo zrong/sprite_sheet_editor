@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-17 23:27+0800\n"
-"PO-Revision-Date: 2013-03-27 23:35+0800\n"
+"POT-Creation-Date: 2013-06-13 14:18+0800\n"
+"PO-Revision-Date: 2013-06-13 14:19+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: en_US\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:511
+#: ../src/mediator/comps/FramesAndLabelMediator.as:513
 msgid "Please enter label's name!"
 msgstr "Please enter label's name!"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:516
+#: ../src/mediator/comps/FramesAndLabelMediator.as:518
 msgid "Please select the frame to add the label!"
 msgstr "Please select the frame to add the label!"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:524
+#: ../src/mediator/comps/FramesAndLabelMediator.as:526
 msgid "Duplicate label's name is't allowed!"
 msgstr "No Duplicate label's name is allowed!"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:558
+#: ../src/mediator/comps/FramesAndLabelMediator.as:560
 msgid "Please select the frame to remove."
 msgstr "Please select the frame to remove."
 
@@ -42,13 +42,17 @@ msgstr "Frame animation preview"
 msgid "animation preview"
 msgstr "animation preview"
 
-#: ../src/mediator/panel/SSPanelMediator.as:92
+#: ../src/mediator/panel/SSPanelMediator.as:99
 msgid "trimmed size"
 msgstr "trim the size"
 
-#: ../src/mediator/panel/SSPanelMediator.as:93
+#: ../src/mediator/panel/SSPanelMediator.as:100
 msgid "original size"
 msgstr "original size"
+
+#: ../src/mediator/panel/SSPanelMediator.as:195
+msgid "No frame info, can not generate the sheet."
+msgstr "No frame info, can not generate the sheet."
 
 #: ../src/model/FileProcessor.as:45 ../src/view/comps/ImageTypeSetting.mxml:9
 msgid "PNG image"
@@ -66,35 +70,35 @@ msgstr "JPEG-XR image"
 msgid "SWF animation"
 msgstr "SWF animation"
 
-#: ../src/model/FileProcessor.as:77
+#: ../src/model/FileProcessor.as:88
 msgid "All compatible image"
 msgstr "All compatible image"
 
-#: ../src/model/FileProcessor.as:93
+#: ../src/model/FileProcessor.as:104
 msgid "Select a swf file"
 msgstr "Select a swf file"
 
-#: ../src/model/FileProcessor.as:99 ../src/model/FileProcessor.as:112
+#: ../src/model/FileProcessor.as:110 ../src/model/FileProcessor.as:123
 msgid "Select image file"
 msgstr "Select an image file"
 
-#: ../src/model/FileProcessor.as:106
+#: ../src/model/FileProcessor.as:117
 msgid "Select a Sprite Sheet file"
 msgstr "Select a Sprite Sheet file"
 
-#: ../src/model/FileProcessor.as:128
+#: ../src/model/FileProcessor.as:139
 msgid "Select the save path of Sprite Sheet file"
 msgstr "Select the path to save the Sprite Sheet file"
 
-#: ../src/model/FileProcessor.as:132
+#: ../src/model/FileProcessor.as:145
 msgid "Select the save path of metadata"
 msgstr "Select the path to save the metadata"
 
-#: ../src/model/FileProcessor.as:136
+#: ../src/model/FileProcessor.as:149
 msgid "Select the save path of the image sequence"
 msgstr "Select the path to save the image sequence"
 
-#: ../src/model/FileProcessor.as:140
+#: ../src/model/FileProcessor.as:153
 msgid "Select the save path of image and metedata"
 msgstr "Select the path to save image and metedata"
 
@@ -119,11 +123,11 @@ msgstr "Import a swf file"
 msgid "Process image file"
 msgstr "Process a  image file"
 
-#: ../src/utils/Funs.as:206
+#: ../src/utils/Funs.as:207
 msgid "Warning"
 msgstr "Warning"
 
-#: ../src/utils/Funs.as:216
+#: ../src/utils/Funs.as:217
 msgid "Please Confirm"
 msgstr "Please Confirm"
 
@@ -374,6 +378,7 @@ msgstr ""
 "Sprite Sheet as a frame."
 
 #: ../src/view/comps/FramesAndLabels.mxml:70
+#: ../src/view/comps/FramesAndLabels.mxml:125
 msgid "Remove frame"
 msgstr "Remove the frame"
 
@@ -435,10 +440,6 @@ msgstr "Modify the label"
 #: ../src/view/comps/FramesAndLabels.mxml:122
 msgid "Add frame"
 msgstr "Add the frame"
-
-#: ../src/view/comps/FramesAndLabels.mxml:125
-msgid "Reset frame"
-msgstr "Reset the frame"
 
 #: ../src/view/comps/ImageTypeSetting.mxml:19
 msgid "Compress:"
@@ -521,18 +522,22 @@ msgid "TXT format"
 msgstr "TXT format"
 
 #: ../src/view/comps/SaveSheetSetting.mxml:49
+msgid "Starling format"
+msgstr "Starling format"
+
+#: ../src/view/comps/SaveSheetSetting.mxml:52
 msgid "Use simple metadata"
 msgstr "Use the simple metadata"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:50
+#: ../src/view/comps/SaveSheetSetting.mxml:53
 msgid "If selected, coordinate and WH are saved only."
 msgstr "If selected, only save coordinate and WH."
 
-#: ../src/view/comps/SaveSheetSetting.mxml:53
+#: ../src/view/comps/SaveSheetSetting.mxml:56
 msgid "Include file name"
 msgstr "Include the file name"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:54
+#: ../src/view/comps/SaveSheetSetting.mxml:57
 msgid ""
 "If selected, the relationship between the image file name and the frame "
 "index are saved in metadata. Then, you can get the corresponding frame "
@@ -542,15 +547,15 @@ msgstr ""
 "index will be saved in the metadata. And  you can get the corresponding "
 "frame by the image file name."
 
-#: ../src/view/comps/SaveSheetSetting.mxml:60
+#: ../src/view/comps/SaveSheetSetting.mxml:63
 msgid "Save image"
 msgstr "Save the image"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:63
+#: ../src/view/comps/SaveSheetSetting.mxml:66
 msgid "Save all"
 msgstr "Save all"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:66
+#: ../src/view/comps/SaveSheetSetting.mxml:69
 msgid "Save metadata"
 msgstr "Save the metadata"
 
@@ -667,3 +672,6 @@ msgstr "Total frames:"
 #: ../src/view/panel/TopPanel.mxml:9 ../src/view/panel/TopPanel.mxml:27
 msgid "Back to previous"
 msgstr "Back to the previous step"
+
+#~ msgid "Reset frame"
+#~ msgstr "Reset the frame"
