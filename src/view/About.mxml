@@ -11,13 +11,12 @@
 	<fx:Script>
 	<![CDATA[
 		import mx.events.FlexEvent;
+		import utils.Global;
 		
 		import flashx.textLayout.conversion.TextConverter;
 		import flashx.textLayout.elements.TextFlow;
 		
 		import org.zengrong.air.utils.getDesc;
-		[Embed(source="/assets/about.txt",mimeType="application/octet-stream")] 
-		private static const TXT:Class;
 		
 		[Bindable] private var _tf:TextFlow;
 		
@@ -29,7 +28,7 @@
 		
 		protected function handler_create($event:FlexEvent):void
 		{
-			_tf = TextConverter.importToFlow(new TXT().toString(), TextConverter.TEXT_FIELD_HTML_FORMAT);
+			_tf = TextConverter.importToFlow(new Global.ABOUT_TEXT().toString(), TextConverter.TEXT_FIELD_HTML_FORMAT);
 			htmlHelpRET.textFlow = _tf;
 			var __str:String =  '<p align="center"><b>' + getDesc('name') + ' v'+ getDesc('versionNumber') +'</b></p>'
 				+'<p>Author: zrong(<a href="mailto:zrongzrong@gmail.com">zrongzrong@gmail.com</a>)<br>Blog:　<a href="http://www.zengrong.net">http://www.zengrong.net</a></p>';

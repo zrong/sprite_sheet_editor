@@ -43,12 +43,11 @@
 	<echo>swf.name:${swf.name}</echo>
 	<echo>FLEX_HOME:${FLEX_HOME}</echo>
 
-	<!-- 清除项目 -->
 	<target name="clearswf">
 		<delete file="${swf.file}"/>
 	</target>
 
-	<!-- 开始打包swf -->
+	<!-- package the swf file -->
 	<target name="packswf" depends="clearswf">
 		<condition property="var.debug" value="${var.debug}" else="true">
 			<isset property="var.debug" />
@@ -108,10 +107,24 @@
 		</replaceregexp>
 	</target>
 
+	<!-- Copy the assets to bin directory. -->
+	<target name="copyBinAssets">
+		<mkdir dir="${BIN_DIR}"/>
+		<delete dir="${BIN_DIR}/icon"/>
+		<delete dir="${BIN_DIR}/locale"/>
+		<echo>Copy ${ASSET_DIR} to ${BIN_DIR}</echo>
+		<copy todir="${BIN_DIR}">
+			<fileset dir="${ASSET_DIR}">
+				<include name="icon/**"/>
+				<include name="locale/**"/>
+			</fileset>
+		</copy>
+	</target>
+
 	<!-- Copy the assets to temp directory. -->
 	<target name="copyPackageAssets">
 		<mkdir dir="${TEMP_DIR}"/>
-		<echo>Copy assets to ${TEMP_DIR} ${BIN_DIR}</echo>
+		<echo>Copy ${TEMP_DIR} to ${BIN_DIR}</echo>
 		<copy todir="${TEMP_DIR}">
 			<fileset dir="${BIN_DIR}">
 				<include name="assets/**"/>
@@ -163,5 +176,15 @@
 			<param name="var.optimize" value="false"/>
 		</antcall>
 		<antcall target="startADL"/>
+	</target>
+
+	<!-- Build a release swf file, and package it to a air file -->
+	<target name="packair" depends="copyBinAssets">
+		<echo>packair ${APP_XML} ${BIN_DIR}</echo>
+		<antcall target="packswf">
+			<param name="var.debug" value="false"/>
+			<param name="var.optimize" value="true"/>
+		</antcall>
+		<antcall target="packager"/>
 	</target>
 </project>
