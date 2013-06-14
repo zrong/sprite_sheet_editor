@@ -79,7 +79,6 @@
 		
 		protected function handler_unCaughtError($event:UncaughtErrorEvent):void
 		{
-			return;
 			var __str:String = '';
 			if($event.error is Error)
 				__str = Error($event.error).message;

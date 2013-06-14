@@ -1,3 +1,8 @@
+<b>2013-06-14：v0.8.1版发布</b>
+<ul>
+	<li>增加保存为Starling格式的SpriteSheet，但不支持打开Starling；</li>
+	<li>调整程序结构以支持更多格式。</li>
+</ul>
 <b>2013-02-19：v0.8.0版发布</b>
 <ul>
 	<li>关于帧和Label界面的大幅调整；</li>

@@ -21,6 +21,8 @@
 
 这个工具原来的名字叫做[Sprite Sheet Packer](http://zengrong.net/spritesheetpacker)，从v0.5.0改名为Sprite Sheet Editor。
 
+* [2013-06-14：v0.8.1版发布](http://zengrong.net/post/1880.htm)
+* [2013-02-19：v0.8.0版发布](http://zengrong.net/post/1815.htm)
 * [2012-10-15：v0.7.3版发布](http://zengrong.net/post/1706.htm)
 * [2012-08-20：v0.7.2版发布](http://zengrong.net/post/1672.htm)
 * [2012-08-18：v0.7.1版发布](http://zengrong.net/post/1668.htm)
