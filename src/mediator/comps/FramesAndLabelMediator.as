@@ -687,10 +687,11 @@ public class FramesAndLabelMediator extends Mediator
 		//ani.destroy();
 	}
 	
+	//在大Sheet上点击的时候，寻找被点击到的frame
 	private function handler_previewClick($evt:SSEvent):void
 	{
 		if(playing) return;
-		v.findFrameByPoint($evt.info as Point);
+		v.findFrameByPoint($evt.info);
 	}
 	
 	private function handler_optimizeDone($evt:SSEvent):void

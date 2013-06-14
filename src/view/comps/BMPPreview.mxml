@@ -99,7 +99,7 @@
 		
 		private function handler_viewClick($evt:MouseEvent):void
 		{
-			dispatchEvent(new SSEvent(SSEvent.PREVIEW_CLICK, new Point(scrollerView.mouseX, scrollerView.mouseY)));
+			dispatchEvent(new SSEvent(SSEvent.PREVIEW_CLICK, {controlKey:$evt.controlKey, shiftKey:$evt.shiftKey, point:new Point(scrollerView.mouseX, scrollerView.mouseY)}));
 		}
 	]]>
 	</fx:Script>

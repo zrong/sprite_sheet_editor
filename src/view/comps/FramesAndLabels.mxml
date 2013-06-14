@@ -140,6 +140,7 @@
 	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
+		import flash.geom.Point;
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
@@ -225,17 +226,59 @@
 		/**
 		 * 根据单击的位置找到帧列表中的对应帧
 		 */
-		public function findFrameByPoint($point:Point):void
+		public function findFrameByPoint($info:Object):void
 		{
+			var __point:Point = $info.point as Point;
 			if(frameDG.dataProvider && frameDG.dataProvider.length>0)
 			{
 				var __frame:FrameVO;
 				for (var i:int = 0; i < frameDG.dataProvider.length; i++) 
 				{
 					__frame = getFrameItemAt(i);
-					if(__frame.frameRect.containsPoint($point))
+					//若找到位图对应的索引，判断键盘
+					if(__frame.frameRect.containsPoint(__point))
 					{
-						frameDG.selectedIndex = i;
+						var ___selectedLen:int = frameDG.selectedIndices.length ;
+						//在已经选择过帧的情况下，才处理键盘
+						if(___selectedLen > 0)
+						{
+							//处理Control按键，不连续选择
+							var __newIndices:Vector.<int> = new Vector.<int>;
+							if($info.controlKey)
+							{
+								__newIndices[0] = i;
+								for (var j:int = 0; j < ___selectedLen; j++) 
+								{
+									if(i != frameDG.selectedIndices[j])
+										__newIndices.push(frameDG.selectedIndices[j]);
+								}
+							}
+							//处理Shift按键，连续选择
+							else if($info.shiftKey)
+							{
+								var __start:int = Math.min(frameDG.selectedIndices[0], i);
+								var __end:int = Math.max(frameDG.selectedIndices[0], i);
+								for (j = __start; j <= __end; j++) 
+								{
+									__newIndices.push(j);
+								}
+							}
+							if(__newIndices.length > 0)
+							{
+								frameDG.selectedIndices = __newIndices;
+								frameDG.ensureCellIsVisible(__newIndices[0]);
+							}
+							else
+							{
+								frameDG.selectedIndex  = i;
+								frameDG.ensureCellIsVisible(i);
+							}
+						}
+						else
+						{
+							frameDG.selectedIndex = i;
+							frameDG.ensureCellIsVisible(i);
+						}
 						return;
 					}
 				}
