@@ -6,6 +6,7 @@
 
 package model
 {
+import air.update.net.FileDownloader;
 import flash.display.BitmapData;
 import flash.display.JPEGEncoderOptions;
 import flash.display.JPEGXREncoderOptions;
@@ -18,7 +19,6 @@ import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 import flash.net.FileFilter;
 import flash.utils.ByteArray;
-
 import gnu.as3.gettext.FxGettext;
 
 import org.robotlegs.mvcs.Actor;
@@ -162,30 +162,31 @@ public class FileProcessor extends Actor
 	{
 		var __stream:FileStream = new FileStream();
 		var __ba:ByteArray = null;
+		var __imgFile:File = getFile(_saveData.picType);
 		if(_openState == StateType.SAVE_META)
 		{
 			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName));
+			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName, __imgFile.name));
 			__stream.close();
 		}
 		else if(_openState == StateType.SAVE_SHEET_PIC)
 		{
 			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
-			__stream.open(getFile(_saveData.picType), FileMode.WRITE);
+			__stream.open(__imgFile, FileMode.WRITE);
 			__stream.writeBytes(__ba);
 			__stream.close();
 		}
 		else if(_openState == StateType.SAVE_ALL)
 		{
-			//使用metadata的扩展名（数组元素1）新建一个File
-			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName));
-			__stream.close();
-			
 			//使用sheet的扩展名（数组元素0）新建一个File
 			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
-			__stream.open(getFile(_saveData.picType), FileMode.WRITE);
+			__stream.open(__imgFile, FileMode.WRITE);
 			__stream.writeBytes(__ba);
+			__stream.close();
+			
+			//使用metadata的扩展名（数组元素1）新建一个File
+			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
+			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName,__imgFile.name));
 			__stream.close();
 		}
 		else if(_openState == StateType.SAVE_SEQ)
@@ -251,7 +252,9 @@ public class FileProcessor extends Actor
 			_selectedFiles = [_file.clone()];
 			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态
 			if(_openState == StateType.SS)
+			{
 				_ssLoader.load(_file.url);
+			}
 			else
 				stateModel.state = _openState;
 		}
@@ -261,6 +264,14 @@ public class FileProcessor extends Actor
 			saveData();
 		}
 		//trace('single:',_file.nativePath, _openState);
+	}
+	
+	protected function getMetadataUrl($url:String, $type:String):String
+	{
+		var __dotIndex:int = $url.lastIndexOf('.');
+		if(__dotIndex == -1)
+			return $url + '.'+$type;
+		return $url.slice(0, __dotIndex) + '.'+$type;
 	}
 	
 	private function handler_selectMulti($evt:FileListEvent):void

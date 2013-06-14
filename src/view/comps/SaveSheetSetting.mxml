@@ -84,6 +84,7 @@
 			xmlRB.value = ExtendedNameType.XML;
 			txtRB.value = ExtendedNameType.TEXT;
 			jsonRB.value = ExtendedNameType.JSON;
+			starlingRB.value = ExtendedNameType.XML;
 		}
 
 		protected function handler_savePicBTNClick(event:MouseEvent):void

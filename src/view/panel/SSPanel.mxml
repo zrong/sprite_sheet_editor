@@ -29,6 +29,8 @@
 	<fx:Script>
 	<![CDATA[
 		import gnu.as3.gettext.FxGettext;
+		import interf.IPreview;
+		import vo.SaveVO;
 		
 		public function init($bmd:BitmapData, $hasName:Boolean):void
 		{
@@ -98,13 +100,63 @@
 			return saveSheet.nameCB.selected;
 		}
 		
-		//----------------------------------------
-		// handler
-		//----------------------------------------
-
-		//----------------------------------------
-		// 内部方法
-		//----------------------------------------
+		/**
+		 * 限制宽度（true）还是限制高度（false）
+		 */
+		public function get limitWidth():Boolean
+		{
+			return optPanel.whDDL.selectedIndex == 0;
+		}
+		
+		/**
+		 * 明确指定Sheet的宽度或高度
+		 */
+		public function get explicitSize():int
+		{
+			return optPanel.whNS.value;
+		}
+		
+		/**
+		 * 是否开启2的幂
+		 */
+		public function get powerOf2():Boolean
+		{
+			return optPanel.powerOf2CB.selected;
+		}
+		
+		/**
+		 * 是否开启正方形
+		 */
+		public function get square():Boolean
+		{
+			return optPanel.squareCB.selected;
+		}
+		
+		public function get trim():Boolean
+		{
+			return optPanel.trimCB.selected;
+		}
+		
+		public function get resetRect():Boolean
+		{
+			return optPanel.resetRectCB.selected;
+		}
+		
+		public function getSeqFileNames($num:int):Vector.<String>
+		{
+			return saveSeq.getFileNames($num);
+		}
+		
+		public function getSaveVO():SaveVO
+		{
+			var __vo:SaveVO = new SaveVO();
+			__vo.picType = imageType;
+			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
+			__vo.quality = qualityValue;
+			__vo.isSimple = isSimple;
+			__vo.includeName = includeName;
+			return __vo;
+		}
 	]]>
 	</fx:Script>
 </s:HGroup>

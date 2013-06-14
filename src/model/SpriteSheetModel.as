@@ -4,6 +4,7 @@ import flash.display.BitmapData;
 import flash.geom.Rectangle;
 import org.zengrong.display.spritesheet.MaskType;
 import org.zengrong.utils.BitmapUtil;
+import vo.RectsAndBmdsVO;
 
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.display.spritesheet.SpriteSheet;
@@ -96,8 +97,14 @@ public class SpriteSheetModel extends Actor
 		_originalSheet.addFrameAt($index, $bmd, $sizeRect, $originalRect, $name);
 	}
 		
-	public function drawAdjustedSheet($bmd:BitmapData):void
+	/**
+	 * 重新设置Sheet中的帧信息，并重绘Sheet位图
+	 * @param	$bmd
+	 * @param	$list
+	 */
+	public function redrawAdjustedSheet($bmd:BitmapData, $list:RectsAndBmdsVO):void
 	{
+		_adjustedSheet.setFrames($list.bmds, $list.frameRects, $list.originRects, originalSheet.metadata.names);
 		_adjustedSheet.drawSheet($bmd);
 	}
 	
@@ -128,7 +135,7 @@ public class SpriteSheetModel extends Actor
 	 * @param $trim 是否修剪
 	 * @param $reset 是否重置大小
 	 */
-	public function getRectsAndBmds($trim:Boolean, $reset:Boolean):Object
+	public function getRectsAndBmds($trim:Boolean, $reset:Boolean):RectsAndBmdsVO
 	{
 		//所有的BitmapData列表
 		var __bmd:Vector.<BitmapData> = null;
@@ -184,7 +191,7 @@ public class SpriteSheetModel extends Actor
 				__origin[j].y = 0;
 			}
 		}
-		return { frame:__frame, origin:__origin, bmd:__bmd };
+		return  new RectsAndBmdsVO(__bmd, __origin, __frame);
 	}
 	
 	/**

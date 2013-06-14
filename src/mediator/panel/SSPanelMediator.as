@@ -5,6 +5,7 @@ import flash.events.Event;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.text.ReturnKeyLabel;
+import vo.RectsAndBmdsVO;
 
 import events.SSEvent;
 
@@ -40,7 +41,6 @@ import vo.SaveVO;
 public class SSPanelMediator extends Mediator
 {
 	[Inject] public var v:SSPanel;
-	[Inject] public var file:FileProcessor;
 	[Inject] public var stateModel:StateModel;
 	[Inject] public var ssModel:SpriteSheetModel;
 	
@@ -102,25 +102,41 @@ public class SSPanelMediator extends Mediator
 	
 	private function handler_saveAll($evt:SSEvent):void
 	{
-		file.save(getAllSave());
-		dispatch(new SSEvent(SSEvent.SAVE, getAllSave()));
+		updateMetadata();
+		var __vo:SaveVO = v.getSaveVO();
+		var __bmd:BitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
+		__vo.bitmapData = __bmd;
+		__vo.metadata = getMetadata();
+		__vo.type = StateType.SAVE_ALL;
+		dispatch(new SSEvent(SSEvent.SAVE, __vo));
 	}
 	
 	protected function handler_saveMeta($event:SSEvent):void
 	{
-		file.save(getMetaSave());
+		updateMetadata();
+		var __vo:SaveVO =  v.getSaveVO();
+		__vo.metadata = getMetadata();
+		__vo.type = StateType.SAVE_META;
+		dispatch(new SSEvent(SSEvent.SAVE, __vo));
 	}
 	
 	protected function handler_savePic($event:SSEvent):void
 	{
-		file.save(getPicSave());
-		
+		updateMetadata();
+		var __vo:SaveVO =v.getSaveVO();
+		__vo.bitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
+		__vo.type = StateType.SAVE_SHEET_PIC;
+		dispatch(new SSEvent(SSEvent.SAVE, __vo));
 	}
 	
 	private function handler_saveSeq($evt:SSEvent):void
 	{
-		var __vo:SaveVO = getSeqSave();
-		file.save(__vo);
+		var __vo:SaveVO = v.getSaveVO();
+		__vo.fileNameList = v.getSeqFileNames(ssModel.adjustedSheet.metadata.totalFrame);
+		__vo.type = StateType.SAVE_SEQ;
+		//根据显示的帧类型来保存序列
+		__vo.bitmapDataList = ssModel.getBMDList();
+		dispatch(new SSEvent(SSEvent.SAVE, __vo));
 	}
 
 	private function handler_enterState($evt:SSEvent):void
@@ -196,82 +212,28 @@ public class SSPanelMediator extends Mediator
 			return;
 		}
 		trace('优化帧数：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
-		var __list:Object = ssModel.getRectsAndBmds(v.optPanel.trimCB.selected, v.optPanel.resetRectCB.selected);
-		trace('新生成的：', __list.bmd, __list.frame, __list.origin)
+		var __list:RectsAndBmdsVO = ssModel.getRectsAndBmds(v.trim, v.resetRect);
+		trace('新生成的：', __list.bmds, __list.frameRects, __list.originRects)
 		//保存新计算出的WH
 		var __whRect:Rectangle = new Rectangle();
 		//保存新计算出的每个帧在大Sheet中放置的位置
 		var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
 		//重新计算出最终Sheet的宽高以及修改过的frameRect
 		Funs.calculateSize(	
-			__list.frame, 
+			__list.frameRects, 
 			__newFrameRects, 
 			__whRect,
-			v.optPanel.whDDL.selectedIndex == 0, 
-			v.optPanel.whNS.value,
-			v.optPanel.powerOf2CB.selected,
-			v.optPanel.squareCB.selected
+			v.limitWidth,
+			v.explicitSize,
+			v.powerOf2,
+			v.square
 		);
-		ssModel.adjustedSheet.setFrames(__list.bmd, __newFrameRects, __list.origin, ssModel.originalSheet.metadata.names);
 		//绘制大Sheet位图
-		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, v.optPanel.transparentCB.selected, v.optPanel.bgColorPicker.selectedColor);
-		ssModel.drawAdjustedSheet(__sheetBmd);
+		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, v.transparent, v.bgColor);
+		ssModel.redrawAdjustedSheet(__sheetBmd, new RectsAndBmdsVO(__list.bmds, __list.originRects, __newFrameRects));
 		v.sheetPreview.source = ssModel.adjustedSheet.bitmapData;
 		//优化完毕，FramesAndLabel需要更新
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET_DONE));
-	}
-		
-	/**
-	 * 获取要保存的metadata和位图
-	 */
-	public function getAllSave():SaveVO
-	{
-		updateMetadata();
-		var __vo:SaveVO = new SaveVO();
-		var __bmd:BitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
-		__vo.bitmapData = __bmd;
-		__vo.metadata = getMetadata();
-		__vo.picType = v.saveSheet.imageSetting.imageType;
-		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
-		__vo.quality = v.saveSheet.imageSetting.qualityValue;
-		__vo.type = StateType.SAVE_ALL;
-		__vo.isSimple = v.isSimple;
-		__vo.includeName = v.includeName;
-		return __vo;
-	}
-	
-	public function getMetaSave():SaveVO
-	{
-		updateMetadata();
-		var __vo:SaveVO = new SaveVO();
-		__vo.metadata = getMetadata();
-		__vo.metaType = v.saveSheet.metaRBG.selectedValue.toString();
-		__vo.type = StateType.SAVE_META;
-		__vo.isSimple = v.isSimple;
-		__vo.includeName = v.includeName;
-		return __vo;
-	}
-	
-	public function getPicSave():SaveVO
-	{
-		updateMetadata();
-		var __vo:SaveVO = new SaveVO();
-		__vo.bitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
-		__vo.picType = v.imageType;
-		__vo.quality = v.qualityValue;
-		__vo.type = StateType.SAVE_SHEET_PIC;
-		return __vo;
-	}
-	
-	public function getSeqSave():SaveVO
-	{
-		var __vo:SaveVO = new SaveVO();
-		__vo.fileNameList = v.saveSeq.getFileNames(ssModel.adjustedSheet.metadata.totalFrame);
-		__vo.quality = v.qualityValue;
-		__vo.type = StateType.SAVE_SEQ;
-		//根据显示的帧类型来保存序列
-		__vo.bitmapDataList = ssModel.getBMDList();
-		return __vo;
 	}
 	
 	/**

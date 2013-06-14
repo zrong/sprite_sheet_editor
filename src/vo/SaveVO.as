@@ -55,7 +55,14 @@ public class SaveVO
 	 */
 	public var type:String;
 	
+	/**
+	 * 仅包含简单信息
+	 */
 	public var isSimple:Boolean;
+	
+	/**
+	 * 包含文件名
+	 */
 	public var includeName:Boolean;
 }
 }
