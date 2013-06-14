@@ -1,7 +1,9 @@
 <b>2013-06-14：v0.8.1版发布</b>
 <ul>
 	<li>增加保存为Starling格式的SpriteSheet，但不支持打开Starling；</li>
-	<li>调整程序结构以支持更多格式。</li>
+	<li>调整程序结构以支持更多格式；</li>
+	<li>在“编辑SpriteSheet界面”，直接单击大图选择对应的帧，左侧帧列表会自动滚动到该帧；</li>
+	<li>在“编辑SpriteSheet界面”，可以使用Shift实现连续多选，使用Ctrl/Control键实现不连续多选。</li>
 </ul>
 <b>2013-02-19：v0.8.0版发布</b>
 <ul>
