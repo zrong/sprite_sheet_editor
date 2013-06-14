@@ -62,10 +62,11 @@
 		<echo>The main file is ${main.file}.</echo>
 		<echo>debug:${var.debug} optimize:${var.optimize} swfversion:${var.swfversion}</echo>
 		<java jar="${FLEX_HOME}/lib/mxmlc.jar" fork="true" failonerror="true" dir="${FLEX_FRAMEWORKS}">
-			<arg value="-o=${swf.file}"/>
-			<!-- <arg line="-sp=${basedir}/${SRC_DIR}"/> -->
-			<arg value="-load-config=air-config.xml"/>
-			<arg value="-l+=${LIB_DIR}"/>
+			<arg line="-output ${swf.file}"/>
+			<arg line="-swf-version ${var.swfversion}"/>
+			<arg line="-source-path ${SRC_DIR}"/>
+			<arg value="-load-config+=air-config.xml"/>
+			<arg value="-library-path+=${LIB_DIR}"/>
 			<!--
 			<arg value="-l+=${ANE_DIR}/com.sanguo.ios.ane"/>
 			-->
@@ -127,8 +128,7 @@
 		<echo>Copy ${TEMP_DIR} to ${BIN_DIR}</echo>
 		<copy todir="${TEMP_DIR}">
 			<fileset dir="${BIN_DIR}">
-				<include name="assets/**"/>
-				<include name="${swf.name}"/>
+				<include name="**"/>
 			</fileset>
 		</copy>
 	</target>
@@ -139,15 +139,16 @@
 		<fail unless="var.signing"/>
 		<fail unless="var.output"/>
 		<mkdir dir="${DIST_DIR}"/>
-		<echo>Packager a ${var.type}${var.target}.</echo>
-		<echo>The signing is ${var.signing}.</echo>
-		<echo>The output file is ${var.output}.</echo>
-		<echo>The debug options are ${var.options}.</echo>
+		<echo>Packager a ${var.type}${var.target}</echo>
+		<echo>The signing is ${var.signing}</echo>
+		<echo>The output file is ${var.output}</echo>
+		<echo>The options are ${var.options}</echo>
+		<echo>${FLEX_HOME}/lib/adt.jar -package ${var.signing} ${var.options} -target ${var.type}${var.target} ${var.output} ${APP_XML} ${var.fileordir} ${ANE_DIR_ARGS}</echo>
 		<java jar="${FLEX_HOME}/lib/adt.jar" fork="true" failonerror="true">
 			<arg value="-package"/>
-			<arg line="-target ${var.type}${var.target}"/>
-			<arg line="${var.options}"/>
 			<arg line="${var.signing}"/>
+			<arg line="${var.options}"/>
+			<arg line="-target ${var.type}${var.target}"/>
 			<arg line="${var.output}"/>
 			<arg value="${APP_XML}"/>
 			<arg line="${var.fileordir}"/>

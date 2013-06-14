@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <application xmlns="http://ns.adobe.com/air/application/3.7">
-  <id>SpriteSheetEditor</id>
+  <id>org.zengrong.SpriteSheetEditor</id>
   <filename>SpriteSheetEditor</filename>
   <name>Sprite Sheet Editor</name>
   <versionNumber>0.8.1</versionNumber>
