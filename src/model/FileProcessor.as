@@ -6,29 +6,22 @@
 
 package model
 {
-import air.update.net.FileDownloader;
+import events.SSEvent;
 import flash.display.BitmapData;
 import flash.display.JPEGEncoderOptions;
 import flash.display.JPEGXREncoderOptions;
 import flash.display.PNGEncoderOptions;
 import flash.events.Event;
 import flash.events.FileListEvent;
-import flash.events.IOErrorEvent;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 import flash.net.FileFilter;
 import flash.utils.ByteArray;
 import gnu.as3.gettext.FxGettext;
-
 import org.robotlegs.mvcs.Actor;
-import org.zengrong.net.SpriteSheetLoader;
-
 import type.ExtendedNameType;
 import type.StateType;
-
-import utils.Funs;
-
 import vo.SaveVO;
 
 /**
@@ -38,7 +31,6 @@ import vo.SaveVO;
 public class FileProcessor extends Actor
 {
 	[Inject] public var stateModel:StateModel;
-	[Inject] public var ssModel:SpriteSheetModel;
 	/**
 	 * 要打开的图像文件类型
 	 */	
@@ -52,10 +44,6 @@ public class FileProcessor extends Actor
 		initFile(File.desktopDirectory);
 		
 		initFilter();
-		
-		_ssLoader = new SpriteSheetLoader();
-		_ssLoader.addEventListener(Event.COMPLETE, handler_ssLoadComplete);
-		_ssLoader.addEventListener(IOErrorEvent.IO_ERROR, handler_ssLoadError);
 	}
 	
 	private var _file:File;
@@ -64,8 +52,6 @@ public class FileProcessor extends Actor
 	private var _openState:String;
 	private var _selectedFiles:Array;	//选择的文件数组
 	private var _callBack:Function;
-	
-	private var _ssLoader:SpriteSheetLoader;	//用于载入现有的SpriteSheet
 	
 	private var _saveData:SaveVO;
 	
@@ -253,7 +239,7 @@ public class FileProcessor extends Actor
 			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态
 			if(_openState == StateType.SS)
 			{
-				_ssLoader.load(_file.url);
+				dispatch(new SSEvent(SSEvent.LOAD_SPRITE_SHEET, _file.url));
 			}
 			else
 				stateModel.state = _openState;
@@ -296,20 +282,6 @@ public class FileProcessor extends Actor
 	private function handler_selectCancel($evt:Event):void
 	{
 		_callBack = null;
-	}
-	
-	/**
-	 * 打开SS格式，载入SS完毕后调用
-	 */
-	private function handler_ssLoadComplete($evt:Event):void
-	{
-		ssModel.updateOriginalSheet(_ssLoader.getSpriteSheet());
-		stateModel.state = StateType.SS;
-	}
-	
-	private function handler_ssLoadError($evt:IOErrorEvent):void
-	{
-		Funs.alert($evt.text);
 	}
 }
 }

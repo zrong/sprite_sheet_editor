@@ -1,5 +1,6 @@
 package
 {
+import ctrl.LoadSpriteSheetCmd;
 import ctrl.PreviewSSChangeCmd;
 import ctrl.SaveCmd;
 
@@ -57,6 +58,7 @@ public class SSEContext extends Context
 		
 		commandMap.mapEvent(SSEvent.PREVIEW_SS_CHANGE, PreviewSSChangeCmd);
 		commandMap.mapEvent(SSEvent.SAVE, SaveCmd);
+		commandMap.mapEvent(SSEvent.LOAD_SPRITE_SHEET, LoadSpriteSheetCmd);
 	}
 }
 }

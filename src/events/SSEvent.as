@@ -15,6 +15,7 @@ public class SSEvent extends Event
 	
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	
+	public static const LOAD_SPRITE_SHEET:String = "loadSpriteSheet";
 	/**
 	 * 选择的帧变化了
 	 */
