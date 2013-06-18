@@ -19,7 +19,7 @@
 			<s:Label fontWeight="bold">
 				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
 			</s:Label>
-			<s:CheckBox id="useOriginalSizeCB">
+			<s:CheckBox id="useOriginalSizeCB" selected="true">
 				<s:label>{FxGettext.gettext("Original size of the frame")}</s:label>
 			</s:CheckBox>
 			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">

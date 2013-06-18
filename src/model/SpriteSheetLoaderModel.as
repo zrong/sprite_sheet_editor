@@ -1,5 +1,7 @@
 package model 
 {
+import flash.events.Event;
+import flash.events.IOErrorEvent;
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.net.SpriteSheetLoader;
 import type.StateType;

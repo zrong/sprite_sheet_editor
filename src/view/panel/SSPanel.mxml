@@ -85,9 +85,14 @@
 			return saveSheet.imageSetting.spriteSheetType;
 		}
 		
-		public function get  qualityValue():int
+		public function get  seqQualityValue():int
 		{
 			return saveSeq.imageSetting.qualityValue;
+		}
+		
+		public function get sheetQualityValue():int
+		{
+			return saveSheet.imageSetting.qualityValue;
 		}
 		
 		public function get isSimple():Boolean
@@ -147,14 +152,27 @@
 			return saveSeq.getFileNames($num);
 		}
 		
-		public function getSaveVO():SaveVO
+		private function getSaveVO():SaveVO
 		{
 			var __vo:SaveVO = new SaveVO();
 			__vo.picType = imageType;
 			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
-			__vo.quality = qualityValue;
 			__vo.isSimple = isSimple;
 			__vo.includeName = includeName;
+			return __vo;
+		}
+		
+		public function getSeqSaveVO():SaveVO
+		{
+			var __vo:SaveVO = getSaveVO();
+			__vo.quality = seqQualityValue;
+			return __vo;
+		}
+		
+		public function getSheetSaveVO():SaveVO
+		{
+			var __vo:SaveVO = getSaveVO();
+			__vo.quality = sheetQualityValue;
 			return __vo;
 		}
 	]]>
