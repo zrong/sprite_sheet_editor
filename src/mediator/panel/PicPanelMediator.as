@@ -1,6 +1,7 @@
 package mediator.panel
 {
 import events.SSEvent;
+import vo.BrowseFileDoneVO;
 
 import flash.events.Event;
 
@@ -33,6 +34,7 @@ public class PicPanelMediator extends Mediator
 		addViewListener(SSEvent.ADD_FRAME, handler_addFrame);
 		eventMap.mapListener(v.fileM, Event.SELECT, handler_select);
 		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_build);
+		eventMap.mapListener(eventDispatcher, SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		if(stateModel.state == StateType.PIC)
@@ -40,6 +42,7 @@ public class PicPanelMediator extends Mediator
 			enterState(stateModel.oldState, stateModel.state);
 		}
 	}
+
 	
 	override public function onRemove():void
 	{
@@ -47,15 +50,20 @@ public class PicPanelMediator extends Mediator
 		removeViewListener(SSEvent.ADD_FRAME, handler_addFrame);
 		eventMap.unmapListener(v.fileM, Event.SELECT, handler_select);
 		eventMap.unmapListener(v.buildSetting, SSEvent.BUILD, handler_build);
+		eventMap.unmapListener(eventDispatcher, SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		eventMap.unmapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
 		v.pic.viewer.source = null;
 		v.pic.transf.destroy();
 	}
 	
+	/**
+	 * 在PicPanel界面中新增Pic
+	 * @param	$evt
+	 */
 	private function handler_select($evt:Event):void
 	{
-		file.openPics(v.fileM.fun_addFile);
+		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.PIC));
 	}
 	
 	private function handler_captureDone($evt:SSEvent):void
@@ -95,6 +103,15 @@ public class PicPanelMediator extends Mediator
 	private function handler_addFrame($evt:SSEvent):void
 	{
 		ssModel.addOriginalFrame($evt.info.bmd, $evt.info.rect);
-	}	
+	}
+		
+	private function handler_browseFileDone($evt:SSEvent):void 
+	{
+		var __vo:BrowseFileDoneVO = $evt.info as BrowseFileDoneVO;
+		if(__vo && __vo.openState == StateType.PIC)
+		{
+			v.fileM.addFile2Manager(__vo.selectedFiles);
+		}
+	}
 }
 }

@@ -6,6 +6,8 @@ import flash.events.MouseEvent;
 import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import type.StateType;
+import vo.BrowseFileDoneVO;
 
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
@@ -110,6 +112,7 @@ public class FramesAndLabelMediator extends Mediator
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
 		addContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
 		addContextListener(SSEvent.OPTIMIZE_SHEET_DONE, handler_optimizeDone);
+		addContextListener(SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		init();
 	}
@@ -139,6 +142,7 @@ public class FramesAndLabelMediator extends Mediator
 		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
 		removeContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET_DONE, handler_optimizeDone);
+		removeContextListener(SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		destroy();
 	}
@@ -620,13 +624,22 @@ public class FramesAndLabelMediator extends Mediator
 	private function handler_selectFile($evt:Event):void
 	{
 		_isAddSSFrame = ($evt.currentTarget == v.addSSBTN);
-		file.addToSS(fun_addToSS);
+		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.ADD_TO_SS));
+	}
+	
+	private function handler_browseFileDone($evt:SSEvent):void 
+	{
+		var __vo:BrowseFileDoneVO = $evt.info as BrowseFileDoneVO;
+		if(__vo && __vo.openState == StateType.ADD_TO_SS)
+		{
+			addToSS(__vo.selectedFiles);
+		}
 	}
 	
 	/**
 	 * 选择加入的图像文件后，调用的方法
 	 */
-	private function fun_addToSS($filelist:Array):void
+	private function addToSS($filelist:Array):void
 	{
 		var __fileList:Array = $filelist;
 		var __file:File = null;

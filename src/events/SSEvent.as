@@ -16,6 +16,16 @@ public class SSEvent extends Event
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	
 	public static const LOAD_SPRITE_SHEET:String = "loadSpriteSheet";
+	
+	/**
+	 * 要求File对象选择一个或者一组文件
+	 */
+	public static const BROWSE_FILE:String = "browseFile";
+	
+	/**
+	 * 选择一个或者一组文件成功
+	 */
+	public static const BROWSE_FILE_DONE:String = "browseFileDone";
 	/**
 	 * 选择的帧变化了
 	 */

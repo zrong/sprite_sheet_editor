@@ -22,6 +22,7 @@ import gnu.as3.gettext.FxGettext;
 import org.robotlegs.mvcs.Actor;
 import type.ExtendedNameType;
 import type.StateType;
+import vo.BrowseFileDoneVO;
 import vo.SaveVO;
 
 /**
@@ -42,7 +43,6 @@ public class FileProcessor extends Actor
 	public function FileProcessor()
 	{
 		initFile(File.desktopDirectory);
-		
 		initFilter();
 	}
 	
@@ -51,7 +51,6 @@ public class FileProcessor extends Actor
 	private var _allPicArr:Array;
 	private var _openState:String;
 	private var _selectedFiles:Array;	//选择的文件数组
-	private var _callBack:Function;
 	
 	private var _saveData:SaveVO;
 	
@@ -80,36 +79,35 @@ public class FileProcessor extends Actor
 		return _selectedFiles;
 	}
 	
+	public function get openState():String
+	{
+		return _openState;
+	}
+	
 	//----------------------------------------
 	// 打开文件操作
 	//----------------------------------------
 	
-	public function openSwf():void
+	public function open($state:String):void
 	{
-		_openState = StateType.SWF;
-		_file.browseForOpen(FxGettext.gettext("Select a swf file"), [SWF_FILTER]);
+		_openState = $state;
+		switch(_openState)
+		{
+			case StateType.SWF:
+				_file.browseForOpen(FxGettext.gettext("Select a swf file"), [SWF_FILTER]);
+				break;
+			case StateType.SS:
+				_file.browseForOpen(FxGettext.gettext("Select a Sprite Sheet file"), _allPicArr);
+				break;
+			case StateType.PIC:
+				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
+				break;
+			case StateType.ADD_TO_SS:
+				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
+				break;
+		}
 	}
-	
-	public function openPics($callBack:Function=null):void
-	{
-		_openState = StateType.PIC;
-		_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
-		_callBack = $callBack;
-	}
-	
-	public function openSS():void
-	{
-		_openState = StateType.SS;
-		_file.browseForOpen(FxGettext.gettext("Select a Sprite Sheet file"), _allPicArr);
-	}
-	
-	public function addToSS($callBack:Function=null):void
-	{
-		_openState = StateType.ADD_TO_SS;
-		_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
-		_callBack = $callBack;
-	}
-	
+
 	//----------------------------------------
 	// 保存文件操作
 	//----------------------------------------
@@ -232,11 +230,12 @@ public class FileProcessor extends Actor
 	
 	private function handler_selectSingle($evt:Event):void
 	{
-		//如果发生选择事件的state是编辑器界面状态，就执行状态切换
+		//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
 		if(StateType.isViewState(_openState))
 		{
 			_selectedFiles = [_file.clone()];
-			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态
+			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态。
+			//载入的工作交给SpriteSheetLaoderModel。
 			if(_openState == StateType.SS)
 			{
 				dispatch(new SSEvent(SSEvent.LOAD_SPRITE_SHEET, _file.url));
@@ -270,18 +269,20 @@ public class FileProcessor extends Actor
 		if(_openState == StateType.PIC ||
 			_openState == StateType.ADD_TO_SS)
 		{
-			if(_callBack is Function)
-			{
-				_callBack.call(null, _selectedFiles);
-				_callBack = null;
-			}
+			this.dispatch
+			(
+				new SSEvent
+				(
+					SSEvent.BROWSE_FILE_DONE, 
+					new BrowseFileDoneVO(_openState, _selectedFiles)
+				)
+			);
 		}
 		//trace('multi:', _file.nativePath, $evt.files, _openState);
 	}
 	
 	private function handler_selectCancel($evt:Event):void
 	{
-		_callBack = null;
 	}
 }
 }

@@ -1,18 +1,14 @@
 package mediator.panel
 {
+import events.SSEvent;
 import flash.events.MouseEvent;
-
-import model.FileProcessor;
-
 import org.robotlegs.mvcs.Mediator;
-
+import type.StateType;
 import view.panel.StartPanel;
 
 public class StartPanelMediator extends Mediator
 {
 	[Inject] public var v:StartPanel;
-	
-	[Inject] public var file:FileProcessor;
 	
 	override public function onRegister():void
 	{
@@ -31,17 +27,17 @@ public class StartPanelMediator extends Mediator
 	
 	protected function handler_openSWFBTNClick(event:MouseEvent):void
 	{
-		file.openSwf();
+		dispatch(new SSEvent(SSEvent.BROWSE_FILE,StateType.SWF));
 	}
 	
 	protected function handler_openPicBTNClick(event:MouseEvent):void
 	{
-		file.openPics();
+		dispatch(new SSEvent(SSEvent.BROWSE_FILE,StateType.PIC));
 	}
 	
 	protected function handler_openSSBTNclick(event:MouseEvent):void
 	{
-		file.openSS();
+		dispatch(new SSEvent(SSEvent.BROWSE_FILE,StateType.SS));
 	}
 }
 }
