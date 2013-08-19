@@ -1,3 +1,15 @@
+<b>2013-08-20：v0.8.2版发布</b>
+<ul>
+	<li>增加拖放功能，可以直接从资源管理器中拖动图像文件到编辑器中，规则如下：
+		<ol>
+			<li>在开始界面中，根据文件扩展名和有无metadata文件，进入不同的界面（SWF、PIc或SS）；</li>
+			<li>在PIC界面中，将文件作为图像文件对待，加入PIC列表；</li>
+			<li>在SS页面中，将文件作为图像文件或SpriteSheet对待，加入SpriteSheet列表；</li>
+		</ol>
+	</li>
+	<li>解决导入图像列表会出现重复的BUG；</li>
+	<li>合并了SS界面中的“增加图像帧”和“增加SpriteSheet”。</li>
+</ul>
 <b>2013-06-14：v0.8.1版发布</b>
 <ul>
 	<li>增加保存为Starling格式的SpriteSheet，但不支持打开Starling；</li>

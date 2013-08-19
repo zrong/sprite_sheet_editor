@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-13 14:18+0800\n"
-"PO-Revision-Date: 2013-06-13 14:19+0800\n"
+"POT-Creation-Date: 2013-08-20 00:08+0800\n"
+"PO-Revision-Date: 2013-08-20 00:14+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -18,176 +18,184 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:513
+#: ../../src/ctrl/DragFileCmd.as:28
+msgid "These files are not supported!"
+msgstr "这些文件不被支持！"
+
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:503
 msgid "Please enter label's name!"
 msgstr "请输入Label名称！"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:518
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:508
 msgid "Please select the frame to add the label!"
 msgstr "请选择要加入label的帧！"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:526
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:516
 msgid "Duplicate label's name is't allowed!"
 msgstr "Label名称不允许重复！"
 
-#: ../src/mediator/comps/FramesAndLabelMediator.as:560
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:550
 msgid "Please select the frame to remove."
 msgstr "请选择要删除的帧。"
 
-#: ../src/mediator/comps/SSPreviewMediator.as:82
+#: ../../src/mediator/comps/SSPreviewMediator.as:82
 msgid "Frame animation preview"
 msgstr "帧动画预览"
 
-#: ../src/mediator/comps/SSPreviewMediator.as:82
+#: ../../src/mediator/comps/SSPreviewMediator.as:82
 msgid "animation preview"
 msgstr "动画预览"
 
-#: ../src/mediator/panel/SSPanelMediator.as:99
+#: ../../src/mediator/panel/SSPanelMediator.as:99
 msgid "trimmed size"
 msgstr "修剪尺寸"
 
-#: ../src/mediator/panel/SSPanelMediator.as:100
+#: ../../src/mediator/panel/SSPanelMediator.as:100
 msgid "original size"
 msgstr "原始尺寸"
 
-#: ../src/mediator/panel/SSPanelMediator.as:195
+#: ../../src/mediator/panel/SSPanelMediator.as:210
 msgid "No frame info, can not generate the sheet."
 msgstr "没有帧的信息，不能生成Sheet。"
 
-#: ../src/model/FileProcessor.as:45 ../src/view/comps/ImageTypeSetting.mxml:9
-msgid "PNG image"
-msgstr "PNG图像"
-
-#: ../src/model/FileProcessor.as:46 ../src/view/comps/ImageTypeSetting.mxml:12
-msgid "JPEG image"
-msgstr "JPEG图像"
-
-#: ../src/model/FileProcessor.as:47 ../src/view/comps/ImageTypeSetting.mxml:15
-msgid "JPEG-XR image"
-msgstr "JPEG-XR图像"
-
-#: ../src/model/FileProcessor.as:48
-msgid "SWF animation"
-msgstr "SWF动画"
-
-#: ../src/model/FileProcessor.as:88
-msgid "All compatible image"
-msgstr "所有的支持的图像"
-
-#: ../src/model/FileProcessor.as:104
+#: ../../src/model/FileOpenerModel.as:52
 msgid "Select a swf file"
 msgstr "选择swf文件"
 
-#: ../src/model/FileProcessor.as:110 ../src/model/FileProcessor.as:123
-msgid "Select image file"
-msgstr "选择图像文件"
-
-#: ../src/model/FileProcessor.as:117
+#: ../../src/model/FileOpenerModel.as:55
 msgid "Select a Sprite Sheet file"
 msgstr "选择Sprite Sheet文件"
 
-#: ../src/model/FileProcessor.as:139
+#: ../../src/model/FileOpenerModel.as:58 ../../src/model/FileOpenerModel.as:61
+#: ../../src/model/FileOpenerModel.as:64
+msgid "Select image file"
+msgstr "选择图像文件"
+
+#: ../../src/model/FileSaverModel.as:42
 msgid "Select the save path of Sprite Sheet file"
 msgstr "选择Sprite Sheet文件的保存路径"
 
-#: ../src/model/FileProcessor.as:145
+#: ../../src/model/FileSaverModel.as:48
 msgid "Select the save path of metadata"
 msgstr "选择元数据的保存路径"
 
-#: ../src/model/FileProcessor.as:149
+#: ../../src/model/FileSaverModel.as:52
 msgid "Select the save path of the image sequence"
 msgstr "选择图像序列的保存路径"
 
-#: ../src/model/FileProcessor.as:153
+#: ../../src/model/FileSaverModel.as:56
 msgid "Select the save path of image and metedata"
 msgstr "选择图像和元数据的保存路径"
 
-#: ../src/SpriteSheetEditor.mxml:72
+#: ../../src/SpriteSheetEditor.mxml:72
 msgid "Do you want to exit Sprite Sheet Editor?"
 msgstr "你要退出么？"
 
-#: ../src/type/StateType.as:60 ../src/view/panel/TopPanel.mxml:12
-#: ../src/view/panel/TopPanel.mxml:28
+#: ../../src/type/ExtendedNameType.as:23
+#: ../../src/view/comps/ImageTypeSetting.mxml:9
+msgid "PNG image"
+msgstr "PNG图像"
+
+#: ../../src/type/ExtendedNameType.as:24
+#: ../../src/view/comps/ImageTypeSetting.mxml:12
+msgid "JPEG image"
+msgstr "JPEG图像"
+
+#: ../../src/type/ExtendedNameType.as:25
+#: ../../src/view/comps/ImageTypeSetting.mxml:15
+msgid "JPEG-XR image"
+msgstr "JPEG-XR图像"
+
+#: ../../src/type/ExtendedNameType.as:26
+msgid "SWF animation"
+msgstr "SWF动画"
+
+#: ../../src/type/ExtendedNameType.as:27
+msgid "All compatible image"
+msgstr "所有的支持的图像"
+
+#: ../../src/type/StateType.as:62 ../../src/view/panel/TopPanel.mxml:12
+#: ../../src/view/panel/TopPanel.mxml:28
 msgid "Start"
 msgstr "开始"
 
-#: ../src/type/StateType.as:62
+#: ../../src/type/StateType.as:64
 msgid "Edit Sprite Sheet"
 msgstr "编辑Sprite Sheet"
 
-#: ../src/type/StateType.as:64
+#: ../../src/type/StateType.as:66
 msgid "Import swf file"
 msgstr "导入swf文件"
 
-#: ../src/type/StateType.as:66
+#: ../../src/type/StateType.as:68
 msgid "Process image file"
 msgstr "处理图像文件"
 
-#: ../src/utils/Funs.as:207
+#: ../../src/utils/Funs.as:211
 msgid "Warning"
 msgstr "警告"
 
-#: ../src/utils/Funs.as:217
+#: ../../src/utils/Funs.as:221
 msgid "Please Confirm"
 msgstr "请确认"
 
-#: ../src/view/comps/Alert.mxml:10
+#: ../../src/view/comps/Alert.mxml:10
 msgid "OK"
 msgstr "确定"
 
-#: ../src/view/comps/Alert.mxml:13
+#: ../../src/view/comps/Alert.mxml:13
 msgid "Cancel"
 msgstr "取消"
 
-#: ../src/view/comps/BuildSetting.mxml:17
+#: ../../src/view/comps/BuildSetting.mxml:17
 msgid "Build Sprite Sheet"
 msgstr "建立Sprite Sheet"
 
-#: ../src/view/comps/BuildSetting.mxml:18
+#: ../../src/view/comps/BuildSetting.mxml:18
 msgid "Optimize Sprite Sheet"
 msgstr "优化Sprite Sheet"
 
-#: ../src/view/comps/BuildSetting.mxml:23
+#: ../../src/view/comps/BuildSetting.mxml:23
 msgid "Smooth"
 msgstr "平滑"
 
-#: ../src/view/comps/BuildSetting.mxml:26
+#: ../../src/view/comps/BuildSetting.mxml:26
 msgid "Transparent"
 msgstr "透明"
 
-#: ../src/view/comps/BuildSetting.mxml:31
+#: ../../src/view/comps/BuildSetting.mxml:31
 msgid "Background"
 msgstr "背景"
 
-#: ../src/view/comps/BuildSetting.mxml:37
+#: ../../src/view/comps/BuildSetting.mxml:37
 msgid ""
 "Select width or height of the SpriteSheet. Another dimension needed to "
 "automatically calculate."
 msgstr "选择生成的SpriteSheet的宽度或者高度。另一个维度根据需要自动计算。"
 
-#: ../src/view/comps/BuildSetting.mxml:39
+#: ../../src/view/comps/BuildSetting.mxml:39
 msgid "Width"
 msgstr "宽"
 
-#: ../src/view/comps/BuildSetting.mxml:40
+#: ../../src/view/comps/BuildSetting.mxml:40
 msgid "Height"
 msgstr "高"
 
-#: ../src/view/comps/BuildSetting.mxml:50
+#: ../../src/view/comps/BuildSetting.mxml:50
 msgid "Trim blank"
 msgstr "修剪空白"
 
-#: ../src/view/comps/BuildSetting.mxml:51
+#: ../../src/view/comps/BuildSetting.mxml:51
 msgid ""
 "If selected, then in the top left corner of the pixel color as a benchmark, "
 "cutting off the edge of the redundant blank."
 msgstr "选中后，将以左上角的像素颜色为基准，裁切掉边缘的多余空白"
 
-#: ../src/view/comps/BuildSetting.mxml:54
+#: ../../src/view/comps/BuildSetting.mxml:54
 msgid "Reset frame size"
 msgstr "重设帧大小"
 
-#: ../src/view/comps/BuildSetting.mxml:55
+#: ../../src/view/comps/BuildSetting.mxml:55
 msgid ""
 "If selected, reset the original frame to the size after pruning blank. In "
 "metadata, the trimmed frame size and the original frame size is same. "
@@ -200,123 +208,124 @@ msgstr ""
 "若不选，则仅在保存的Sheet图像中使用修剪后的大小，在metadata中记录原始的帧大小"
 "和修剪的帧大小的数据。"
 
-#: ../src/view/comps/BuildSetting.mxml:61
+#: ../../src/view/comps/BuildSetting.mxml:61
 msgid "Power of 2"
 msgstr "2的幂"
 
-#: ../src/view/comps/BuildSetting.mxml:62
+#: ../../src/view/comps/BuildSetting.mxml:62
 msgid "If selected, then output size are power of 2(e.g., 256,512)"
 msgstr "选中后，输出尺寸的宽高均为2的幂（如256,512）"
 
-#: ../src/view/comps/BuildSetting.mxml:65
+#: ../../src/view/comps/BuildSetting.mxml:65
 msgid "Square"
 msgstr "正方形"
 
-#: ../src/view/comps/BuildSetting.mxml:66
+#: ../../src/view/comps/BuildSetting.mxml:66
 msgid ""
 "If selected, then output file is square,  width and height are automatic "
 "identification"
 msgstr "选中后，输出尺寸比例为正方形，宽高自动确定"
 
-#: ../src/view/comps/BuildSetting.mxml:71
+#: ../../src/view/comps/BuildSetting.mxml:71
 msgid "Build"
 msgstr "生成"
 
-#: ../src/view/comps/BuildSetting.mxml:72
+#: ../../src/view/comps/BuildSetting.mxml:72
 msgid "Optimize"
 msgstr "优化"
 
-#: ../src/view/comps/FileManager.mxml:11
+#: ../../src/view/comps/FileManager.mxml:11
 msgid "File list"
 msgstr "文件列表"
 
-#: ../src/view/comps/FileManager.mxml:19
+#: ../../src/view/comps/FileManager.mxml:19
 msgid "File name"
 msgstr "文件名"
 
-#: ../src/view/comps/FileManager.mxml:22
+#: ../../src/view/comps/FileManager.mxml:22
 msgid "File size"
 msgstr "文件尺寸"
 
-#: ../src/view/comps/FileManager.mxml:29
+#: ../../src/view/comps/FileManager.mxml:29
 msgid ""
 "Add multiple files. If you select items in the list, add the file will "
 "appear in the option above."
 msgstr "添加多个文件。如果列表中有选择项，添加的文件会出现在选择项的上方。"
 
-#: ../src/view/comps/FileManager.mxml:32
+#: ../../src/view/comps/FileManager.mxml:32
 msgid "Delete the selected file from the list."
 msgstr "从列表中删除选择的文件。"
 
-#: ../src/view/comps/FileManager.mxml:35
+#: ../../src/view/comps/FileManager.mxml:35
 msgid "Move to top"
 msgstr "移动到顶部"
 
-#: ../src/view/comps/FileManager.mxml:38
+#: ../../src/view/comps/FileManager.mxml:38
 msgid "move to bottom"
 msgstr "移动到底部"
 
-#: ../src/view/comps/FileManager.mxml:41
-#: ../src/view/comps/FramesAndLabels.mxml:79
-#: ../src/view/comps/FramesAndLabels.mxml:130
+#: ../../src/view/comps/FileManager.mxml:41
+#: ../../src/view/comps/FramesAndLabels.mxml:75
+#: ../../src/view/comps/FramesAndLabels.mxml:126
 msgid "Move up"
 msgstr "上移"
 
-#: ../src/view/comps/FileManager.mxml:44
-#: ../src/view/comps/FramesAndLabels.mxml:83
-#: ../src/view/comps/FramesAndLabels.mxml:133
+#: ../../src/view/comps/FileManager.mxml:44
+#: ../../src/view/comps/FramesAndLabels.mxml:79
+#: ../../src/view/comps/FramesAndLabels.mxml:129
 msgid "Move down"
 msgstr "下移"
 
-#: ../src/view/comps/FrameDataGrid.mxml:10
+#: ../../src/view/comps/FrameDataGrid.mxml:10
 msgid "Frame number"
 msgstr "帧编号"
 
-#: ../src/view/comps/FrameDataGrid.mxml:13
+#: ../../src/view/comps/FrameDataGrid.mxml:13
 msgid "Frame name"
 msgstr "帧名"
 
-#: ../src/view/comps/FrameDataGrid.mxml:16
+#: ../../src/view/comps/FrameDataGrid.mxml:16
 msgid "Trimmed size"
 msgstr "修剪尺寸"
 
-#: ../src/view/comps/FrameDataGrid.mxml:19
+#: ../../src/view/comps/FrameDataGrid.mxml:19
 msgid "Original size"
 msgstr "原始尺寸"
 
-#: ../src/view/comps/FramesAndLabels.mxml:26
+#: ../../src/view/comps/FramesAndLabels.mxml:26
 msgid "Open preview windows"
 msgstr "打开预览窗口"
 
-#: ../src/view/comps/FramesAndLabels.mxml:32
+#: ../../src/view/comps/FramesAndLabels.mxml:32
 msgid "Use frame"
 msgstr "使用帧"
 
-#: ../src/view/comps/FramesAndLabels.mxml:33
+#: ../../src/view/comps/FramesAndLabels.mxml:33
 msgid "Play the animation of selected frames"
 msgstr "播放选中的帧的动画"
 
-#: ../src/view/comps/FramesAndLabels.mxml:37
+#: ../../src/view/comps/FramesAndLabels.mxml:37
 msgid "Use label"
 msgstr "使用Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:38
+#: ../../src/view/comps/FramesAndLabels.mxml:38
 msgid "Play the animation of selected label"
 msgstr "播放选中Label的动画"
 
-#: ../src/view/comps/FramesAndLabels.mxml:44
+#: ../../src/view/comps/FramesAndLabels.mxml:44
 msgid "Trim"
 msgstr "修剪"
 
-#: ../src/view/comps/FramesAndLabels.mxml:45
+#: ../../src/view/comps/FramesAndLabels.mxml:45
 msgid "Display width and height of trimmed frame."
 msgstr "显示修剪空白后的帧的宽高"
 
-#: ../src/view/comps/FramesAndLabels.mxml:49
+#: ../../src/view/comps/FramesAndLabels.mxml:49
 msgid "Original"
 msgstr "原始"
 
-#: ../src/view/comps/FramesAndLabels.mxml:50
+#: ../../src/view/comps/FramesAndLabels.mxml:50
+#, fuzzy
 msgid ""
 "Display the width and height of trimmed. In order to reduce file size, we "
 "could trim the blank. If the file does not trim, the original size and the "
@@ -325,22 +334,24 @@ msgstr ""
 "显示修剪空白前的帧的宽高，在实际的程序中会使用这个宽高。修剪空白是为了减小文"
 "件尺寸。如果文件没有进行过修剪，则原始Rect的w、h与修剪的相等。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:56
+#: ../../src/view/comps/FramesAndLabels.mxml:56
 msgid "All available frames:"
 msgstr "所有可用帧："
 
-#: ../src/view/comps/FramesAndLabels.mxml:56
+#: ../../src/view/comps/FramesAndLabels.mxml:56
 msgid "The frames are not available."
 msgstr "没有可用帧。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:60
-msgid "Add Sprite Sheet"
-msgstr "增加Sprite Sheet"
+#: ../../src/view/comps/FramesAndLabels.mxml:60
+msgid "Add image frame Or Sprite Sheet"
+msgstr "增加图像帧或者Sprite Sheet"
 
-#: ../src/view/comps/FramesAndLabels.mxml:61
+#: ../../src/view/comps/FramesAndLabels.mxml:61
 msgid ""
-"Add one or more Sprite Sheet to the end of the current Sprite Sheet. The "
-"rules are as follows:\n"
+"If the selected files are image file, they will be added to the end of the "
+"current Sprite Sheet as some frames.\n"
+"If they are Sprite Sheet files, they will be added to the end of the current "
+"Sprite Sheet with follows rules:\n"
 "1. All frames will be added to the Sprite Sheet at the end of current;\n"
 "2. If the label is the same name, the label in the Sprite Sheet do not "
 "import, but all frames in the label will be imported;\n"
@@ -349,182 +360,174 @@ msgid ""
 "4. If original Sprite Sheet contains frame name, but imported Sprite Sheet "
 "does not, all frame in the Sprite Sheet will be automatically named."
 msgstr ""
-"添加一个或多个SpriteSheet到当前Sheet的末尾。规则如下：\n"
+"如果选择的文件是图像文件，它们将作为帧被添加到当前SpriteSheet末尾。\n"
+"如果它们是SpriteSheet文件，它们将作为帧被添加到当前的SpriteSheet中，规则如"
+"下：\n"
 "1.所有帧会增加到当前Sheet的末尾；\n"
 "2.若label重名，则被导入Sheet中的label不导入，但依然会导入该lable的所有帧；\n"
 "3.若name重名，则被导入的Sheet中该name对应的重名帧不会被导入；\n"
 "4.若原始Sheet中包含name，但被导入Sheet中不含name，则会自动为被导入的Sheet中的"
 "所有帧命名。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:64
-msgid "Add image frame"
-msgstr "增加图像帧"
-
-#: ../src/view/comps/FramesAndLabels.mxml:65
-msgid ""
-"Add multiple image file. One frame added to the end of the current Sprite "
-"Sheet as a frame."
-msgstr "添加多个图像文件。每个图像作为一帧增加到当前Sprite Sheet的末尾。"
-
-#: ../src/view/comps/FramesAndLabels.mxml:70
-#: ../src/view/comps/FramesAndLabels.mxml:125
+#: ../../src/view/comps/FramesAndLabels.mxml:66
+#: ../../src/view/comps/FramesAndLabels.mxml:121
 msgid "Remove frame"
 msgstr "删帧"
 
-#: ../src/view/comps/FramesAndLabels.mxml:71
+#: ../../src/view/comps/FramesAndLabels.mxml:67
 msgid "Remove a frame from the list. Update the Sprite Sheet immediately."
 msgstr "从帧列表中删除一帧。删除后会立即更新Sprite Sheet。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:74
+#: ../../src/view/comps/FramesAndLabels.mxml:70
 msgid "Selecte all"
 msgstr "选择所有"
 
-#: ../src/view/comps/FramesAndLabels.mxml:80
-#: ../src/view/comps/FramesAndLabels.mxml:84
+#: ../../src/view/comps/FramesAndLabels.mxml:76
+#: ../../src/view/comps/FramesAndLabels.mxml:80
 msgid "Move the frame's position, the frmae Numbers will change after moving."
 msgstr "移动帧的位置，移动后帧的编号也会发生变化。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:92
+#: ../../src/view/comps/FramesAndLabels.mxml:88
 msgid "use label"
 msgstr "使用Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:98
+#: ../../src/view/comps/FramesAndLabels.mxml:94
 msgid "Enter label"
 msgstr "输入Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:99
+#: ../../src/view/comps/FramesAndLabels.mxml:95
 msgid "Label format: letters + Numbers"
 msgstr "label格式：英文字母+数字"
 
-#: ../src/view/comps/FramesAndLabels.mxml:102
+#: ../../src/view/comps/FramesAndLabels.mxml:98
 msgid "Number of frame:"
 msgstr "帧数量："
 
-#: ../src/view/comps/FramesAndLabels.mxml:102
+#: ../../src/view/comps/FramesAndLabels.mxml:98
 msgid "No selected label"
 msgstr "没有选择的Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:107
+#: ../../src/view/comps/FramesAndLabels.mxml:103
 msgid "Add label"
 msgstr "增加Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:108
+#: ../../src/view/comps/FramesAndLabels.mxml:104
 msgid "Add a label to the list."
 msgstr "添加一个Label到列表中。"
 
-#: ../src/view/comps/FramesAndLabels.mxml:112
+#: ../../src/view/comps/FramesAndLabels.mxml:108
 msgid "Remove label"
 msgstr "删除Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:113
+#: ../../src/view/comps/FramesAndLabels.mxml:109
 msgid "Remove the selected label"
 msgstr "删除选择的Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:117
+#: ../../src/view/comps/FramesAndLabels.mxml:113
 msgid "Modify label"
 msgstr "修改Label"
 
-#: ../src/view/comps/FramesAndLabels.mxml:122
+#: ../../src/view/comps/FramesAndLabels.mxml:118
 msgid "Add frame"
 msgstr "插入帧"
 
-#: ../src/view/comps/ImageTypeSetting.mxml:19
+#: ../../src/view/comps/ImageTypeSetting.mxml:19
 msgid "Compress:"
 msgstr "压缩："
 
-#: ../src/view/comps/ImageTypeSetting.mxml:22
+#: ../../src/view/comps/ImageTypeSetting.mxml:22
 msgid "For JPEG, bigger is better;For JPEG-XR, smaller is better."
 msgstr "JPEG格式越大越好；JPEG-XR格式越小越好。"
 
-#: ../src/view/comps/Preview.mxml:64
+#: ../../src/view/comps/Preview.mxml:64
 msgid "Show all"
 msgstr "显示所有"
 
-#: ../src/view/comps/Preview.mxml:65
+#: ../../src/view/comps/Preview.mxml:65
 msgid "Chess background"
 msgstr "方格背景"
 
-#: ../src/view/comps/Preview.mxml:66
+#: ../../src/view/comps/Preview.mxml:66
 msgid "White background"
 msgstr "白色背景"
 
-#: ../src/view/comps/Preview.mxml:67
+#: ../../src/view/comps/Preview.mxml:67
 msgid "Black background"
 msgstr "黑色背景"
 
-#: ../src/view/comps/SaveSeqSetting.mxml:17
+#: ../../src/view/comps/SaveSeqSetting.mxml:17
 msgid "Prefix"
 msgstr "前缀"
 
-#: ../src/view/comps/SaveSeqSetting.mxml:23
+#: ../../src/view/comps/SaveSeqSetting.mxml:23
 msgid "Start at:"
 msgstr "起始编号："
 
-#: ../src/view/comps/SaveSeqSetting.mxml:29
+#: ../../src/view/comps/SaveSeqSetting.mxml:29
 msgid "Digits:"
 msgstr "编号位数："
 
-#: ../src/view/comps/SaveSeqSetting.mxml:37
+#: ../../src/view/comps/SaveSeqSetting.mxml:37
 msgid "File name preview:"
 msgstr "文件名预览："
 
-#: ../src/view/comps/SaveSeqSetting.mxml:42
+#: ../../src/view/comps/SaveSeqSetting.mxml:42
 msgid "Save"
 msgstr "保存"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:19
+#: ../../src/view/comps/SaveSheetSetting.mxml:19
 msgid "Sprite Sheet"
 msgstr "Sprite Sheet"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:24
+#: ../../src/view/comps/SaveSheetSetting.mxml:24
 msgid "Mask:"
 msgstr "蒙版："
 
-#: ../src/view/comps/SaveSheetSetting.mxml:28
+#: ../../src/view/comps/SaveSheetSetting.mxml:28
 msgid "No mask"
 msgstr "不用蒙版"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:29
+#: ../../src/view/comps/SaveSheetSetting.mxml:29
 msgid "Horzontial mask"
 msgstr "横向蒙版"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:30
+#: ../../src/view/comps/SaveSheetSetting.mxml:30
 msgid "Vertical mask"
 msgstr "纵向蒙版"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:37
+#: ../../src/view/comps/SaveSheetSetting.mxml:37
 msgid "Metedata"
 msgstr "元数据"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:40
+#: ../../src/view/comps/SaveSheetSetting.mxml:40
 msgid "XML format"
 msgstr "XML格式"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:43
+#: ../../src/view/comps/SaveSheetSetting.mxml:43
 msgid "JSON format"
 msgstr "JSON格式"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:46
+#: ../../src/view/comps/SaveSheetSetting.mxml:46
 msgid "TXT format"
 msgstr "TXT格式"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:49
+#: ../../src/view/comps/SaveSheetSetting.mxml:49
 msgid "Starling format"
 msgstr "Starling格式"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:52
+#: ../../src/view/comps/SaveSheetSetting.mxml:52
 msgid "Use simple metadata"
 msgstr "使用简单元数据"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:53
+#: ../../src/view/comps/SaveSheetSetting.mxml:53
 msgid "If selected, coordinate and WH are saved only."
 msgstr "选中后仅保存每帧的坐标和宽高"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:56
+#: ../../src/view/comps/SaveSheetSetting.mxml:56
 msgid "Include file name"
 msgstr "包含文件名"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:57
+#: ../../src/view/comps/SaveSheetSetting.mxml:57
 msgid ""
 "If selected, the relationship between the image file name and the frame "
 "index are saved in metadata. Then, you can get the corresponding frame "
@@ -533,35 +536,35 @@ msgstr ""
 "选中后将图像文件的主文件名与帧索引的关系保存到meta文件中。在使用的时候，就能"
 "通过主文件名获取对应的帧。"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:63
+#: ../../src/view/comps/SaveSheetSetting.mxml:63
 msgid "Save image"
 msgstr "保存图像"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:66
+#: ../../src/view/comps/SaveSheetSetting.mxml:66
 msgid "Save all"
 msgstr "同时保存"
 
-#: ../src/view/comps/SaveSheetSetting.mxml:69
+#: ../../src/view/comps/SaveSheetSetting.mxml:69
 msgid "Save metadata"
 msgstr "保存元数据"
 
-#: ../src/view/comps/SSPreview.mxml:9
+#: ../../src/view/comps/SSPreview.mxml:9
 msgid "Bitmap animation preview"
 msgstr "位图动画预览"
 
-#: ../src/view/comps/SSPreview.mxml:19
+#: ../../src/view/comps/SSPreview.mxml:19
 msgid "Pause"
 msgstr "暂停"
 
-#: ../src/view/comps/SSPreview.mxml:19
+#: ../../src/view/comps/SSPreview.mxml:19
 msgid "Play"
 msgstr "播放"
 
-#: ../src/view/comps/SSPreview.mxml:24
+#: ../../src/view/comps/SSPreview.mxml:24
 msgid "Adjust the original size(x,y,w,h)"
 msgstr "调整帧原始大小(x,y,w,h)"
 
-#: ../src/view/comps/SSPreview.mxml:25
+#: ../../src/view/comps/SSPreview.mxml:25
 msgid ""
 "Is selected, the original size is reduced. But you can still be executed "
 "'Trim blank' again on the basis of reduced size."
@@ -569,11 +572,11 @@ msgstr ""
 "选择后，会缩小帧的原始大小。但你依然可以在缩小后的尺寸基础上再次执行“修剪空"
 "白”优化。"
 
-#: ../src/view/comps/SSPreview.mxml:29
+#: ../../src/view/comps/SSPreview.mxml:29
 msgid "Do adjusting"
 msgstr "保存调整"
 
-#: ../src/view/comps/SSPreview.mxml:30
+#: ../../src/view/comps/SSPreview.mxml:30
 msgid ""
 "Recalculated according to the original size adjusted, and immediate "
 "optimization.\n"
@@ -582,81 +585,89 @@ msgstr ""
 "根据调整的原始大小重新计算帧大小，并立即执行优化。\n"
 "此操作会直接修改原始帧的大小。"
 
-#: ../src/view/panel/PicPanel.mxml:20 ../src/view/panel/SwfPanel.mxml:15
+#: ../../src/view/panel/PicPanel.mxml:20 ../../src/view/panel/SwfPanel.mxml:15
 msgid "frame(x,y,w,h)"
 msgstr "帧设置(x,y,w,h)"
 
-#: ../src/view/panel/PicPanel.mxml:23 ../src/view/panel/SwfPanel.mxml:18
+#: ../../src/view/panel/PicPanel.mxml:23 ../../src/view/panel/SwfPanel.mxml:18
 msgid "Original size of the frame"
 msgstr "使用帧的原始尺寸"
 
-#: ../src/view/panel/SSPanel.mxml:18
+#: ../../src/view/panel/SSPanel.mxml:18
 msgid "Save a Sprite Sheet"
 msgstr "保存Sprite Sheet"
 
-#: ../src/view/panel/SSPanel.mxml:21
+#: ../../src/view/panel/SSPanel.mxml:21
 msgid "Save a sequence"
 msgstr "保存序列"
 
-#: ../src/view/panel/StartPanel.mxml:9
+#: ../../src/view/panel/StartPanel.mxml:9
 msgid "Open a swf file"
 msgstr "打开一个swf文件"
 
-#: ../src/view/panel/StartPanel.mxml:10
+#: ../../src/view/panel/StartPanel.mxml:10
 msgid "Convert a swf file to Sprite Sheet in sequential frame."
 msgstr "将一个SWF文件按照帧的播放顺序转换成Sprite Sheet。"
 
-#: ../src/view/panel/StartPanel.mxml:13
+#: ../../src/view/panel/StartPanel.mxml:13
 msgid "Import image file"
 msgstr "导入图像文件"
 
-#: ../src/view/panel/StartPanel.mxml:14
+#: ../../src/view/panel/StartPanel.mxml:14
 msgid "Convert a set of file to a Sprite Sheet."
 msgstr "将一组图像文件转换成Sprite Sheet。"
 
-#: ../src/view/panel/StartPanel.mxml:18
+#: ../../src/view/panel/StartPanel.mxml:18
 msgid "Open a Sprite Sheet"
 msgstr "打开Sprite Sheet"
 
-#: ../src/view/panel/StartPanel.mxml:19
+#: ../../src/view/panel/StartPanel.mxml:19
 msgid "Open a Sprite Sheet for edit and optimize."
 msgstr "打开已有的Sprite Sheet进行编辑和优化。"
 
-#: ../src/view/panel/StartPanel.mxml:24
+#: ../../src/view/panel/StartPanel.mxml:24
 msgid "Check update"
 msgstr "检查更新"
 
-#: ../src/view/panel/StartPanel.mxml:28
+#: ../../src/view/panel/StartPanel.mxml:28
 msgid "About"
 msgstr "关于"
 
-#: ../src/view/panel/StartPanel.mxml:31
+#: ../../src/view/panel/StartPanel.mxml:31
 msgid "Visit zrong's blog"
 msgstr "访问作者博客"
 
-#: ../src/view/panel/StartPanel.mxml:32
+#: ../../src/view/panel/StartPanel.mxml:32
 msgid "Visit zengrong.net"
 msgstr "访问 zengrong.net"
 
-#: ../src/view/panel/StartPanel.mxml:37
+#: ../../src/view/panel/StartPanel.mxml:37
 msgid "Language:"
 msgstr "语言："
 
-#: ../src/view/panel/StartPanel.mxml:107
+#: ../../src/view/panel/StartPanel.mxml:107
 msgid "Language change sucessfully. Please exit and restart it."
 msgstr "语言切换成功，请退出并重启。"
 
-#: ../src/view/panel/SwfPanel.mxml:28
+#: ../../src/view/panel/SwfPanel.mxml:28
 msgid "1st frame(zero-based):"
 msgstr "第一帧(0基)："
 
-#: ../src/view/panel/SwfPanel.mxml:35
+#: ../../src/view/panel/SwfPanel.mxml:35
 msgid "Total frames:"
 msgstr "所有帧："
 
-#: ../src/view/panel/TopPanel.mxml:9 ../src/view/panel/TopPanel.mxml:27
+#: ../../src/view/panel/TopPanel.mxml:9 ../../src/view/panel/TopPanel.mxml:27
 msgid "Back to previous"
 msgstr "返回上一步"
+
+#~ msgid "Add image frame"
+#~ msgstr "增加图像帧"
+
+#~ msgid ""
+#~ "Add multiple image file. One frame added to the end of the current Sprite "
+#~ "Sheet as a frame."
+#~ msgstr "添加多个图像文件。每个图像作为一帧增加到当前Sprite Sheet的末尾。"
 
 #~ msgid "Reset frame"
 #~ msgstr "重设帧大小"

@@ -3,7 +3,7 @@
   <id>org.zengrong.SpriteSheetEditor</id>
   <filename>SpriteSheetEditor</filename>
   <name>Sprite Sheet Editor</name>
-  <versionNumber>0.8.1</versionNumber>
+  <versionNumber>0.8.2</versionNumber>
   <!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents the version of the application, as it should be shown to users. Optional. -->
   <!-- <versionLabel></versionLabel> -->
   <!-- Description, displayed in the AIR application installer.
