@@ -1,6 +1,7 @@
 package
 {
 import ctrl.BrowseFileCmd;
+import ctrl.DragFileCmd;
 import ctrl.LoadSpriteSheetCmd;
 import ctrl.PreviewSSChangeCmd;
 import ctrl.SaveCmd;
@@ -62,6 +63,7 @@ public class SSEContext extends Context
 		commandMap.mapEvent(SSEvent.SAVE, SaveCmd);
 		commandMap.mapEvent(SSEvent.LOAD_SPRITE_SHEET, LoadSpriteSheetCmd);
 		commandMap.mapEvent(SSEvent.BROWSE_FILE, BrowseFileCmd);
+		commandMap.mapEvent(SSEvent.DRAG_FILE, DragFileCmd);
 	}
 }
 }

@@ -1,14 +1,18 @@
 package mediator
 {
 import events.SSEvent;
-
+import flash.desktop.ClipboardFormats;
+import flash.desktop.NativeDragManager;
+import flash.events.NativeDragEvent;
+import model.FileProcessor;
 import mx.events.FlexEvent;
-
 import org.robotlegs.mvcs.Mediator;
 
 public class AppMediator extends Mediator
 {
 	[Inject] public var v:SpriteSheetEditor;
+	
+	[Inject] public var file:FileProcessor;
 	
 	override public function onRegister():void
 	{
@@ -17,6 +21,21 @@ public class AppMediator extends Mediator
 //		v.ssState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
 //		v.swfState.addEventListener(FlexEvent.EXIT_STATE, handler_exitState);
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
+		v.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, handler_nativeDragEnter);
+		v.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, handler_nativeDragDrop);
+	}
+	
+	private function handler_nativeDragDrop($evt:NativeDragEvent):void 
+	{
+		dispatch(new SSEvent(SSEvent.DRAG_FILE, $evt.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array));
+	}
+	
+	private function handler_nativeDragEnter($evt:NativeDragEvent):void 
+	{
+		if($evt.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT))
+		{
+			NativeDragManager.acceptDragDrop(v);
+		}
 	}
 	
 	private function handler_enterState($evt:SSEvent):void

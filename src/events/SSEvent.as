@@ -18,6 +18,10 @@ public class SSEvent extends Event
 	public static const LOAD_SPRITE_SHEET:String = "loadSpriteSheet";
 	
 	/**
+	 * 拖动一个文件到SSE中
+	 */
+	public static const DRAG_FILE:String = "dragFile";
+	/**
 	 * 要求File对象选择一个或者一组文件
 	 */
 	public static const BROWSE_FILE:String = "browseFile";

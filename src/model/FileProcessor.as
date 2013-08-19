@@ -2,6 +2,7 @@
 //  zengrong.net
 //  创建者:	zrong zrongzrong@gmail.com
 //  创建时间：2011-8-3
+// 修改时间：2013-08-19
 ////////////////////////////////////////////////////////////////////////////////
 
 package model
@@ -16,7 +17,6 @@ import flash.events.FileListEvent;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
-import flash.net.FileFilter;
 import flash.utils.ByteArray;
 import gnu.as3.gettext.FxGettext;
 import org.robotlegs.mvcs.Actor;
@@ -32,13 +32,6 @@ import vo.SaveVO;
 public class FileProcessor extends Actor
 {
 	[Inject] public var stateModel:StateModel;
-	/**
-	 * 要打开的图像文件类型
-	 */	
-	public static const PNG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("PNG image"), '*.png');
-	public static const JPG_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPEG image"), '*.jpg;*.jpeg');
-	public static const JPEG_XR_FILTER:FileFilter = new FileFilter(FxGettext.gettext("JPEG-XR image"), '*.wdp;*.hdp');
-	public static const SWF_FILTER:FileFilter = new FileFilter(FxGettext.gettext("SWF animation"), '*.swf');
 	
 	public function FileProcessor()
 	{
@@ -47,7 +40,6 @@ public class FileProcessor extends Actor
 	}
 	
 	private var _file:File;
-	private var _allPicFilter:FileFilter;
 	private var _allPicArr:Array;
 	private var _openState:String;
 	private var _selectedFiles:Array;	//选择的文件数组
@@ -70,8 +62,7 @@ public class FileProcessor extends Actor
 	
 	private function initFilter():void
 	{
-		_allPicFilter = new FileFilter(FxGettext.gettext("All compatible image"), PNG_FILTER.extension+';'+JPG_FILTER.extension+';'+JPEG_XR_FILTER.extension);
-		_allPicArr = [_allPicFilter, PNG_FILTER, JPG_FILTER, JPEG_XR_FILTER];
+		_allPicArr = [ ExtendedNameType.ALL_PIC_FILTER, ExtendedNameType.PNG_FILTER, ExtendedNameType.JPG_FILTER, ExtendedNameType.JPEG_XR_FILTER];
 	}
 	
 	public function get selectedFiles():Array
@@ -94,7 +85,7 @@ public class FileProcessor extends Actor
 		switch(_openState)
 		{
 			case StateType.SWF:
-				_file.browseForOpen(FxGettext.gettext("Select a swf file"), [SWF_FILTER]);
+				_file.browseForOpen(FxGettext.gettext("Select a swf file"), [ExtendedNameType.SWF_FILTER]);
 				break;
 			case StateType.SS:
 				_file.browseForOpen(FxGettext.gettext("Select a Sprite Sheet file"), _allPicArr);
@@ -227,12 +218,23 @@ public class FileProcessor extends Actor
 		return $bmd.encode($bmd.rect, __opt);
 	}
 	
-	//----------------------------------------
-	// handler
-	//----------------------------------------
-	
-	private function handler_selectSingle($evt:Event):void
+	public function checkFileByDrag($file:*, $openState:String):void
 	{
+		_openState = $openState;
+		if(_openState == StateType.SS ||
+			_openState == StateType.SWF )
+		{
+			checkSingleFileAndDispatch($file as File);
+		}
+		else if(_openState == StateType.PIC)
+		{
+			checkMultiFileAndDispatch($file as Array);
+		}
+	}
+	
+	private function checkSingleFileAndDispatch($file:File):void
+	{
+		if(_file != $file) _file = $file;
 		//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
 		if(StateType.isViewState(_openState))
 		{
@@ -254,17 +256,9 @@ public class FileProcessor extends Actor
 		//trace('single:',_file.nativePath, _openState);
 	}
 	
-	protected function getMetadataUrl($url:String, $type:String):String
+	private function checkMultiFileAndDispatch($files:Array):void
 	{
-		var __dotIndex:int = $url.lastIndexOf('.');
-		if(__dotIndex == -1)
-			return $url + '.'+$type;
-		return $url.slice(0, __dotIndex) + '.'+$type;
-	}
-	
-	private function handler_selectMulti($evt:FileListEvent):void
-	{
-		_selectedFiles = $evt.files;
+		_selectedFiles = $files;
 		if(StateType.isViewState(_openState))
 		{
 			stateModel.state = _openState;
@@ -282,6 +276,20 @@ public class FileProcessor extends Actor
 			);
 		}
 		//trace('multi:', _file.nativePath, $evt.files, _openState);
+	}
+
+	//----------------------------------------
+	// handler
+	//----------------------------------------
+	
+	private function handler_selectSingle($evt:Event):void
+	{
+		checkSingleFileAndDispatch(_file);
+	}
+	
+	private function handler_selectMulti($evt:FileListEvent):void
+	{
+		checkMultiFileAndDispatch($evt.files);
 	}
 	
 	private function handler_selectCancel($evt:Event):void

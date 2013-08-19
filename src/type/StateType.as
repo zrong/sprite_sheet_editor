@@ -6,7 +6,9 @@
 
 package type
 {
+import flash.filesystem.File;
 import gnu.as3.gettext.FxGettext;
+import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 
 /**
  * 保存State的名称
