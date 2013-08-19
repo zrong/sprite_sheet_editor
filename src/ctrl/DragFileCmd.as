@@ -34,7 +34,7 @@ public class DragFileCmd extends Command
 			if(stateModel.state == StateType.PIC) __state = StateType.ADD_TO_PIC_List;
 			//若位于SSPanel中，则将状态改为增加到ss
 			else if(stateModel.state == StateType.SS) __state = StateType.ADD_TO_SS;
-			fileOpener.openFileByDrag(__files, __state);
+			fileOpener.openFilesByDrag(__files, __state);
 		}
 		else if(__state == StateType.SS)
 		{
@@ -42,14 +42,14 @@ public class DragFileCmd extends Command
 			if(stateModel.state == StateType.SS)  
 			{
 				__state = StateType.ADD_TO_SS;
-				fileOpener.openFileByDrag(__files, __state);
+				fileOpener.openFilesByDrag(__files, __state);
 			}
 			//否则直接切换到SS列表
-			else fileOpener.openFileByDrag(__files[0], __state);
+			else fileOpener.openFilesByDrag([__files[0]], __state);
 		}
 		else if(__state == StateType.SWF)
 		{
-			fileOpener.openFileByDrag(__files[0], __state);
+			fileOpener.openFilesByDrag([__files[0]], __state);
 		}
 	}
 }

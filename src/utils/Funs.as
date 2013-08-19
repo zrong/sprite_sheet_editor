@@ -254,6 +254,13 @@ public class Funs
 		return $url.slice(0, __dotIndex) + '.'+$type;
 	}
 	
+	public static function hasMetadataFile($url:String, $type:String="xml"):Boolean
+	{
+		var __metaUrl:String = getMetadataUrl($url, $type);
+		var __file:File = new File(__metaUrl);
+		return __file.exists;
+	}
+	
 	/**
 	 * 根据当前传递的文件类型取得当前的界面状态
 	 * @return
@@ -266,9 +273,7 @@ public class Funs
 		}
 		else if( ExtendedNameType.ALL_PIC_FILTER.extension.indexOf($file.type) > -1)
 		{
-			var __metaUrl:String = getMetadataUrl($file.url, "xml");
-			var __file:File = new File(__metaUrl);
-			if(__file.exists) return StateType.SS;
+			if(hasMetadataFile($file.url, "xml")) return StateType.SS;
 			return StateType.PIC;
 		}
 		return '';

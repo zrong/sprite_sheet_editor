@@ -56,13 +56,9 @@
 		<s:text>{frameDG.dataProvider?FxGettext.gettext("All available frames:")+frameDG.dataProvider.length:FxGettext.gettext("The frames are not available.")}</s:text>
 	</s:Label>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
-		<s:Button id="addSSBTN" width="100%">
-				<s:label>{FxGettext.gettext("Add Sprite Sheet")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Add one or more Sprite Sheet to the end of the current Sprite Sheet. The rules are as follows:\n1. All frames will be added to the Sprite Sheet at the end of current;\n2. If the label is the same name, the label in the Sprite Sheet do not import, but all frames in the label will be imported;\n3. If the name is the same name, the name in the Sprite Sheet do not import;\n4. If original Sprite Sheet contains frame name, but imported Sprite Sheet does not, all frame in the Sprite Sheet will be automatically named.")}</s:toolTip>
-		</s:Button>
 		<s:Button id="addPicBTN" width="100%" >
-				<s:label>{FxGettext.gettext("Add image frame")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Add multiple image file. One frame added to the end of the current Sprite Sheet as a frame.")}</s:toolTip>
+				<s:label>{FxGettext.gettext("Add image frame Or Sprite Sheet")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If the selected files are image file, they will be added to the end of the current Sprite Sheet as some frames.\nIf they are Sprite Sheet files, they will be added to the end of the current Sprite Sheet with follows rules:\n1. All frames will be added to the Sprite Sheet at the end of current;\n2. If the label is the same name, the label in the Sprite Sheet do not import, but all frames in the label will be imported;\n3. If the name is the same name, the name in the Sprite Sheet do not import;\n4. If original Sprite Sheet contains frame name, but imported Sprite Sheet does not, all frame in the Sprite Sheet will be automatically named.")}</s:toolTip>
 		</s:Button>
 	</s:HGroup>
 	<s:HGroup id="naviGRP1" verticalAlign="middle" width="100%">

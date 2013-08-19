@@ -4,6 +4,8 @@ import events.SSEvent;
 import flash.events.IOErrorEvent;
 import flash.filesystem.File;
 import gnu.as3.gettext.FxGettext;
+import org.zengrong.assets.AssetsType;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
 import org.zengrong.net.SpriteSheetLoader;
 import type.ExtendedNameType;
 import type.StateType;
@@ -70,61 +72,39 @@ public class FileOpenerModel extends FileProcessor
 	 * @param	$file 要处理的文件，可能是一个File，也可能是File数组
 	 * @param	$openState 打开的状态
 	 */
-	public function openFileByDrag($file:*, $openState:String):void
+	public function openFilesByDrag($files:Array, $openState:String):void
 	{
 		_openState = $openState;
-		if(_openState == StateType.SS ||
-			_openState == StateType.SWF )
-		{
-			checkSingleFileAndDispatch($file as File);
-		}
-		else if(_openState == StateType.PIC ||
-			_openState == StateType.ADD_TO_PIC_List ||
-			_openState == StateType.ADD_TO_SS)
-		{
-			checkMultiFileAndDispatch($file as Array);
-		}
+		checkSelectedFiles($files);
 	}
 	
-	private function checkSingleFileAndDispatch($file:File):void
-	{
-		if(_file != $file) _file = $file;
-		//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
-		if(StateType.isViewState(_openState))
-		{
-			_selectedFiles = [_file.clone()];
-			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态。
-			//载入的工作交给SpriteSheetLaoderModel。
-			if(_openState == StateType.SS)
-			{
-				_ssLoader.load(_file.url);
-			}
-			else
-				stateModel.state = _openState;
-		}
-		//trace('single:',_file.nativePath, _openState);
-	}
-	
-	private function checkMultiFileAndDispatch($files:Array):void
+	private function checkSelectedFiles($files:Array):void
 	{
 		_selectedFiles = $files;
 		if(StateType.isViewState(_openState))
 		{
-			stateModel.state = _openState;
+			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态。
+			//载入的工作交给SpriteSheetLaoderModel。
+			if(_openState == StateType.SS)
+				_ssLoader.load(_file.url);
+			//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
+			else
+				stateModel.state = _openState;
 		}
 		if(_openState == StateType.ADD_TO_PIC_List ||
 			_openState == StateType.ADD_TO_SS)
 		{
-			this.dispatch
-			(
-				new SSEvent
-				(
-					SSEvent.BROWSE_FILE_DONE, 
-					new BrowseFileDoneVO(_openState, _selectedFiles)
-				)
-			);
+			var __bfd:BrowseFileDoneVO = new BrowseFileDoneVO(_openState, _selectedFiles);
+			//向SS中加入帧的时候，要判断加入的文件是否是SS类型
+			if(_openState == StateType.ADD_TO_SS &&
+				Funs.hasMetadataFile((_selectedFiles[0] as File).url, SpriteSheetMetadataType.XML))
+			{
+				__bfd.fileType = AssetsType.SPRITE_SHEET;
+				__bfd.metaType = SpriteSheetMetadataType.XML;
+			}
+			this.dispatch(new SSEvent(SSEvent.BROWSE_FILE_DONE, 	__bfd));
 		}
-		//trace('multi:', _file.nativePath, $evt.files, _openState);
+		//trace('checkSelectedFiles', _file.nativePath, $evt.files, _openState);
 	}
 	
 	//----------------------------------------
@@ -132,17 +112,12 @@ public class FileOpenerModel extends FileProcessor
 	//----------------------------------------
 	override protected function handler_selectSingle($evt:Event):void
 	{
-		checkSingleFileAndDispatch(_file);
+		checkSelectedFiles([_file.clone()]);
 	}
 	
 	override protected function handler_selectMulti($evt:FileListEvent):void
 	{
-		checkMultiFileAndDispatch($evt.files);
-	}
-	
-	public function load($url:String, ...$args):void
-	{
-		_ssLoader.load($url);
+		checkSelectedFiles($evt.files);
 	}
 	
 	/**

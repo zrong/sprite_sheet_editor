@@ -48,7 +48,7 @@ public class FramesAndLabelMediator extends Mediator
 	/**
 	 * 加入帧的方式，true代表加入的是SpriteSheet，否则是普通图像
 	 */
-	private var _isAddSSFrame:Boolean;
+	private var _addSSFiles:BrowseFileDoneVO;
 	
 	/**
 	 * 使用_assets每载入一个文件，这个索引加一
@@ -79,7 +79,6 @@ public class FramesAndLabelMediator extends Mediator
 	override public function onRegister():void
 	{
 		eventMap.mapListener(v.delFrameBTN,  MouseEvent.CLICK,handler_delFrameBTNclick);
-		eventMap.mapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		
 		eventMap.mapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
@@ -109,7 +108,6 @@ public class FramesAndLabelMediator extends Mediator
 	override public function onRemove():void
 	{
 		eventMap.unmapListener(v.delFrameBTN,  MouseEvent.CLICK,handler_delFrameBTNclick);
-		eventMap.unmapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.unmapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		
 		eventMap.unmapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
@@ -223,7 +221,7 @@ public class FramesAndLabelMediator extends Mediator
 		if(__vo.whole && __vo.done)
 		{
 			trace('FrameAndLabels.handler_assetsProgress:',__vo.toString());
-			if(_isAddSSFrame)
+			if(_addSSFiles.fileType == AssetsType.SPRITE_SHEET)
 				addSSToSheet(__vo);
 			else
 				addPicToSheet(__vo);
@@ -611,41 +609,16 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function handler_selectFile($evt:Event):void
 	{
-		_isAddSSFrame = ($evt.currentTarget == v.addSSBTN);
 		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.ADD_TO_SS));
 	}
 	
 	private function handler_browseFileDone($evt:SSEvent):void 
 	{
-		var __vo:BrowseFileDoneVO = $evt.info as BrowseFileDoneVO;
-		if(__vo && __vo.openState == StateType.ADD_TO_SS)
+		_addSSFiles = $evt.info as BrowseFileDoneVO;
+		if(_addSSFiles && _addSSFiles.openState == StateType.ADD_TO_SS)
 		{
-			addToSS(__vo.selectedFiles);
+			_assets.load(_addSSFiles.toAssetsList());
 		}
-	}
-	
-	/**
-	 * 选择加入的图像文件后，调用的方法
-	 */
-	private function addToSS($filelist:Array):void
-	{
-		var __fileList:Array = $filelist;
-		var __file:File = null;
-		var __urls:Array = [];
-		var __urlobj:Object = null;
-		for(var i:int=0;i<__fileList.length;i++)
-		{
-			__file = __fileList[i] as File;
-			__urlobj = {url:__file.url};
-			__urlobj.ftype = __file.extension;
-			if(_isAddSSFrame)
-			{
-				__urlobj.ftype = AssetsType.SPRITE_SHEET;
-				__urlobj.mtype = SpriteSheetMetadataType.XML;
-			}
-			__urls.push(__urlobj);
-		}
-		_assets.load(__urls);
 	}
 	
 	private function dispatchOptimize():void
