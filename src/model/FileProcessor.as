@@ -102,6 +102,9 @@ public class FileProcessor extends Actor
 			case StateType.PIC:
 				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
 				break;
+			case StateType.ADD_TO_PIC_List:
+				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
+				break;
 			case StateType.ADD_TO_SS:
 				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
 				break;
@@ -266,7 +269,7 @@ public class FileProcessor extends Actor
 		{
 			stateModel.state = _openState;
 		}
-		if(_openState == StateType.PIC ||
+		if(_openState == StateType.ADD_TO_PIC_List ||
 			_openState == StateType.ADD_TO_SS)
 		{
 			this.dispatch

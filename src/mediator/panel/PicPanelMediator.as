@@ -36,11 +36,7 @@ public class PicPanelMediator extends Mediator
 		eventMap.mapListener(v.buildSetting, SSEvent.BUILD, handler_build);
 		eventMap.mapListener(eventDispatcher, SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
-		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
-		if(stateModel.state == StateType.PIC)
-		{
-			enterState(stateModel.oldState, stateModel.state);
-		}
+		enterState(stateModel.oldState, stateModel.state);
 	}
 
 	
@@ -52,7 +48,7 @@ public class PicPanelMediator extends Mediator
 		eventMap.unmapListener(v.buildSetting, SSEvent.BUILD, handler_build);
 		eventMap.unmapListener(eventDispatcher, SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
-		eventMap.unmapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
+		v.fileM.init();
 		v.pic.viewer.source = null;
 		v.pic.transf.destroy();
 	}
@@ -63,7 +59,7 @@ public class PicPanelMediator extends Mediator
 	 */
 	private function handler_select($evt:Event):void
 	{
-		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.PIC));
+		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.ADD_TO_PIC_List));
 	}
 	
 	private function handler_captureDone($evt:SSEvent):void
@@ -79,19 +75,23 @@ public class PicPanelMediator extends Mediator
 		stateModel.state = StateType.SS;
 	}
 	
-	public function enterState($oldState:String, $newState:String):void
+	private function enterState($oldState:String, $newState:String):void
 	{
 		trace('picPanel.updateOnStateChanged:', $oldState, $newState);
-		//如果是从START状态跳转过来的，就更新一次fileList的值
-		if($oldState == StateType.START)
-			v.fileM.setFileList(file.selectedFiles);
-		v.pic.transf.init();
-		v.fileM.init();
-	}
-	
-	public function handler_enterState($evt:SSEvent):void
-	{
-		enterState($evt.info.oldState,$evt.info.newState);
+		if($newState== StateType.PIC &&
+			$oldState != $newState)
+		{
+			v.pic.transf.init();
+			v.fileM.init();
+			//如果是从START状态跳转过来的，就更新一次fileList的值
+			if($oldState == StateType.START)
+			{
+				v.fileM.setFileList(file.selectedFiles);
+				//trace("从start进入pic");
+				//trace("file:", file.selectedFiles.length);
+				//trace("enterState.fileList:", v.fileM.fileList.length);
+			}
+		}
 	}
 	
 	protected function handler_build($event:SSEvent):void
@@ -108,7 +108,7 @@ public class PicPanelMediator extends Mediator
 	private function handler_browseFileDone($evt:SSEvent):void 
 	{
 		var __vo:BrowseFileDoneVO = $evt.info as BrowseFileDoneVO;
-		if(__vo && __vo.openState == StateType.PIC)
+		if(__vo && __vo.openState == StateType.ADD_TO_PIC_List)
 		{
 			v.fileM.addFile2Manager(__vo.selectedFiles);
 		}

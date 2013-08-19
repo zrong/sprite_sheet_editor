@@ -62,11 +62,11 @@
 			bottomFile.enabled = false;
 			upFile.enabled = false;
 			downFile.enabled = false;
+			fileList = new ArrayCollection();
 		}
 		
 		public function setFileList($files:Array):void
 		{
-			fileList = new ArrayCollection();
 			for (var i:int = 0; i < $files.length; i++) 
 			{
 				fileList.addItem({file:$files[i]});
