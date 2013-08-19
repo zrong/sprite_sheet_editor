@@ -2,7 +2,6 @@ package
 {
 import ctrl.BrowseFileCmd;
 import ctrl.DragFileCmd;
-import ctrl.LoadSpriteSheetCmd;
 import ctrl.PreviewSSChangeCmd;
 import ctrl.SaveCmd;
 
@@ -44,10 +43,10 @@ public class SSEContext extends Context
 	override public function startup():void
 	{
 		init();
-		injector.mapSingleton(FileProcessor);
+		injector.mapSingleton(FileOpenerModel);
+		injector.mapSingleton(FileSaverModel);
 		injector.mapSingleton(StateModel);
 		injector.mapSingleton(SpriteSheetModel);
-		injector.mapSingleton(SpriteSheetLoaderModel);
 		
 		mediatorMap.mapView(SpriteSheetEditor, AppMediator);
 		mediatorMap.mapView(TopPanel, TopPanelMediator);
@@ -61,7 +60,6 @@ public class SSEContext extends Context
 		
 		commandMap.mapEvent(SSEvent.PREVIEW_SS_CHANGE, PreviewSSChangeCmd);
 		commandMap.mapEvent(SSEvent.SAVE, SaveCmd);
-		commandMap.mapEvent(SSEvent.LOAD_SPRITE_SHEET, LoadSpriteSheetCmd);
 		commandMap.mapEvent(SSEvent.BROWSE_FILE, BrowseFileCmd);
 		commandMap.mapEvent(SSEvent.DRAG_FILE, DragFileCmd);
 	}

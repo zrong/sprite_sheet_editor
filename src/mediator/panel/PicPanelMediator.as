@@ -1,21 +1,15 @@
 package mediator.panel
 {
 import events.SSEvent;
-import vo.BrowseFileDoneVO;
-
 import flash.events.Event;
-
-import model.FileProcessor;
+import model.FileOpenerModel;
 import model.SpriteSheetModel;
 import model.StateModel;
-
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-
 import type.StateType;
-
 import view.panel.PicPanel;
-
+import vo.BrowseFileDoneVO;
 import vo.NamesVO;
 
 public class PicPanelMediator extends Mediator
@@ -24,7 +18,7 @@ public class PicPanelMediator extends Mediator
 	
 	[Inject] public var stateModel:StateModel;
 	
-	[Inject] public var file:FileProcessor;
+	[Inject] public var fileOpener:FileOpenerModel;
 	
 	[Inject] public var ssModel:SpriteSheetModel;
 	
@@ -86,7 +80,7 @@ public class PicPanelMediator extends Mediator
 			//如果是从START状态跳转过来的，就更新一次fileList的值
 			if($oldState == StateType.START)
 			{
-				v.fileM.setFileList(file.selectedFiles);
+				v.fileM.setFileList(fileOpener.selectedFiles);
 				//trace("从start进入pic");
 				//trace("file:", file.selectedFiles.length);
 				//trace("enterState.fileList:", v.fileM.fileList.length);

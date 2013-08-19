@@ -1,5 +1,6 @@
 package vo 
 {
+	import air.update.utils.StringUtils;
 /**
  * 选择一个或者一组文件成功后发出事件所带VO
  * @author zrong
@@ -16,6 +17,7 @@ public class BrowseFileDoneVO
 	
 	public var openState:String;
 	public var selectedFiles:Array;
+	public var fileType:String;
 	
 }
 }

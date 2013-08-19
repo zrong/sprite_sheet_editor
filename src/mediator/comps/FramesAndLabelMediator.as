@@ -1,14 +1,14 @@
 package mediator.comps
 {
+import events.SSEvent;
 import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
-import type.StateType;
-import vo.BrowseFileDoneVO;
-
+import gnu.as3.gettext.FxGettext;
+import model.SpriteSheetModel;
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
 import mx.collections.IList;
@@ -17,38 +17,26 @@ import mx.collections.SortField;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.managers.PopUpManager;
-
-import events.SSEvent;
-
-import gnu.as3.gettext.FxGettext;
-
-import model.FileProcessor;
-import model.SpriteSheetModel;
-
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.assets.Assets;
 import org.zengrong.assets.AssetsEvent;
 import org.zengrong.assets.AssetsProgressVO;
 import org.zengrong.assets.AssetsType;
+import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 import org.zengrong.display.spritesheet.SpriteSheet;
-import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
-
+import type.StateType;
 import utils.Funs;
-
 import view.comps.FramesAndLabels;
 import view.comps.SSPreview;
-
+import vo.BrowseFileDoneVO;
 import vo.FrameVO;
 import vo.LabelListVO;
 import vo.LabelVO;
-import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 
 public class FramesAndLabelMediator extends Mediator
 {
 	[Inject] public var v:FramesAndLabels;
-	
-	[Inject] public var file:FileProcessor;
 	
 	[Inject] public var ssModel:SpriteSheetModel;
 	

@@ -1,33 +1,15 @@
-////////////////////////////////////////////////////////////////////////////////
-//  zengrong.net
-//  创建者:	zrong zrongzrong@gmail.com
-//  创建时间：2011-8-3
-// 修改时间：2013-08-19
-////////////////////////////////////////////////////////////////////////////////
-
 package model
 {
-import events.SSEvent;
-import flash.display.BitmapData;
-import flash.display.JPEGEncoderOptions;
-import flash.display.JPEGXREncoderOptions;
-import flash.display.PNGEncoderOptions;
 import flash.events.Event;
 import flash.events.FileListEvent;
 import flash.filesystem.File;
-import flash.filesystem.FileMode;
-import flash.filesystem.FileStream;
-import flash.utils.ByteArray;
-import gnu.as3.gettext.FxGettext;
 import org.robotlegs.mvcs.Actor;
-import type.ExtendedNameType;
-import type.StateType;
-import vo.BrowseFileDoneVO;
-import vo.SaveVO;
 
 /**
- * 专门负责对文件的处理，包括打开、保存等等操作。
- * @author zrong
+ * 专门负责对文件的处理，基类。
+ * @author zrong(zengrong.net)
+ * Creation: 2011-8-3
+ * Modification: 2013-08-19
  */
 public class FileProcessor extends Actor
 {
@@ -36,17 +18,12 @@ public class FileProcessor extends Actor
 	public function FileProcessor()
 	{
 		initFile(File.desktopDirectory);
-		initFilter();
 	}
 	
-	private var _file:File;
-	private var _allPicArr:Array;
-	private var _openState:String;
-	private var _selectedFiles:Array;	//选择的文件数组
+	protected var _file:File;
+	protected var _openState:String;
 	
-	private var _saveData:SaveVO;
-	
-	private function initFile($file:File):void
+	protected function initFile($file:File):void
 	{
 		if(_file)
 		{
@@ -59,240 +36,25 @@ public class FileProcessor extends Actor
 		_file.addEventListener(Event.SELECT, handler_selectSingle);
 		_file.addEventListener(Event.CANCEL, handler_selectCancel);
 	}
-	
-	private function initFilter():void
-	{
-		_allPicArr = [ ExtendedNameType.ALL_PIC_FILTER, ExtendedNameType.PNG_FILTER, ExtendedNameType.JPG_FILTER, ExtendedNameType.JPEG_XR_FILTER];
-	}
-	
-	public function get selectedFiles():Array
-	{
-		return _selectedFiles;
-	}
-	
+
 	public function get openState():String
 	{
 		return _openState;
-	}
-	
-	//----------------------------------------
-	// 打开文件操作
-	//----------------------------------------
-	
-	public function open($state:String):void
-	{
-		_openState = $state;
-		switch(_openState)
-		{
-			case StateType.SWF:
-				_file.browseForOpen(FxGettext.gettext("Select a swf file"), [ExtendedNameType.SWF_FILTER]);
-				break;
-			case StateType.SS:
-				_file.browseForOpen(FxGettext.gettext("Select a Sprite Sheet file"), _allPicArr);
-				break;
-			case StateType.PIC:
-				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
-				break;
-			case StateType.ADD_TO_PIC_List:
-				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
-				break;
-			case StateType.ADD_TO_SS:
-				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), _allPicArr);
-				break;
-		}
-	}
-
-	//----------------------------------------
-	// 保存文件操作
-	//----------------------------------------
-	
-	public function save($vo:SaveVO):void
-	{
-		_saveData = $vo;
-		_openState = _saveData.type;
-		var __title:String;
-		switch(_saveData.type)
-		{
-			case StateType.SAVE_SHEET_PIC:
-				__title = FxGettext.gettext("Select the save path of Sprite Sheet file");
-				//更新一次File的引用，是为了避免File指向老的已经存在的图片，导致AIR的覆盖提示错误
-				initFile(getFile(_saveData.picType));
-				_file.browseForSave(__title);
-				break;
-			case StateType.SAVE_META:
-				__title = FxGettext.gettext("Select the save path of metadata");
-				_file.browseForSave(__title);
-				break;
-			case StateType.SAVE_SEQ:
-				__title = FxGettext.gettext("Select the save path of the image sequence");
-				_file.browseForDirectory(__title);
-				break;
-			case StateType.SAVE_ALL:
-				__title = FxGettext.gettext("Select the save path of image and metedata");
-				//更新一次File的引用，是为了避免File指向老的已经存在的图片，导致AIR的覆盖提示错误
-				initFile(getFile(_saveData.picType));
-				_file.browseForSave(__title);
-				break;
-		}
-	}
-	
-	private function saveData():void
-	{
-		var __stream:FileStream = new FileStream();
-		var __ba:ByteArray = null;
-		var __imgFile:File = getFile(_saveData.picType);
-		if(_openState == StateType.SAVE_META)
-		{
-			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName, __imgFile.name));
-			__stream.close();
-		}
-		else if(_openState == StateType.SAVE_SHEET_PIC)
-		{
-			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
-			__stream.open(__imgFile, FileMode.WRITE);
-			__stream.writeBytes(__ba);
-			__stream.close();
-		}
-		else if(_openState == StateType.SAVE_ALL)
-		{
-			//使用sheet的扩展名（数组元素0）新建一个File
-			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
-			__stream.open(__imgFile, FileMode.WRITE);
-			__stream.writeBytes(__ba);
-			__stream.close();
-			
-			//使用metadata的扩展名（数组元素1）新建一个File
-			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName,__imgFile.name));
-			__stream.close();
-		}
-		else if(_openState == StateType.SAVE_SEQ)
-		{
-			var __bmds:Vector.<BitmapData> = _saveData.bitmapDataList;
-			var __names:Vector.<String> = _saveData.fileNameList;
-			//获取文件的扩展名
-			var __ext:String = __names[0].slice(__names[0].lastIndexOf('.'));
-			for (var i:int = 0; i < __bmds.length; i++) 
-			{
-				__ba = getSheet(__bmds[i], __ext, _saveData.quality);
-				__stream.open(_file.resolvePath(__names[i]), FileMode.WRITE);
-				__stream.writeBytes(__ba);
-				__stream.close();
-			}
-		}
-	}
-	
-	//----------------------------------------
-	// 内部方法
-	//----------------------------------------
-	
-	/**
-	 * 根据扩展名，制作一个新的File文件对象并返回
-	 */	
-	private function getFile($ext:String):File
-	{
-		var __file:File = _file.parent.resolvePath(_file.name.split('.')[0]+$ext);
-		return __file;
-	}
-	
-	/**
-	 * 获取压缩之后的Sheet的Byte
-	 */
-	private function getSheet($bmd:BitmapData, $ext:String, $quality:int=70):ByteArray
-	{
-		var __ba:ByteArray = null;
-		var __opt:*;
-		if($ext == ExtendedNameType.PNG)
-		{
-			__opt = new PNGEncoderOptions();
-		}
-		else if($ext == ExtendedNameType.JPEG_XR)
-		{
-			__opt = new JPEGXREncoderOptions($quality);
-		}
-		else
-		{
-			__opt = new JPEGEncoderOptions($quality);
-		}
-		return $bmd.encode($bmd.rect, __opt);
-	}
-	
-	public function checkFileByDrag($file:*, $openState:String):void
-	{
-		_openState = $openState;
-		if(_openState == StateType.SS ||
-			_openState == StateType.SWF )
-		{
-			checkSingleFileAndDispatch($file as File);
-		}
-		else if(_openState == StateType.PIC)
-		{
-			checkMultiFileAndDispatch($file as Array);
-		}
-	}
-	
-	private function checkSingleFileAndDispatch($file:File):void
-	{
-		if(_file != $file) _file = $file;
-		//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
-		if(StateType.isViewState(_openState))
-		{
-			_selectedFiles = [_file.clone()];
-			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态。
-			//载入的工作交给SpriteSheetLaoderModel。
-			if(_openState == StateType.SS)
-			{
-				dispatch(new SSEvent(SSEvent.LOAD_SPRITE_SHEET, _file.url));
-			}
-			else
-				stateModel.state = _openState;
-		}
-		//否则执行保存
-		else
-		{
-			saveData();
-		}
-		//trace('single:',_file.nativePath, _openState);
-	}
-	
-	private function checkMultiFileAndDispatch($files:Array):void
-	{
-		_selectedFiles = $files;
-		if(StateType.isViewState(_openState))
-		{
-			stateModel.state = _openState;
-		}
-		if(_openState == StateType.ADD_TO_PIC_List ||
-			_openState == StateType.ADD_TO_SS)
-		{
-			this.dispatch
-			(
-				new SSEvent
-				(
-					SSEvent.BROWSE_FILE_DONE, 
-					new BrowseFileDoneVO(_openState, _selectedFiles)
-				)
-			);
-		}
-		//trace('multi:', _file.nativePath, $evt.files, _openState);
 	}
 
 	//----------------------------------------
 	// handler
 	//----------------------------------------
 	
-	private function handler_selectSingle($evt:Event):void
+	protected function handler_selectSingle($evt:Event):void
 	{
-		checkSingleFileAndDispatch(_file);
 	}
 	
-	private function handler_selectMulti($evt:FileListEvent):void
+	protected function handler_selectMulti($evt:FileListEvent):void
 	{
-		checkMultiFileAndDispatch($evt.files);
 	}
 	
-	private function handler_selectCancel($evt:Event):void
+	protected function handler_selectCancel($evt:Event):void
 	{
 	}
 }

@@ -26,5 +26,7 @@ public class ExtendedNameType
 	public static const SWF_FILTER:FileFilter = new FileFilter(FxGettext.gettext("SWF animation"), '*.swf');
 	public static const ALL_PIC_FILTER:FileFilter = new FileFilter(FxGettext.gettext("All compatible image"), PNG_FILTER.extension + ';' + JPG_FILTER.extension + ';' + JPEG_XR_FILTER.extension);
 	
+	public static const ALL_PIC_FILTER_LIST:Array = [ ALL_PIC_FILTER, PNG_FILTER, JPG_FILTER, JPEG_XR_FILTER];
+	
 }
 }

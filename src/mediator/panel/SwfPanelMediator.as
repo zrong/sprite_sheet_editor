@@ -1,19 +1,13 @@
 package mediator.panel
 {
 import events.SSEvent;
-
-import flash.events.Event;
 import flash.filesystem.File;
-
-import model.FileProcessor;
+import model.FileOpenerModel;
 import model.SpriteSheetModel;
 import model.StateModel;
-
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-
 import type.StateType;
-
 import view.panel.SwfPanel;
 
 /**
@@ -26,7 +20,7 @@ public class SwfPanelMediator extends Mediator
 	
 	[Inject] public var stateModel:StateModel;
 	
-	[Inject] public var file:FileProcessor;
+	[Inject] public var fileOpener:FileOpenerModel;
 	
 	[Inject] public var ssModel:SpriteSheetModel;
 	
@@ -71,7 +65,7 @@ public class SwfPanelMediator extends Mediator
 	{
 		if($newState == StateType.SWF)
 		{
-			_swfURL = File(file.selectedFiles[0]).url;
+			_swfURL = File(fileOpener.selectedFiles[0]).url;
 			trace('swfPanel.load:', _swfURL);
 			if(_swfURL)
 			{

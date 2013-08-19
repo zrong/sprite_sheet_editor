@@ -15,8 +15,6 @@ public class SSEvent extends Event
 	
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	
-	public static const LOAD_SPRITE_SHEET:String = "loadSpriteSheet";
-	
 	/**
 	 * 拖动一个文件到SSE中
 	 */

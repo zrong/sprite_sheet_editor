@@ -2,7 +2,7 @@ package ctrl
 {
 import air.update.utils.StringUtils;
 import events.SSEvent;
-import model.FileProcessor;
+import model.FileOpenerModel;
 import org.robotlegs.mvcs.Command;
 	
 /**
@@ -12,14 +12,14 @@ import org.robotlegs.mvcs.Command;
 public class BrowseFileCmd extends Command 
 {
 	[Inject]
-	public var file:FileProcessor;
+	public var fileOpener:FileOpenerModel;
 	
 	[Inject]
 	public var evt:SSEvent;
 	
 	override public function execute():void 
 	{
-		file.open(evt.info as String);
+		fileOpener.open(evt.info as String);
 	}
 }
 }

@@ -4,15 +4,12 @@ import events.SSEvent;
 import flash.desktop.ClipboardFormats;
 import flash.desktop.NativeDragManager;
 import flash.events.NativeDragEvent;
-import model.FileProcessor;
 import mx.events.FlexEvent;
 import org.robotlegs.mvcs.Mediator;
 
 public class AppMediator extends Mediator
 {
 	[Inject] public var v:SpriteSheetEditor;
-	
-	[Inject] public var file:FileProcessor;
 	
 	override public function onRegister():void
 	{
