@@ -7,10 +7,10 @@
 				   creationComplete="handler_creationComplete(event)">
 	<fx:Metadata>
 		[Event(name="previewLoadComplete", type="events.SSEvent")]
+		[Event(name="transformChange", type="events.SSEvent")]
 	</fx:Metadata>
 	<fx:Declarations>
-		<comps:TransformTool id="transf" width="100" height="100" maxW="{sourceWidth}" maxH="{sourceHeight}" 
-							 visible="{showTransformTool&amp;&amp;!scaleContent}"/>
+		<comps:TransformTool id="transf" width="100" height="100" maxDragW="{sourceWidth}" maxDragH="{sourceHeight}" visible="false" transformChange="handler_transformChange(event)" />
 	</fx:Declarations>
 	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
 		<s:Group id="scrollerView" width="100%" height="100%">
@@ -25,6 +25,9 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
+		import events.SSEvent;
+		import flash.events.Event;
+		import flash.geom.Rectangle;
 		import mx.collections.ArrayList;
 		import mx.events.FlexEvent;
 		
@@ -37,25 +40,84 @@
 		public static var LABEL_WHITE:String;
 		public static var LABEL_BLACK:String;
 		
-		[Bindable] public var showTransformTool:Boolean;
+		private var _maxSizeLimit:String = "source";
+		
+		public function get maxSizeLimit():String 
+		{
+			return _maxSizeLimit;
+		}
+		
+		public function set maxSizeLimit(value:String):void 
+		{
+			_maxSizeLimit = value;
+			updateTransformBarMax();
+		}
+		
+		
+		[Bindable] public var controlBar:Boolean;
+		
 		[Bindable] public var scaleContent:Boolean;
 		/**
 		 * 被载入的显示对象的实际宽度。例如，对于swf来说，就是swf文件的宽度。
 		 */
-		[Bindable] public var sourceWidth:int=100;
+		private var _sourceWidth:int = 100;
+		[Bindable] 
+		public function get sourceWidth():int 
+		{
+			return _sourceWidth;
+		}
+		
+		public function set sourceWidth(value:int):void 
+		{
+			_sourceWidth = value;
+			updateTransformBarMax();
+		}
 		/**
 		 * 被载入的显示对象的实际高度。
 		 */
-		[Bindable] public var sourceHeight:int=100;
+		private var _sourceHeight:int = 100;
+		[Bindable] 
+		public function get sourceHeight():int 
+		{
+			return _sourceHeight;
+		}
+		
+		public function set sourceHeight(value:int):void 
+		{
+			_sourceHeight = value;
+			updateTransformBarMax();
+		}
 		
 		/**
 		 * viewer的显示宽度。当scaleContent为false的时候，它与sourceWidth相等。
 		 */
-		[Bindable] public var viewerWidth:int=100;
+		private var _viewerWidth:int=100;
+		[Bindable] 
+		public function get viewerWidth():int 
+		{
+			return _viewerWidth;
+		}
+		
+		public function set viewerWidth(value:int):void 
+		{
+			_viewerWidth = value;
+			updateTransformBarMax();
+		}
 		/**
 		 * viewer的显示高度。当scaleContent为false的时候，它与sourceWidth相等。
 		 */
-		[Bindable] public var viewerHeight:int=100;
+		private var _viewerHeight:int=100;
+		[Bindable] 
+		public function get viewerHeight():int 
+		{
+			return _viewerHeight;
+		}
+		
+		public function set viewerHeight(value:int):void 
+		{
+			_viewerHeight = value;
+			updateTransformBarMax();
+		}
 		
 		[Bindable] public var sourceInfo:String;
 		
@@ -74,6 +136,56 @@
 			showAllCB.label = LABEL_SHOW_ALL;
 			var __bgAL:ArrayList = new ArrayList([LABEL_CHESS, LABEL_BLACK,LABEL_WHITE]);
 			BGDDL.dataProvider = __bgAL;
+		}
+		
+		private var _transformControlBar:TransformToolContralBar;
+		[Bindable]
+		public function get transformControlBar():TransformToolControlBar 
+		{
+			return _transformControlBar;
+		}
+		
+		private function updateTransformBarMax():void
+		{
+			if(transformContrlBar)
+			{
+				var __limitW:int = this[maxSizeLimit + "Width"];
+				var __limitH:int = this[maxSizeLimit + "Height"];
+				transformContrlBar.maxX =  __limitW - 1;
+				transformContrlBar.maxY = __limitH - 1;
+				transformContrlBar.maxW = __limitW;
+				transformContrlBar.maxH = __limitH;
+			}
+		}
+		
+		public function set transformControlBar(value:TransformToolControlBar):void 
+		{
+			_transformControlBar = value;
+			updateTransformBarMax();
+			if(_transformContarlBar)
+			{
+				_transformContarlBar.useCustomSizeCB.addEventListener(Event.CHANGE, handler_useCustomSizeChange);
+				_transformContarlBar.addEventListener(SSEvent.TRANSFORM_FRAME_CHANGE, handler_transformFrameChange);
+				updateTransformVisible();
+			}
+		}
+		
+		private function updateTransformVisible():void
+		{
+			transf.visible = (_transformContarlBar?_transformContarlBar.useCustomSizeCB.selected : false) && !scaleContent;
+		}
+		
+		private function updateTransformControl():void
+		{
+			if(_transformContarlBar)
+			{
+				_transformContarlBar.transformRect = transf.transformRect;
+			}
+		}
+		
+		private function handler_useCustomSizeChange($evt:Event):void 
+		{
+			updateTransformVisible();
 		}
 		
 		protected function get bg():*
@@ -104,6 +216,17 @@
 		{
 		}
 		
+		protected function handler_transformFrameChange($evt:SSEvent):void
+		{
+			transf.transformRect = _transformContarlBar.transformRect;
+		}
+		
+		protected function handler_transformChange($evt:SSEvent):void
+		{
+			updateTransformControl();
+			this.dispatchEvent($evt);
+		}
+		
 		public function destroy():void
 		{
 		}
@@ -116,7 +239,6 @@
 		{
 			return null;
 		}
-		
 		
 	]]>
 	</fx:Script>

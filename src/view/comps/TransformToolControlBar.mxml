@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:comps="comps.*"
+		  xmlns:mx = "library://ns.adobe.com/flex/mx" 
+		  xmlns:viewcomps = "view.comps.*" >
+		<fx:Metadata>
+			[Event(name="transformChange", type="events.SSEvent")]
+			[Event(name="transformUseCustomChange", type="events.SSEvent")]
+		</fx:Metadata>
+		<s:CheckBox id="useCustomSizeCB" label="{label}" toolTip="{toolTip}" />
+		<s:HGroup id="nsGrp" width="100%" enabled="{useCustomSizeCB.selected}">
+			<s:NumericStepper id="frameX" width="100%" minimum="0" maximum="{maxX}" change="handler_frameChange(event)" />
+			<s:NumericStepper id="frameY" width="100%" minimum="0" maximum="{maxY}" change="handler_frameChange(event)" />
+			<s:NumericStepper id="frameW" width="100%" minimum="1" maximum="{maxW}" change="handler_frameChange(event)" />
+			<s:NumericStepper id="frameH" width="100%" minimum="1" maximum="{maxH}" change="handler_frameChange(event)" />
+		</s:HGroup>
+		  <fx:Script>
+			  <![CDATA[
+			  import events.SSEvent;
+			  import flash.geom.Rectangle;
+			  import gnu.as3.gettext.FxGettext;
+			  
+			  [Bindable] public var maxX:int;
+			  [Bindable] public var maxY:int;
+			  [Bindable] public var maxW:int;
+			  [Bindable] public var maxH:int;
+			  
+			  [Bindable] public var label:String;
+			  [Bindable] public var toolTip:String;
+			  
+			   [Bindable] 
+			  public function get useCustom():Boolean 
+			 {
+				return useCustomSizeCB.selected;
+			  }
+			  
+			 public function set useCustom(value:Boolean):void 
+			{
+				useCustomSizeCB.selected = value;
+			 }
+			  
+			private function handler_frameChange($evt:Event):void
+			{
+				dispatchEvent(new SSEvent(SSEvent.TRANSFORM_FRAME_CHANGE, transformRect));
+			}
+			
+			public function set transformRect($value:Rectangle):void
+			{
+				frameX.value =$value.x;
+				frameY.value = $value.y;
+				frameW.value = $value.width;
+				frameH.value = $value.height;
+			}
+			
+			public function get transformRect():Rectangle
+			{
+				return new Rectangle(frameX.value, frameY.value,frameW.value,frameH.value)
+			}
+			  ]]>
+		  </fx:Script>
+</s:Group>
+ 

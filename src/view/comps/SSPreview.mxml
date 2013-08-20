@@ -11,7 +11,10 @@
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
 	<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"
-					   showTransformTool="{resizeOriginCB.selected}"/>
+					    transformChange="handler_transformChange(event)">
+		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
+		<comps:maxSizeLimit>source</comps:maxSizeLimit>
+	</comps:BMPPreview>
 	<s:HGroup width="100%" verticalAlign="middle">
 		<s:Label id="frameLabel" width="50" />
 		<s:Spacer width="100%"/>
@@ -19,31 +22,15 @@
 			<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
 		</s:ToggleButton>
 	</s:HGroup>
-	<s:HGroup horizontalAlign="center" width="100%">
-		<s:CheckBox id="resizeOriginCB" enabled="{!ani.scaleContent}" >
-			<s:label>{FxGettext.gettext("Adjust the original size(x,y,w,h)")}</s:label>
-			<s:toolTip>{FxGettext.gettext("Is selected, the original size is reduced. But you can still be executed 'Trim blank' again on the basis of reduced size.")}</s:toolTip>
-		</s:CheckBox>
-		<s:Spacer width="100%" height="20"/>
-		<s:Button id="saveResizeBTN" enabled="false" >
-			<s:label>{FxGettext.gettext("Do adjusting")}</s:label>
-			<s:toolTip>{FxGettext.gettext("Recalculated according to the original size adjusted, and immediate optimization.\nThis action will directly modify the size of the original size.")}</s:toolTip>
-		</s:Button>
-	</s:HGroup>
-	<s:HGroup width="100%" enabled="{resizeOriginCB.selected}">
-		<s:NumericStepper id="frameX" width="100%" value="@{ani.transf.x}" minimum="0" maximum="{ani.sourceWidth-1}" change="handler_frameChange(event)"/>
-		<s:NumericStepper id="frameY" width="100%" value="@{ani.transf.y}" minimum="0" maximum="{ani.sourceHeight-1}" change="handler_frameChange(event)"/>
-		<s:NumericStepper id="frameW" width="100%" value="@{ani.transf.width}" minimum="1" maximum="{ani.sourceWidth}" change="handler_frameChange(event)"/>
-		<s:NumericStepper id="frameH" width="100%" value="@{ani.transf.height}" minimum="1" maximum="{ani.sourceHeight}" change="handler_frameChange(event)"/>
-	</s:HGroup>
+	<comps:TransformToolControlBarForSS id="transControlBar"/>
 	<fx:Script>
 	<![CDATA[
+		import events.SSEvent;
 		import gnu.as3.gettext.FxGettext;
 		public static const EVENT_FRAME_SIZE_CHANGE:String = 'frameChange';
 		
 		public function init():void
 		{
-			ani.transf.init();
 		}
 		
 		public function destroy():void
@@ -54,13 +41,12 @@
 		
 		public function destroyAni():void
 		{
-			ani.transf.destroy();
 			ani.destroy();
 		}
 		
 		public function getResizeRect():Rectangle
 		{
-			return new Rectangle(frameX.value, frameY.value,frameW.value,frameH.value)
+			return ani.transControlBar;
 		}
 		
 		public function showBmd($bmd:BitmapData):void
@@ -71,6 +57,16 @@
 		protected function handler_frameChange($evt:Event):void
 		{
 			dispatchEvent(new Event(EVENT_FRAME_SIZE_CHANGE));
+			ani.transf.transformRect = getResizeRect();
+		}
+		
+		private function handler_transformChange($evt:SSEvent):void
+		{
+			var __rect:Rectangle = $evt.info as Rectangle;
+			frameX.value =__rect.x;
+			frameY.value = __rect.y;
+			frameW.value = __rect.width;
+			frameH.value = __rect.height;
 		}
 	]]>
 	</fx:Script>

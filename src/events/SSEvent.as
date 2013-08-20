@@ -63,6 +63,20 @@ public class SSEvent extends Event
 	public static const PREVIEW_CLICK:String = 'previewClick';
 	
 	/**
+	 * 变形工具的大小和位置改变了
+	 */
+	public static const TRANSFORM_CHANGE:String = "transformChange";
+	
+	/**
+	 * 变形工具的帧设置大小改变了
+	 */
+	public static const TRANSFORM_FRAME_CHANGE:String = "transformFrameChange";
+	/**
+	 * 变形工具中选择是否使用变形值的事件
+	 */
+	public static const TRANSFORM_USE_CUSTOM_CHANGE:String = "transformUseCustomChange";
+	
+	/**
 	 * 控制SS的播放
 	 */
 	public static const PREVIEW_SS_PLAY:String = 'previewSSPlay';

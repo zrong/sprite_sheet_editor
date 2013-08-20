@@ -86,7 +86,7 @@ public class FileOpenerModel extends FileProcessor
 			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态。
 			//载入的工作交给SpriteSheetLaoderModel。
 			if(_openState == StateType.SS)
-				_ssLoader.load(_file.url);
+				_ssLoader.load(File(_selectedFiles[0]).url);
 			//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
 			else
 				stateModel.state = _openState;

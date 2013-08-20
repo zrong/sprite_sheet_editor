@@ -44,7 +44,6 @@ public class PicPanelMediator extends Mediator
 		
 		v.fileM.init();
 		v.pic.viewer.source = null;
-		v.pic.transf.destroy();
 	}
 	
 	/**
@@ -75,7 +74,6 @@ public class PicPanelMediator extends Mediator
 		if($newState== StateType.PIC &&
 			$oldState != $newState)
 		{
-			v.pic.transf.init();
 			v.fileM.init();
 			//如果是从START状态跳转过来的，就更新一次fileList的值
 			if($oldState == StateType.START)
