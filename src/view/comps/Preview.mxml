@@ -138,7 +138,7 @@
 			BGDDL.dataProvider = __bgAL;
 		}
 		
-		private var _transformControlBar:TransformToolContralBar;
+		private var _transformControlBar:TransformToolControlBar;
 		[Bindable]
 		public function get transformControlBar():TransformToolControlBar 
 		{
@@ -147,14 +147,14 @@
 		
 		private function updateTransformBarMax():void
 		{
-			if(transformContrlBar)
+			if(transformControlBar)
 			{
 				var __limitW:int = this[maxSizeLimit + "Width"];
 				var __limitH:int = this[maxSizeLimit + "Height"];
-				transformContrlBar.maxX =  __limitW - 1;
-				transformContrlBar.maxY = __limitH - 1;
-				transformContrlBar.maxW = __limitW;
-				transformContrlBar.maxH = __limitH;
+				transformControlBar.maxX =  __limitW - 1;
+				transformControlBar.maxY = __limitH - 1;
+				transformControlBar.maxW = __limitW;
+				transformControlBar.maxH = __limitH;
 			}
 		}
 		
@@ -162,24 +162,24 @@
 		{
 			_transformControlBar = value;
 			updateTransformBarMax();
-			if(_transformContarlBar)
+			if(transformControlBar)
 			{
-				_transformContarlBar.useCustomSizeCB.addEventListener(Event.CHANGE, handler_useCustomSizeChange);
-				_transformContarlBar.addEventListener(SSEvent.TRANSFORM_FRAME_CHANGE, handler_transformFrameChange);
+				transformControlBar.useCustomSizeCB.addEventListener(Event.CHANGE, handler_useCustomSizeChange);
+				transformControlBar.addEventListener(SSEvent.TRANSFORM_FRAME_CHANGE, handler_transformFrameChange);
 				updateTransformVisible();
 			}
 		}
 		
 		private function updateTransformVisible():void
 		{
-			transf.visible = (_transformContarlBar?_transformContarlBar.useCustomSizeCB.selected : false) && !scaleContent;
+			transf.visible = (transformControlBar?transformControlBar.useCustomSizeCB.selected : false) && !scaleContent;
 		}
 		
 		private function updateTransformControl():void
 		{
-			if(_transformContarlBar)
+			if(transformControlBar)
 			{
-				_transformContarlBar.transformRect = transf.transformRect;
+				transformControlBar.transformRect = transf.transformRect;
 			}
 		}
 		
@@ -218,7 +218,7 @@
 		
 		protected function handler_transformFrameChange($evt:SSEvent):void
 		{
-			transf.transformRect = _transformContarlBar.transformRect;
+			transf.transformRect = transformControlBar.transformRect;
 		}
 		
 		protected function handler_transformChange($evt:SSEvent):void

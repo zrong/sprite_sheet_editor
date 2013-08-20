@@ -8,6 +8,7 @@
 		</ol>
 	</li>
 	<li>解决导入图像列表会出现重复的BUG；</li>
+	<li>重写TransformTool；</li>
 	<li>合并了SS界面中的“增加图像帧”和“增加SpriteSheet”。</li>
 </ul>
 <b>2013-06-14：v0.8.1版发布</b>

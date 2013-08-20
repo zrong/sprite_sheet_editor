@@ -46,7 +46,7 @@
 		
 		public function getResizeRect():Rectangle
 		{
-			return ani.transControlBar;
+			return transControlBar.transformRect;
 		}
 		
 		public function showBmd($bmd:BitmapData):void
@@ -62,11 +62,11 @@
 		
 		private function handler_transformChange($evt:SSEvent):void
 		{
-			var __rect:Rectangle = $evt.info as Rectangle;
-			frameX.value =__rect.x;
-			frameY.value = __rect.y;
-			frameW.value = __rect.width;
-			frameH.value = __rect.height;
+			//var __rect:Rectangle = $evt.info as Rectangle;
+			//frameX.value =__rect.x;
+			//frameY.value = __rect.y;
+			//frameW.value = __rect.width;
+			//frameH.value = __rect.height;
 		}
 	]]>
 	</fx:Script>

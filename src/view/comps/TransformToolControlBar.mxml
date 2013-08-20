@@ -8,7 +8,7 @@
 			[Event(name="transformChange", type="events.SSEvent")]
 			[Event(name="transformUseCustomChange", type="events.SSEvent")]
 		</fx:Metadata>
-		<s:CheckBox id="useCustomSizeCB" label="{label}" toolTip="{toolTip}" />
+		<s:CheckBox id="useCustomSizeCB" label="{label}" />
 		<s:HGroup id="nsGrp" width="100%" enabled="{useCustomSizeCB.selected}">
 			<s:NumericStepper id="frameX" width="100%" minimum="0" maximum="{maxX}" change="handler_frameChange(event)" />
 			<s:NumericStepper id="frameY" width="100%" minimum="0" maximum="{maxY}" change="handler_frameChange(event)" />
@@ -27,7 +27,6 @@
 			  [Bindable] public var maxH:int;
 			  
 			  [Bindable] public var label:String;
-			  [Bindable] public var toolTip:String;
 			  
 			   [Bindable] 
 			  public function get useCustom():Boolean 

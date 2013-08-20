@@ -15,7 +15,6 @@ public class TransformToolControlBarForSS extends TransformToolControlBar
 	public function TransformToolControlBarForSS() 
 	{
 		super();
-		this.maxlimi
 		var __layout:VerticalLayout = new VerticalLayout();
 		__layout.horizontalAlign = "center";
 		this.layout = __layout;
@@ -46,12 +45,14 @@ public class TransformToolControlBarForSS extends TransformToolControlBar
 	{
 		useCustomSizeCB.label = FxGettext.gettext("Adjust the original size(x,y,w,h)");
 		useCustomSizeCB.toolTip = FxGettext.gettext("Is selected, the original size is reduced. But you can still be executed 'Trim blank' again on the basis of reduced size.");
+		return useCustomSizeCB;
 	}
 	
 	private function createButton():Button
 	{
 		saveResizeBTN.label  = FxGettext.gettext("Do adjusting");
 		saveResizeBTN.toolTip = FxGettext.gettext("Recalculated according to the original size adjusted, and immediate optimization.\nThis action will directly modify the size of the original size.")
+		return saveResizeBTN;
 	}
 	/**
 	<s:HGroup horizontalAlign="center" width="100%">
