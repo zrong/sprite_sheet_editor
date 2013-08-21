@@ -26,7 +26,8 @@ public class SSPreviewMediator extends Mediator
 		eventMap.mapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.mapListener(v.transControlBar.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
 		eventMap.mapListener(v.transControlBar.useCustomSizeCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
-		addViewListener(SSPreview.EVENT_FRAME_SIZE_CHANGE, handler_frameSizeChange);
+		eventMap.mapListener(v, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
+		addViewListener(SSEvent.TRANSFORM_CHANGE, handler_transformSizeChange);
 		
 		addContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
 		addContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
@@ -43,7 +44,7 @@ public class SSPreviewMediator extends Mediator
 		eventMap.unmapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.unmapListener(v.transControlBar.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
 		eventMap.unmapListener(v.transControlBar.useCustomSizeCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
-		removeViewListener(SSPreview.EVENT_FRAME_SIZE_CHANGE, handler_frameSizeChange);
+		removeViewListener(SSEvent.TRANSFORM_CHANGE, handler_transformSizeChange);
 		
 		removeContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
 		removeContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
@@ -84,7 +85,6 @@ public class SSPreviewMediator extends Mediator
 	
 	private function handler_resizeOriginCBChange($evt:FlexEvent):void
 	{
-		//setSaveEnable();
 		updateFrame();
 	}
 	
@@ -93,7 +93,7 @@ public class SSPreviewMediator extends Mediator
 		updateFrame();
 	}
 	
-	private function handler_frameSizeChange($evt:Event):void
+	private function handler_transformSizeChange($evt:Event):void
 	{
 		updateFrame();
 	}
@@ -108,7 +108,7 @@ public class SSPreviewMediator extends Mediator
 	
 	private function setSaveEnable():void
 	{
-		v.transControlBar.saveResizeBTN.enabled = !ssModel.playing && v.transControlBar.useCustom && ssModel.selectedFrameIndices;
+		v.transControlBar.setResizeBtnEnable(!ssModel.playing  && ssModel.selectedFrameIndices);
 	}
 	
 	private function setPlayEnable():void

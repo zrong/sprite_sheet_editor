@@ -26,9 +26,9 @@ public class TransformToolControlBarForSS extends TransformToolControlBar
 	{
 		super.createChildren();
 		var __grp:HGroup = new HGroup();
-		__grp.addElement(useCustomSizeCB);
-		__grp.addElement(createSpacer());
 		__grp.addElement(createCheckBox());
+		__grp.addElement(createSpacer());
+		__grp.addElement(createButton());
 		this.addElement(__grp);
 		this.addElement(nsGrp);
 	}
@@ -50,9 +50,15 @@ public class TransformToolControlBarForSS extends TransformToolControlBar
 	
 	private function createButton():Button
 	{
+		saveResizeBTN.enabled  = false;
 		saveResizeBTN.label  = FxGettext.gettext("Do adjusting");
 		saveResizeBTN.toolTip = FxGettext.gettext("Recalculated according to the original size adjusted, and immediate optimization.\nThis action will directly modify the size of the original size.")
 		return saveResizeBTN;
+	}
+	
+	public function setResizeBtnEnable($enable:Boolean):void
+	{
+		saveResizeBTN.enabled = useCustom && $enable;
 	}
 	/**
 	<s:HGroup horizontalAlign="center" width="100%">

@@ -170,11 +170,23 @@
 			}
 		}
 		
+		/**
+		 * @private
+		 * 更新变形对象的尺寸
+		 */
 		private function updateTransformVisible():void
 		{
 			transf.visible = (transformControlBar?transformControlBar.useCustomSizeCB.selected : false) && !scaleContent;
+			if(transf.visible)
+			{
+				updateTransformControl();
+			}
 		}
 		
+		/**
+		 * @private
+		 * 更新显示对象的显示
+		 */
 		private function updateTransformControl():void
 		{
 			if(transformControlBar)

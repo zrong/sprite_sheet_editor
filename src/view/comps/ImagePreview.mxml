@@ -12,6 +12,9 @@
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
+		import flash.events.Event;
+		import flash.events.IEventDispatcher;
+		import flash.events.MouseEvent;
 		
 		import utils.Global;
 		
@@ -27,19 +30,50 @@
 		//----------------------------------------
 		override public function destroy():void
 		{
+			contentX = 0;
+			contentY = 0;
 			viewer.unloadAndStop(true);
+			removeDragContentEvent();
+			removeDropContentEvent();
 //			sourceWidth = 0;
 //			sourceHeight = 0;
 //			viewerWidth = 0;
 //			viewerHeight = 0;
 		}
 		
+		/**
+		 * 移动载入的内容的坐标，仅当 enableDragContent 为真时可用
+		 * @param	$x
+		 * @param	$y
+		 */
+		public function moveContent($x:int, $y:int):void
+		{
+			if(enableDragContent)
+			{
+				trace("content.x:", viewer.content.x);
+				trace("content.y:", viewer.content.y);
+				contentX = $x;
+				contentY = $y;
+				viewer.content.x  = contentX;
+				viewer.content.y = contentY;
+			}
+		}
+		
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
+		/**
+		 * 保存在内容移动时候的X值，仅当enableDragContent为真可用
+		 */
+		public var contentX:int = 0;
+		/**
+		 * 保存在内容移动时候的Y值，仅当enableDragContent为真可用
+		 */
+		public var contentY:int = 0;
+		
 		override public function set source($so:*):void
 		{
-			viewer.unloadAndStop(true);
+			destroy();
 			viewer.load($so);
 		}
 		
@@ -51,6 +85,50 @@
 		override protected function get bg():*
 		{
 			return chessboard;
+		}
+		
+		private var _enableDragContent:Boolean=false;
+		/**
+		 * 是否允许拖动载入的内容，针对某些在舞台上没有对位的SWF坐标错误导致无法显示的问题
+		 */
+		public function get enableDragContent():Boolean 
+		{
+			return _enableDragContent;
+		}
+		
+		public function set enableDragContent(value:Boolean):void 
+		{
+			_enableDragContent = value;
+			if(_enableDragContent)
+				addDragContentEvent();
+			else
+				removeDragContentEvent();
+		}
+		
+		private function removeDragContentEvent():void
+		{
+			if(scrollerView && scrollerView.hasEventListener(MouseEvent.MOUSE_DOWN))
+				scrollerView.removeEventListener(MouseEvent.MOUSE_DOWN, handler_mouseDown);	
+		}
+		
+		private function addDragContentEvent():void
+		{
+			if(scrollerView)
+				scrollerView.addEventListener(MouseEvent.MOUSE_DOWN, handler_mouseDown);
+		}
+		
+		private function addDropContentEvent():void
+		{
+			scrollerView.addEventListener(MouseEvent.MOUSE_OUT, handler_mouseUp);
+			scrollerView.addEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
+			scrollerView.addEventListener(Event.ENTER_FRAME, handler_enterFrame);
+		}
+		
+		private function removeDropContentEvent():void
+		{
+			scrollerView.removeEventListener(MouseEvent.MOUSE_OUT, handler_mouseUp);
+			scrollerView.removeEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
+			scrollerView.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 		}
 		
 		//----------------------------------------
@@ -82,10 +160,32 @@
 				viewerWidth = sourceWidth;
 				viewerHeight = sourceHeight;
 			}
-			sourceInfo = 'W:'+sourceWidth+',H:'+sourceHeight;
+			sourceInfo = 'W:' + sourceWidth + ',H:' + sourceHeight;
+			//允许拖动内容
+			enableDragContent = _enableDragContent;
 			this.dispatchEvent(new SSEvent(SSEvent.PREVIEW_LOAD_COMPLETE));
+			trace("viewer.content:", viewer.content)
 			trace(viewer.width, viewer.height, viewer.contentWidth, viewer.contentHeight, sourceWidth, sourceHeight);
 		}
+		
+		private function handler_mouseDown($evt:MouseEvent):void
+		{
+			//如果不相等，应该是点击出现在tranf上，此时不应拖动
+			if($evt.target == $evt.currentTarget)
+				addDropContentEvent();
+		}
+		
+		private function handler_mouseUp($evt:MouseEvent):void
+		{
+			removeDropContentEvent();
+		}
+		
+		private function handler_enterFrame($evt:Event):void
+		{
+			moveContent(this.mouseX, this.mouseY);
+			trace("stratDrag");
+		}
+		
 	]]>
 	</fx:Script>
 </comps:Preview>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-20 00:08+0800\n"
+"POT-Creation-Date: 2013-08-21 11:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,27 +21,27 @@ msgstr ""
 msgid "These files are not supported!"
 msgstr ""
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:503
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:501
 msgid "Please enter label's name!"
 msgstr ""
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:508
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:506
 msgid "Please select the frame to add the label!"
 msgstr ""
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:516
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:514
 msgid "Duplicate label's name is't allowed!"
 msgstr ""
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:550
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:548
 msgid "Please select the frame to remove."
 msgstr ""
 
-#: ../../src/mediator/comps/SSPreviewMediator.as:82
+#: ../../src/mediator/comps/SSPreviewMediator.as:83
 msgid "Frame animation preview"
 msgstr ""
 
-#: ../../src/mediator/comps/SSPreviewMediator.as:82
+#: ../../src/mediator/comps/SSPreviewMediator.as:83
 msgid "animation preview"
 msgstr ""
 
@@ -423,19 +423,19 @@ msgstr ""
 msgid "For JPEG, bigger is better;For JPEG-XR, smaller is better."
 msgstr ""
 
-#: ../../src/view/comps/Preview.mxml:64
+#: ../../src/view/comps/Preview.mxml:126
 msgid "Show all"
 msgstr ""
 
-#: ../../src/view/comps/Preview.mxml:65
+#: ../../src/view/comps/Preview.mxml:127
 msgid "Chess background"
 msgstr ""
 
-#: ../../src/view/comps/Preview.mxml:66
+#: ../../src/view/comps/Preview.mxml:128
 msgid "White background"
 msgstr ""
 
-#: ../../src/view/comps/Preview.mxml:67
+#: ../../src/view/comps/Preview.mxml:129
 msgid "Black background"
 msgstr ""
 
@@ -534,41 +534,41 @@ msgstr ""
 msgid "Bitmap animation preview"
 msgstr ""
 
-#: ../../src/view/comps/SSPreview.mxml:19
+#: ../../src/view/comps/SSPreview.mxml:21
 msgid "Pause"
 msgstr ""
 
-#: ../../src/view/comps/SSPreview.mxml:19
+#: ../../src/view/comps/SSPreview.mxml:21
 msgid "Play"
 msgstr ""
 
-#: ../../src/view/comps/SSPreview.mxml:24
+#: ../../src/view/comps/TransformToolControlBarForSS.as:46
 msgid "Adjust the original size(x,y,w,h)"
 msgstr ""
 
-#: ../../src/view/comps/SSPreview.mxml:25
+#: ../../src/view/comps/TransformToolControlBarForSS.as:47
 msgid ""
 "Is selected, the original size is reduced. But you can still be executed "
 "'Trim blank' again on the basis of reduced size."
 msgstr ""
 
-#: ../../src/view/comps/SSPreview.mxml:29
+#: ../../src/view/comps/TransformToolControlBarForSS.as:53
 msgid "Do adjusting"
 msgstr ""
 
-#: ../../src/view/comps/SSPreview.mxml:30
+#: ../../src/view/comps/TransformToolControlBarForSS.as:54
 msgid ""
 "Recalculated according to the original size adjusted, and immediate "
 "optimization.\n"
 "This action will directly modify the size of the original size."
 msgstr ""
 
-#: ../../src/view/panel/PicPanel.mxml:20 ../../src/view/panel/SwfPanel.mxml:15
+#: ../../src/view/panel/PicPanel.mxml:21 ../../src/view/panel/SwfPanel.mxml:15
 msgid "frame(x,y,w,h)"
 msgstr ""
 
-#: ../../src/view/panel/PicPanel.mxml:23 ../../src/view/panel/SwfPanel.mxml:18
-msgid "Original size of the frame"
+#: ../../src/view/panel/PicPanel.mxml:24 ../../src/view/panel/SwfPanel.mxml:18
+msgid "Custom size of the frame"
 msgstr ""
 
 #: ../../src/view/panel/SSPanel.mxml:18
@@ -627,11 +627,11 @@ msgstr ""
 msgid "Language change sucessfully. Please exit and restart it."
 msgstr ""
 
-#: ../../src/view/panel/SwfPanel.mxml:28
+#: ../../src/view/panel/SwfPanel.mxml:26
 msgid "1st frame(zero-based):"
 msgstr ""
 
-#: ../../src/view/panel/SwfPanel.mxml:35
+#: ../../src/view/panel/SwfPanel.mxml:33
 msgid "Total frames:"
 msgstr ""
 

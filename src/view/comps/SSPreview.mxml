@@ -10,8 +10,7 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
-	<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220"
-					    transformChange="handler_transformChange(event)">
+	<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220">
 		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
 		<comps:maxSizeLimit>source</comps:maxSizeLimit>
 	</comps:BMPPreview>
@@ -27,7 +26,6 @@
 	<![CDATA[
 		import events.SSEvent;
 		import gnu.as3.gettext.FxGettext;
-		public static const EVENT_FRAME_SIZE_CHANGE:String = 'frameChange';
 		
 		public function init():void
 		{
@@ -52,21 +50,6 @@
 		public function showBmd($bmd:BitmapData):void
 		{
 			ani.source = $bmd;
-		}
-		
-		protected function handler_frameChange($evt:Event):void
-		{
-			dispatchEvent(new Event(EVENT_FRAME_SIZE_CHANGE));
-			ani.transf.transformRect = getResizeRect();
-		}
-		
-		private function handler_transformChange($evt:SSEvent):void
-		{
-			//var __rect:Rectangle = $evt.info as Rectangle;
-			//frameX.value =__rect.x;
-			//frameY.value = __rect.y;
-			//frameW.value = __rect.width;
-			//frameH.value = __rect.height;
 		}
 	]]>
 	</fx:Script>

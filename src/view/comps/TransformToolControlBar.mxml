@@ -5,7 +5,6 @@
 		  xmlns:mx = "library://ns.adobe.com/flex/mx" 
 		  xmlns:viewcomps = "view.comps.*" >
 		<fx:Metadata>
-			[Event(name="transformChange", type="events.SSEvent")]
 			[Event(name="transformUseCustomChange", type="events.SSEvent")]
 		</fx:Metadata>
 		<s:CheckBox id="useCustomSizeCB" label="{label}" />

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: main 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-20 00:08+0800\n"
-"PO-Revision-Date: 2013-08-20 00:14+0800\n"
+"POT-Creation-Date: 2013-08-21 11:17+0800\n"
+"PO-Revision-Date: 2013-08-21 15:03+0800\n"
 "Last-Translator: zrong <zrongzrong@gmail.com>\n"
 "Language-Team: none\n"
 "Language: zh_CN\n"
@@ -22,27 +22,27 @@ msgstr ""
 msgid "These files are not supported!"
 msgstr "这些文件不被支持！"
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:503
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:501
 msgid "Please enter label's name!"
 msgstr "请输入Label名称！"
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:508
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:506
 msgid "Please select the frame to add the label!"
 msgstr "请选择要加入label的帧！"
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:516
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:514
 msgid "Duplicate label's name is't allowed!"
 msgstr "Label名称不允许重复！"
 
-#: ../../src/mediator/comps/FramesAndLabelMediator.as:550
+#: ../../src/mediator/comps/FramesAndLabelMediator.as:548
 msgid "Please select the frame to remove."
 msgstr "请选择要删除的帧。"
 
-#: ../../src/mediator/comps/SSPreviewMediator.as:82
+#: ../../src/mediator/comps/SSPreviewMediator.as:83
 msgid "Frame animation preview"
 msgstr "帧动画预览"
 
-#: ../../src/mediator/comps/SSPreviewMediator.as:82
+#: ../../src/mediator/comps/SSPreviewMediator.as:83
 msgid "animation preview"
 msgstr "动画预览"
 
@@ -439,19 +439,19 @@ msgstr "压缩："
 msgid "For JPEG, bigger is better;For JPEG-XR, smaller is better."
 msgstr "JPEG格式越大越好；JPEG-XR格式越小越好。"
 
-#: ../../src/view/comps/Preview.mxml:64
+#: ../../src/view/comps/Preview.mxml:126
 msgid "Show all"
 msgstr "显示所有"
 
-#: ../../src/view/comps/Preview.mxml:65
+#: ../../src/view/comps/Preview.mxml:127
 msgid "Chess background"
 msgstr "方格背景"
 
-#: ../../src/view/comps/Preview.mxml:66
+#: ../../src/view/comps/Preview.mxml:128
 msgid "White background"
 msgstr "白色背景"
 
-#: ../../src/view/comps/Preview.mxml:67
+#: ../../src/view/comps/Preview.mxml:129
 msgid "Black background"
 msgstr "黑色背景"
 
@@ -552,19 +552,19 @@ msgstr "保存元数据"
 msgid "Bitmap animation preview"
 msgstr "位图动画预览"
 
-#: ../../src/view/comps/SSPreview.mxml:19
+#: ../../src/view/comps/SSPreview.mxml:21
 msgid "Pause"
 msgstr "暂停"
 
-#: ../../src/view/comps/SSPreview.mxml:19
+#: ../../src/view/comps/SSPreview.mxml:21
 msgid "Play"
 msgstr "播放"
 
-#: ../../src/view/comps/SSPreview.mxml:24
+#: ../../src/view/comps/TransformToolControlBarForSS.as:46
 msgid "Adjust the original size(x,y,w,h)"
 msgstr "调整帧原始大小(x,y,w,h)"
 
-#: ../../src/view/comps/SSPreview.mxml:25
+#: ../../src/view/comps/TransformToolControlBarForSS.as:47
 msgid ""
 "Is selected, the original size is reduced. But you can still be executed "
 "'Trim blank' again on the basis of reduced size."
@@ -572,11 +572,11 @@ msgstr ""
 "选择后，会缩小帧的原始大小。但你依然可以在缩小后的尺寸基础上再次执行“修剪空"
 "白”优化。"
 
-#: ../../src/view/comps/SSPreview.mxml:29
+#: ../../src/view/comps/TransformToolControlBarForSS.as:53
 msgid "Do adjusting"
 msgstr "保存调整"
 
-#: ../../src/view/comps/SSPreview.mxml:30
+#: ../../src/view/comps/TransformToolControlBarForSS.as:54
 msgid ""
 "Recalculated according to the original size adjusted, and immediate "
 "optimization.\n"
@@ -585,13 +585,13 @@ msgstr ""
 "根据调整的原始大小重新计算帧大小，并立即执行优化。\n"
 "此操作会直接修改原始帧的大小。"
 
-#: ../../src/view/panel/PicPanel.mxml:20 ../../src/view/panel/SwfPanel.mxml:15
+#: ../../src/view/panel/PicPanel.mxml:21 ../../src/view/panel/SwfPanel.mxml:15
 msgid "frame(x,y,w,h)"
 msgstr "帧设置(x,y,w,h)"
 
-#: ../../src/view/panel/PicPanel.mxml:23 ../../src/view/panel/SwfPanel.mxml:18
-msgid "Original size of the frame"
-msgstr "使用帧的原始尺寸"
+#: ../../src/view/panel/PicPanel.mxml:24 ../../src/view/panel/SwfPanel.mxml:18
+msgid "Custom size of the frame"
+msgstr "使用自定义尺寸的帧"
 
 #: ../../src/view/panel/SSPanel.mxml:18
 msgid "Save a Sprite Sheet"
@@ -649,11 +649,11 @@ msgstr "语言："
 msgid "Language change sucessfully. Please exit and restart it."
 msgstr "语言切换成功，请退出并重启。"
 
-#: ../../src/view/panel/SwfPanel.mxml:28
+#: ../../src/view/panel/SwfPanel.mxml:26
 msgid "1st frame(zero-based):"
 msgstr "第一帧(0基)："
 
-#: ../../src/view/panel/SwfPanel.mxml:35
+#: ../../src/view/panel/SwfPanel.mxml:33
 msgid "Total frames:"
 msgstr "所有帧："
 

@@ -42,6 +42,7 @@
 	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" >
 		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
 		<comps:maxSizeLimit>source</comps:maxSizeLimit>
+		<comps:enableDragContent>true</comps:enableDragContent>
 	</comps:ImagePreview>
 	<fx:Metadata>
 		[Event(name="complete", type="flash.events.Event")]
@@ -63,23 +64,8 @@
 		private var _whRect:Rectangle;				//保存Sheet的宽高
 		private var _rectInSheet:Rectangle;		//保存当前帧在Sheet中的位置和大小
 		private var _limitW:Boolean;
-		private var _frameRect:Rectangle;			//当前当前帧的位置
+		private var _frameRect:Rectangle;			//当前帧的位置
 		[Bindable] public var state:String;		//当前的处理状态
-		
-		//----------------------------------------
-		// getter/setter
-		//----------------------------------------
-		
-		public function getFrameRect():Rectangle
-		{
-			var __rect:Rectangle = transControlBar.transformRect;
-			if(!transControlBar.useCustom)
-			{
-				__rect.width = swf.sourceWidth;
-				__rect.height = swf.sourceHeight;
-			}
-			return __rect;
-		}
 		
 		//----------------------------------
 		//  界面相关方法
@@ -137,8 +123,8 @@
 				//如果没有设置_rectInSheet，应该是截取第一帧，这种情况下初始化rectInSheet、frameRect和whRect
 				if(!_rectInSheet)
 				{
-					_frameRect = getFrameRect();
-					_rectInSheet = _frameRect.clone();
+					_frameRect = transControlBar.useCustom ? transControlBar.transformRect : new Rectangle(0,0,swf.sourceWidth, swf.sourceHeight);
+					_rectInSheet = new Rectangle(0, 0, _frameRect.width, _frameRect.height);
 					var __w:int=0;
 					var __h:int=0;
 					if(_limitW)
@@ -181,6 +167,11 @@
 				//需要向“左上角”移动，将当前帧绘制成位图
 				__ma = new Matrix();
 				__ma.translate(-1*$frameRect.x, -1*$frameRect.y);
+			}
+			if(swf.enableDragContent)
+			{
+				if(!__ma) __ma = new Matrix;
+				__ma.translate(swf.contentX, swf.contentY);
 			}
 			__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			return __bmd;
