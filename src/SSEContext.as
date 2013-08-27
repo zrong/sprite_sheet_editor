@@ -1,5 +1,7 @@
 package
 {
+import ctrl.BrowseFileCmd;
+import ctrl.DragFileCmd;
 import ctrl.PreviewSSChangeCmd;
 import ctrl.SaveCmd;
 
@@ -41,7 +43,8 @@ public class SSEContext extends Context
 	override public function startup():void
 	{
 		init();
-		injector.mapSingleton(FileProcessor);
+		injector.mapSingleton(FileOpenerModel);
+		injector.mapSingleton(FileSaverModel);
 		injector.mapSingleton(StateModel);
 		injector.mapSingleton(SpriteSheetModel);
 		
@@ -57,6 +60,8 @@ public class SSEContext extends Context
 		
 		commandMap.mapEvent(SSEvent.PREVIEW_SS_CHANGE, PreviewSSChangeCmd);
 		commandMap.mapEvent(SSEvent.SAVE, SaveCmd);
+		commandMap.mapEvent(SSEvent.BROWSE_FILE, BrowseFileCmd);
+		commandMap.mapEvent(SSEvent.DRAG_FILE, DragFileCmd);
 	}
 }
 }

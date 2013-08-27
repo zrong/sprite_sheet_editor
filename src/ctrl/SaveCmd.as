@@ -1,7 +1,7 @@
 package ctrl 
 {
 import events.SSEvent;
-import model.FileProcessor;
+import model.FileSaverModel;
 import org.robotlegs.mvcs.Command;
 import vo.SaveVO;
 
@@ -16,12 +16,12 @@ public class SaveCmd extends Command
 	public var evt:SSEvent;
 	
 	[Inject]
-	public var file:FileProcessor;
+	public var fileSaver:FileSaverModel;
 	
 	override public function execute():void
 	{
 		var __vo:SaveVO = evt.info as SaveVO;
-		file.save(__vo);
+		fileSaver.save(__vo);
 	}
 }
 }

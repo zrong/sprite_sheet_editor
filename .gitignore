@@ -8,3 +8,4 @@ bin
 obj
 bat
 dist
+build.properties

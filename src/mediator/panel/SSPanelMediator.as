@@ -103,7 +103,7 @@ public class SSPanelMediator extends Mediator
 	private function handler_saveAll($evt:SSEvent):void
 	{
 		updateMetadata();
-		var __vo:SaveVO = v.getSaveVO();
+		var __vo:SaveVO = v.getSheetSaveVO();
 		var __bmd:BitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
 		__vo.bitmapData = __bmd;
 		__vo.metadata = getMetadata();
@@ -114,7 +114,7 @@ public class SSPanelMediator extends Mediator
 	protected function handler_saveMeta($event:SSEvent):void
 	{
 		updateMetadata();
-		var __vo:SaveVO =  v.getSaveVO();
+		var __vo:SaveVO =  v.getSheetSaveVO();
 		__vo.metadata = getMetadata();
 		__vo.type = StateType.SAVE_META;
 		dispatch(new SSEvent(SSEvent.SAVE, __vo));
@@ -123,7 +123,7 @@ public class SSPanelMediator extends Mediator
 	protected function handler_savePic($event:SSEvent):void
 	{
 		updateMetadata();
-		var __vo:SaveVO =v.getSaveVO();
+		var __vo:SaveVO =v.getSheetSaveVO();
 		__vo.bitmapData = ssModel.getBitmapDataForSave(v.maskTypeValue, v.transparent, v.bgColor);
 		__vo.type = StateType.SAVE_SHEET_PIC;
 		dispatch(new SSEvent(SSEvent.SAVE, __vo));
@@ -131,7 +131,7 @@ public class SSPanelMediator extends Mediator
 	
 	private function handler_saveSeq($evt:SSEvent):void
 	{
-		var __vo:SaveVO = v.getSaveVO();
+		var __vo:SaveVO = v.getSeqSaveVO();
 		__vo.fileNameList = v.getSeqFileNames(ssModel.adjustedSheet.metadata.totalFrame);
 		__vo.type = StateType.SAVE_SEQ;
 		//根据显示的帧类型来保存序列

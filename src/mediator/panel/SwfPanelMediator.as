@@ -1,19 +1,13 @@
 package mediator.panel
 {
 import events.SSEvent;
-
-import flash.events.Event;
 import flash.filesystem.File;
-
-import model.FileProcessor;
+import model.FileOpenerModel;
 import model.SpriteSheetModel;
 import model.StateModel;
-
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-
 import type.StateType;
-
 import view.panel.SwfPanel;
 
 /**
@@ -26,11 +20,14 @@ public class SwfPanelMediator extends Mediator
 	
 	[Inject] public var stateModel:StateModel;
 	
-	[Inject] public var file:FileProcessor;
+	[Inject] public var fileOpener:FileOpenerModel;
 	
 	[Inject] public var ssModel:SpriteSheetModel;
 	
 	private var _swfURL:String;
+	
+	private var _swfContentX:int = 0;
+	private var _swfContentY:int = 0;
 	
 	override public function onRegister():void
 	{
@@ -71,7 +68,7 @@ public class SwfPanelMediator extends Mediator
 	{
 		if($newState == StateType.SWF)
 		{
-			_swfURL = File(file.selectedFiles[0]).url;
+			_swfURL = File(fileOpener.selectedFiles[0]).url;
 			trace('swfPanel.load:', _swfURL);
 			if(_swfURL)
 			{
@@ -86,6 +83,9 @@ public class SwfPanelMediator extends Mediator
 		//若当前处于等待载入状态，则开始建立sheet
 		if(v.state == StateType.WAIT_LOADED)
 		{
+			//如果允许调整尺寸，使用调整过的
+			if(v.swf.enableDragContent)
+				v.swf.moveContent(_swfContentX, _swfContentY);
 			//开始capture
 			v.state = StateType.PROCESSING;
 			ssModel.resetSheet(null, new SpriteSheetMetadata());
@@ -100,6 +100,9 @@ public class SwfPanelMediator extends Mediator
 	private function handler_buildClick($evt:SSEvent):void
 	{
 		v.state = StateType.WAIT_LOADED;
+		//记录当前移动的内容坐标，以便载入成功后还原
+		_swfContentX = v.swf.contentX;
+		_swfContentY = v.swf.contentY;
 		v.build(_swfURL);
 	}
 	

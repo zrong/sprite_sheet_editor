@@ -56,13 +56,9 @@
 		<s:text>{frameDG.dataProvider?FxGettext.gettext("All available frames:")+frameDG.dataProvider.length:FxGettext.gettext("The frames are not available.")}</s:text>
 	</s:Label>
 	<s:HGroup id="addGRP" verticalAlign="middle" width="100%">
-		<s:Button id="addSSBTN" width="100%">
-				<s:label>{FxGettext.gettext("Add Sprite Sheet")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Add one or more Sprite Sheet to the end of the current Sprite Sheet. The rules are as follows:\n1. All frames will be added to the Sprite Sheet at the end of current;\n2. If the label is the same name, the label in the Sprite Sheet do not import, but all frames in the label will be imported;\n3. If the name is the same name, the name in the Sprite Sheet do not import;\n4. If original Sprite Sheet contains frame name, but imported Sprite Sheet does not, all frame in the Sprite Sheet will be automatically named.")}</s:toolTip>
-		</s:Button>
 		<s:Button id="addPicBTN" width="100%" >
-				<s:label>{FxGettext.gettext("Add image frame")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Add multiple image file. One frame added to the end of the current Sprite Sheet as a frame.")}</s:toolTip>
+				<s:label>{FxGettext.gettext("Add image frame Or Sprite Sheet")}</s:label>
+				<s:toolTip>{FxGettext.gettext("If the selected files are image file, they will be added to the end of the current Sprite Sheet as some frames.\nIf they are Sprite Sheet files, they will be added to the end of the current Sprite Sheet with follows rules:\n1. All frames will be added to the Sprite Sheet at the end of current;\n2. If the label is the same name, the label in the Sprite Sheet do not import, but all frames in the label will be imported;\n3. If the name is the same name, the name in the Sprite Sheet do not import;\n4. If original Sprite Sheet contains frame name, but imported Sprite Sheet does not, all frame in the Sprite Sheet will be automatically named.")}</s:toolTip>
 		</s:Button>
 	</s:HGroup>
 	<s:HGroup id="naviGRP1" verticalAlign="middle" width="100%">
@@ -140,6 +136,7 @@
 	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
+		import flash.geom.Point;
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
@@ -225,17 +222,59 @@
 		/**
 		 * 根据单击的位置找到帧列表中的对应帧
 		 */
-		public function findFrameByPoint($point:Point):void
+		public function findFrameByPoint($info:Object):void
 		{
+			var __point:Point = $info.point as Point;
 			if(frameDG.dataProvider && frameDG.dataProvider.length>0)
 			{
 				var __frame:FrameVO;
 				for (var i:int = 0; i < frameDG.dataProvider.length; i++) 
 				{
 					__frame = getFrameItemAt(i);
-					if(__frame.frameRect.containsPoint($point))
+					//若找到位图对应的索引，判断键盘
+					if(__frame.frameRect.containsPoint(__point))
 					{
-						frameDG.selectedIndex = i;
+						var ___selectedLen:int = frameDG.selectedIndices.length ;
+						//在已经选择过帧的情况下，才处理键盘
+						if(___selectedLen > 0)
+						{
+							//处理Control按键，不连续选择
+							var __newIndices:Vector.<int> = new Vector.<int>;
+							if($info.controlKey)
+							{
+								__newIndices[0] = i;
+								for (var j:int = 0; j < ___selectedLen; j++) 
+								{
+									if(i != frameDG.selectedIndices[j])
+										__newIndices.push(frameDG.selectedIndices[j]);
+								}
+							}
+							//处理Shift按键，连续选择
+							else if($info.shiftKey)
+							{
+								var __start:int = Math.min(frameDG.selectedIndices[0], i);
+								var __end:int = Math.max(frameDG.selectedIndices[0], i);
+								for (j = __start; j <= __end; j++) 
+								{
+									__newIndices.push(j);
+								}
+							}
+							if(__newIndices.length > 0)
+							{
+								frameDG.selectedIndices = __newIndices;
+								frameDG.ensureCellIsVisible(__newIndices[0]);
+							}
+							else
+							{
+								frameDG.selectedIndex  = i;
+								frameDG.ensureCellIsVisible(i);
+							}
+						}
+						else
+						{
+							frameDG.selectedIndex = i;
+							frameDG.ensureCellIsVisible(i);
+						}
 						return;
 					}
 				}

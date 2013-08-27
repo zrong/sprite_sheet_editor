@@ -3,6 +3,7 @@
 <!-- 创建者:zrong(zrongzrong@gmail.com) -->
 <!-- 创建时间：2011-8-9 -->
 <!-- 更新时间：2011-11-04 -->
+<!-- 更新时间：2013-08-20 -->
 <!-- 选择要拼合成SS文件的图像 -->
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
@@ -19,15 +20,13 @@
 			<s:Label fontWeight="bold">
 				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
 			</s:Label>
-			<s:CheckBox id="useOriginalSizeCB">
-				<s:label>{FxGettext.gettext("Original size of the frame")}</s:label>
-			</s:CheckBox>
-			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
-				<s:NumericStepper id="frameX" width="100%" value="@{pic.transf.x}" minimum="0" maximum="{pic.viewerWidth-1}"/>
-				<s:NumericStepper id="frameY" width="100%" value="@{pic.transf.y}" minimum="0" maximum="{pic.viewerHeight-1}"/>
-				<s:NumericStepper id="frameW" width="100%" value="@{pic.transf.width}" minimum="1" maximum="{pic.viewerWidth}"/>
-				<s:NumericStepper id="frameH" width="100%" value="@{pic.transf.height}" minimum="1" maximum="{pic.viewerHeight}"/>
-			</s:HGroup>
+			<comps:TransformToolControlBar id="transControlBar">
+				<comps:label>{FxGettext.gettext("Custom size of the frame")}</comps:label>
+				<comps:useCustom>false</comps:useCustom>
+				<comps:layout>
+					<s:VerticalLayout horizontalAlign="center" />
+				</comps:layout>
+			</comps:TransformToolControlBar>
 		</s:BorderContainer>
 		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
 							enabled="{fileM.fileList.length&gt;0}"/>
@@ -35,10 +34,14 @@
 							selectionChange="handler_selectionChange(event)" 
 							selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
-	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" showTransformTool="{!useOriginalSizeCB.selected}"/>
+	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0">
+		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
+		<comps:maxSizeLimit>viewer</comps:maxSizeLimit>
+	</comps:ImagePreview>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
+		import flash.geom.Rectangle;
 		
 		import type.StateType;
 		import gnu.as3.gettext.FxGettext;
@@ -61,9 +64,9 @@
 		 */
 		public function getFrameRect():Rectangle
 		{
-			if(useOriginalSizeCB.selected)
+			if(!transControlBar.useCustom)
 				return new Rectangle(0,0,pic.sourceWidth, pic.sourceHeight);
-			return new Rectangle(frameX.value,frameY.value,frameW.value,frameH.value);
+			return transControlBar.transformRect;
 		}
 		
 		/**
@@ -72,7 +75,7 @@
 		private function getCaptureFrameRect():Rectangle
 		{
 			//若使用自定义的Rect，且设置过Rect，就使用保存的Rect
-			if(!useOriginalSizeCB.selected && fileM.fileList.getItemAt(_frameNum).rect)
+			if(transControlBar.useCustom && fileM.fileList.getItemAt(_frameNum).rect)
 				return Rectangle(fileM.fileList.getItemAt(_frameNum).rect);
 			//否则从当前界面新建
 			return getFrameRect();
@@ -141,7 +144,7 @@
 		{
 			var __bmd:BitmapData = new BitmapData($rect.width, $rect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
 			var __ma:Matrix = null;
-			if(!useOriginalSizeCB.selected)
+			if(transControlBar.useCustom)
 			{
 				//需要向“左上角”移动，将当前帧绘制成位图
 				__ma = new Matrix();
@@ -246,14 +249,13 @@
 				pic.viewer.source = __item.file.url;
 				//若为这个文件记录了rect，则改变当前rect的显示
 				if(__item.rect)
-					pic.transf.transformFromRect(__item.rect);
+					pic.transf.transformRect = __item.rect;
 			}
 			else
 			{
 				pic.viewer.source = null;
 			}
 		}
-		
 	]]>
 	</fx:Script>
 </s:HGroup>

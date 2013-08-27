@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  xmlns:comps="comps.*"
-		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:comps1="view.comps.*">
+		  xmlns:comps="view.comps.*"
+		  xmlns:mx="library://ns.adobe.com/flex/mx">
 	<s:BorderContainer width="320" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<s:layout>
 			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
@@ -14,15 +14,13 @@
 			<s:Label>
 				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
 			</s:Label>
-			<s:CheckBox id="useOriginalSizeCB">
-				<s:label>{FxGettext.gettext("Original size of the frame")}</s:label>
-			</s:CheckBox>
-			<s:HGroup width="100%" enabled="{!useOriginalSizeCB.selected}">
-				<s:NumericStepper id="frameX" width="100%" value="@{swf.transf.x}" minimum="0" maximum="{swf.sourceWidth-1}"/>
-				<s:NumericStepper id="frameY" width="100%" value="@{swf.transf.y}" minimum="0" maximum="{swf.sourceHeight-1}"/>
-				<s:NumericStepper id="frameW" width="100%" value="@{swf.transf.width}" minimum="1" maximum="{swf.sourceWidth}"/>
-				<s:NumericStepper id="frameH" width="100%" value="@{swf.transf.height}" minimum="1" maximum="{swf.sourceHeight}"/>
-			</s:HGroup>
+			<comps:TransformToolControlBar id="transControlBar">
+				<comps:label>{FxGettext.gettext("Custom size of the frame")}</comps:label>
+				<comps:useCustom>false</comps:useCustom>
+				<comps:layout>
+					<s:VerticalLayout horizontalAlign="center" />
+				</comps:layout>
+			</comps:TransformToolControlBar>
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label>
 					<s:text>{FxGettext.gettext("1st frame(zero-based):")}</s:text>
@@ -38,17 +36,23 @@
 				<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100"/>
 			</s:HGroup>
 		</s:BorderContainer>
-		<comps1:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
+		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
 						  enabled="{state&amp;&amp;state==StateType.LOAD_DONE}" />
 	</s:BorderContainer>
-	<comps1:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" 
-						showTransformTool="{!useOriginalSizeCB.selected}"/>
+	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" >
+		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
+		<comps:maxSizeLimit>source</comps:maxSizeLimit>
+		<comps:enableDragContent>true</comps:enableDragContent>
+	</comps:ImagePreview>
 	<fx:Metadata>
 		[Event(name="complete", type="flash.events.Event")]
 	</fx:Metadata>
 	<fx:Script>
 	<![CDATA[
+		import air.update.descriptors.ApplicationDescriptor;
 		import events.SSEvent;
+		import flash.events.Event;
+		import flash.geom.Rectangle;
 		import gnu.as3.gettext.FxGettext;
 		
 		import type.StateType;
@@ -60,22 +64,8 @@
 		private var _whRect:Rectangle;				//保存Sheet的宽高
 		private var _rectInSheet:Rectangle;		//保存当前帧在Sheet中的位置和大小
 		private var _limitW:Boolean;
-		private var _frameRect:Rectangle;			//当前当前帧的位置
+		private var _frameRect:Rectangle;			//当前帧的位置
 		[Bindable] public var state:String;		//当前的处理状态
-		
-		//----------------------------------------
-		// getter/setter
-		//----------------------------------------
-		
-		public function get frameWidth():int
-		{
-			return useOriginalSizeCB.selected ? swf.sourceWidth : frameW.value;
-		}
-		
-		public function get frameHeight():int
-		{
-			return useOriginalSizeCB.selected ? swf.sourceHeight : frameH.value;
-		}
 		
 		//----------------------------------
 		//  界面相关方法
@@ -84,7 +74,6 @@
 		public function showSWF($url:String):void
 		{
 			swf.source = $url;
-			swf.transf.init();
 		}
 		
 		public function build($url:String):void
@@ -97,7 +86,6 @@
 		public function destroy():void
 		{
 			swf.source = null;
-			swf.transf.destroy();
 		}
 		
 		//----------------------------------
@@ -135,8 +123,8 @@
 				//如果没有设置_rectInSheet，应该是截取第一帧，这种情况下初始化rectInSheet、frameRect和whRect
 				if(!_rectInSheet)
 				{
-					_frameRect = new Rectangle(frameX.value,frameY.value,frameWidth, frameHeight);
-					_rectInSheet = _frameRect.clone();
+					_frameRect = transControlBar.useCustom ? transControlBar.transformRect : new Rectangle(0,0,swf.sourceWidth, swf.sourceHeight);
+					_rectInSheet = new Rectangle(0, 0, _frameRect.width, _frameRect.height);
 					var __w:int=0;
 					var __h:int=0;
 					if(_limitW)
@@ -174,11 +162,16 @@
 		{
 			var __bmd:BitmapData = new BitmapData($frameRect.width, $frameRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
 			var __ma:Matrix = null;
-			if(!useOriginalSizeCB.selected)
+			if(transControlBar.useCustom)
 			{
 				//需要向“左上角”移动，将当前帧绘制成位图
 				__ma = new Matrix();
 				__ma.translate(-1*$frameRect.x, -1*$frameRect.y);
+			}
+			if(swf.enableDragContent)
+			{
+				if(!__ma) __ma = new Matrix;
+				__ma.translate(swf.contentX, swf.contentY);
 			}
 			__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
 			return __bmd;

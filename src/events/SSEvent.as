@@ -16,6 +16,19 @@ public class SSEvent extends Event
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	
 	/**
+	 * 拖动一个文件到SSE中
+	 */
+	public static const DRAG_FILE:String = "dragFile";
+	/**
+	 * 要求File对象选择一个或者一组文件
+	 */
+	public static const BROWSE_FILE:String = "browseFile";
+	
+	/**
+	 * 选择一个或者一组文件成功
+	 */
+	public static const BROWSE_FILE_DONE:String = "browseFileDone";
+	/**
 	 * 选择的帧变化了
 	 */
 	public static const SELECTED_FRAMEINDICES_CHANGE:String = 'selectedFrameIndicesChange';
@@ -48,6 +61,20 @@ public class SSEvent extends Event
 	
 	public static const PREVIEW_LOAD_COMPLETE:String = 'previewLoadComplete';
 	public static const PREVIEW_CLICK:String = 'previewClick';
+	
+	/**
+	 * 变形工具的大小和位置改变了
+	 */
+	public static const TRANSFORM_CHANGE:String = "transformChange";
+	
+	/**
+	 * 变形工具的帧设置大小改变了
+	 */
+	public static const TRANSFORM_FRAME_CHANGE:String = "transformFrameChange";
+	/**
+	 * 变形工具中选择是否使用变形值的事件
+	 */
+	public static const TRANSFORM_USE_CUSTOM_CHANGE:String = "transformUseCustomChange";
 	
 	/**
 	 * 控制SS的播放

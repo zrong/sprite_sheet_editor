@@ -1,6 +1,10 @@
 package utils
 {
+import flash.filesystem.File;
 import flash.geom.Rectangle;
+import org.zengrong.assets.AssetsType;
+import type.ExtendedNameType;
+import type.StateType;
 
 import mx.managers.PopUpManager;
 
@@ -237,6 +241,42 @@ public class Funs
 			return '<?xml version="1.0" encoding="UTF-8"?>' +$lineEnding+ 
 				"<!-- " + getCreatedWith() + " -->" + $lineEnding +
 				"<!-- http://zengrong.net/sprite_sheet_editor -->" + $lineEnding;
+	}
+	
+	/**
+	 * 根据载入的图片的地址，获取同名的metadata文件
+	 */
+	public static function getMetadataUrl($url:String, $type:String):String
+	{
+		var __dotIndex:int = $url.lastIndexOf('.');
+		if(__dotIndex == -1)
+			return $url + '.'+$type;
+		return $url.slice(0, __dotIndex) + '.'+$type;
+	}
+	
+	public static function hasMetadataFile($url:String, $type:String="xml"):Boolean
+	{
+		var __metaUrl:String = getMetadataUrl($url, $type);
+		var __file:File = new File(__metaUrl);
+		return __file.exists;
+	}
+	
+	/**
+	 * 根据当前传递的文件类型取得当前的界面状态
+	 * @return
+	 */
+	public static function getStateByFile($file:File):String
+	{
+		if(ExtendedNameType.SWF_FILTER.extension.indexOf($file.type) > -1)
+		{
+			return StateType.SWF;
+		}
+		else if( ExtendedNameType.ALL_PIC_FILTER.extension.indexOf($file.type) > -1)
+		{
+			if(hasMetadataFile($file.url, "xml")) return StateType.SS;
+			return StateType.PIC;
+		}
+		return '';
 	}
 }
 }

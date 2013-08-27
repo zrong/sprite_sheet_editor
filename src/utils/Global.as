@@ -11,8 +11,11 @@ import flash.ui.MouseCursorData;
 
 public class Global
 {
-	[Embed(source="/assets/chess.png")]
+	[Embed(source="/../asset/embed/chess.png")]
 	public static const BMP_CHESS:Class;
+	
+	[Embed(source="/../asset/embed/about.txt",mimeType="application/octet-stream")] 
+	public static const ABOUT_TEXT:Class;
 	
 	//Assets.swf来自于Flex框架 %FLEX_SDK%\frameworks\projects\framework\assets\Assets.swf
 	[Embed(source="Assets.swf",symbol="mx.skins.cursor.VBoxDivider")]

@@ -43,12 +43,11 @@
 	<echo>swf.name:${swf.name}</echo>
 	<echo>FLEX_HOME:${FLEX_HOME}</echo>
 
-	<!-- 清除项目 -->
 	<target name="clearswf">
 		<delete file="${swf.file}"/>
 	</target>
 
-	<!-- 开始打包swf -->
+	<!-- package the swf file -->
 	<target name="packswf" depends="clearswf">
 		<condition property="var.debug" value="${var.debug}" else="true">
 			<isset property="var.debug" />
@@ -63,10 +62,11 @@
 		<echo>The main file is ${main.file}.</echo>
 		<echo>debug:${var.debug} optimize:${var.optimize} swfversion:${var.swfversion}</echo>
 		<java jar="${FLEX_HOME}/lib/mxmlc.jar" fork="true" failonerror="true" dir="${FLEX_FRAMEWORKS}">
-			<arg value="-o=${swf.file}"/>
-			<!-- <arg line="-sp=${basedir}/${SRC_DIR}"/> -->
-			<arg value="-load-config=air-config.xml"/>
-			<arg value="-l+=${LIB_DIR}"/>
+			<arg line="-output ${swf.file}"/>
+			<arg line="-swf-version ${var.swfversion}"/>
+			<arg line="-source-path ${SRC_DIR}"/>
+			<arg value="-load-config+=air-config.xml"/>
+			<arg value="-library-path+=${LIB_DIR}"/>
 			<!--
 			<arg value="-l+=${ANE_DIR}/com.sanguo.ios.ane"/>
 			-->
@@ -108,14 +108,27 @@
 		</replaceregexp>
 	</target>
 
+	<!-- Copy the assets to bin directory. -->
+	<target name="copyBinAssets">
+		<mkdir dir="${BIN_DIR}"/>
+		<delete dir="${BIN_DIR}/icon"/>
+		<delete dir="${BIN_DIR}/locale"/>
+		<echo>Copy ${ASSET_DIR} to ${BIN_DIR}</echo>
+		<copy todir="${BIN_DIR}">
+			<fileset dir="${ASSET_DIR}">
+				<include name="icon/**"/>
+				<include name="locale/**"/>
+			</fileset>
+		</copy>
+	</target>
+
 	<!-- Copy the assets to temp directory. -->
 	<target name="copyPackageAssets">
 		<mkdir dir="${TEMP_DIR}"/>
-		<echo>Copy assets to ${TEMP_DIR} ${BIN_DIR}</echo>
+		<echo>Copy ${TEMP_DIR} to ${BIN_DIR}</echo>
 		<copy todir="${TEMP_DIR}">
 			<fileset dir="${BIN_DIR}">
-				<include name="assets/**"/>
-				<include name="${swf.name}"/>
+				<include name="**"/>
 			</fileset>
 		</copy>
 	</target>
@@ -126,15 +139,16 @@
 		<fail unless="var.signing"/>
 		<fail unless="var.output"/>
 		<mkdir dir="${DIST_DIR}"/>
-		<echo>Packager a ${var.type}${var.target}.</echo>
-		<echo>The signing is ${var.signing}.</echo>
-		<echo>The output file is ${var.output}.</echo>
-		<echo>The debug options are ${var.options}.</echo>
+		<echo>Packager a ${var.type}${var.target}</echo>
+		<echo>The signing is ${var.signing}</echo>
+		<echo>The output file is ${var.output}</echo>
+		<echo>The options are ${var.options}</echo>
+		<echo>${FLEX_HOME}/lib/adt.jar -package ${var.signing} ${var.options} -target ${var.type}${var.target} ${var.output} ${APP_XML} ${var.fileordir} ${ANE_DIR_ARGS}</echo>
 		<java jar="${FLEX_HOME}/lib/adt.jar" fork="true" failonerror="true">
 			<arg value="-package"/>
-			<arg line="-target ${var.type}${var.target}"/>
-			<arg line="${var.options}"/>
 			<arg line="${var.signing}"/>
+			<arg line="${var.options}"/>
+			<arg line="-target ${var.type}${var.target}"/>
 			<arg line="${var.output}"/>
 			<arg value="${APP_XML}"/>
 			<arg line="${var.fileordir}"/>
@@ -163,5 +177,15 @@
 			<param name="var.optimize" value="false"/>
 		</antcall>
 		<antcall target="startADL"/>
+	</target>
+
+	<!-- Build a release swf file, and package it to a air file -->
+	<target name="packair" depends="copyBinAssets">
+		<echo>packair ${APP_XML} ${BIN_DIR}</echo>
+		<antcall target="packswf">
+			<param name="var.debug" value="false"/>
+			<param name="var.optimize" value="true"/>
+		</antcall>
+		<antcall target="packager"/>
 	</target>
 </project>

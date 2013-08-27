@@ -6,7 +6,9 @@
 
 package type
 {
+import flash.filesystem.File;
 import gnu.as3.gettext.FxGettext;
+import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 
 /**
  * 保存State的名称
@@ -113,5 +115,10 @@ public class StateType
 	 * 将内容加入到spritesheet中的状态
 	 */	
 	public static const ADD_TO_SS:String = 'addToSS';
+	
+	/**
+	 * 在PicPanel界面将图片加入到Pic列表中的状态
+	 */
+	public static const ADD_TO_PIC_List:String = "addToPicList";
 }
 }

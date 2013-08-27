@@ -6,7 +6,7 @@ sed -i -e 's/\.po//g' po
 locales=`cat po`
 rm po
 
-out=../src/assets/locale
+out=../locale
 mkdir -p $out
 
 for locale in $locales; do

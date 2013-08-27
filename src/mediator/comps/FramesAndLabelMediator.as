@@ -1,12 +1,13 @@
 package mediator.comps
 {
+import events.SSEvent;
 import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.MouseEvent;
-import flash.filesystem.File;
 import flash.geom.Point;
 import flash.geom.Rectangle;
-
+import gnu.as3.gettext.FxGettext;
+import model.SpriteSheetModel;
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
 import mx.collections.IList;
@@ -15,38 +16,25 @@ import mx.collections.SortField;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.managers.PopUpManager;
-
-import events.SSEvent;
-
-import gnu.as3.gettext.FxGettext;
-
-import model.FileProcessor;
-import model.SpriteSheetModel;
-
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.assets.Assets;
 import org.zengrong.assets.AssetsEvent;
 import org.zengrong.assets.AssetsProgressVO;
 import org.zengrong.assets.AssetsType;
+import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 import org.zengrong.display.spritesheet.SpriteSheet;
-import org.zengrong.display.spritesheet.SpriteSheetMetadata;
-import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
-
+import type.StateType;
 import utils.Funs;
-
 import view.comps.FramesAndLabels;
 import view.comps.SSPreview;
-
+import vo.BrowseFileDoneVO;
 import vo.FrameVO;
 import vo.LabelListVO;
 import vo.LabelVO;
-import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 
 public class FramesAndLabelMediator extends Mediator
 {
 	[Inject] public var v:FramesAndLabels;
-	
-	[Inject] public var file:FileProcessor;
 	
 	[Inject] public var ssModel:SpriteSheetModel;
 	
@@ -58,7 +46,7 @@ public class FramesAndLabelMediator extends Mediator
 	/**
 	 * 加入帧的方式，true代表加入的是SpriteSheet，否则是普通图像
 	 */
-	private var _isAddSSFrame:Boolean;
+	private var _addSSFiles:BrowseFileDoneVO;
 	
 	/**
 	 * 使用_assets每载入一个文件，这个索引加一
@@ -89,7 +77,6 @@ public class FramesAndLabelMediator extends Mediator
 	override public function onRegister():void
 	{
 		eventMap.mapListener(v.delFrameBTN,  MouseEvent.CLICK,handler_delFrameBTNclick);
-		eventMap.mapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.mapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		
 		eventMap.mapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
@@ -110,6 +97,7 @@ public class FramesAndLabelMediator extends Mediator
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
 		addContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
 		addContextListener(SSEvent.OPTIMIZE_SHEET_DONE, handler_optimizeDone);
+		addContextListener(SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		init();
 	}
@@ -118,7 +106,6 @@ public class FramesAndLabelMediator extends Mediator
 	override public function onRemove():void
 	{
 		eventMap.unmapListener(v.delFrameBTN,  MouseEvent.CLICK,handler_delFrameBTNclick);
-		eventMap.unmapListener(v.addSSBTN, MouseEvent.CLICK, handler_selectFile);
 		eventMap.unmapListener(v.addPicBTN, MouseEvent.CLICK, handler_selectFile);
 		
 		eventMap.unmapListener(v.frameDG, FlexEvent.VALUE_COMMIT, handler_frameDGValueCommit);
@@ -139,6 +126,7 @@ public class FramesAndLabelMediator extends Mediator
 		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
 		removeContextListener(SSEvent.PREVIEW_CLICK, handler_previewClick);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET_DONE, handler_optimizeDone);
+		removeContextListener(SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		destroy();
 	}
@@ -231,7 +219,7 @@ public class FramesAndLabelMediator extends Mediator
 		if(__vo.whole && __vo.done)
 		{
 			trace('FrameAndLabels.handler_assetsProgress:',__vo.toString());
-			if(_isAddSSFrame)
+			if(_addSSFiles.fileType == AssetsType.SPRITE_SHEET)
 				addSSToSheet(__vo);
 			else
 				addPicToSheet(__vo);
@@ -619,32 +607,16 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function handler_selectFile($evt:Event):void
 	{
-		_isAddSSFrame = ($evt.currentTarget == v.addSSBTN);
-		file.addToSS(fun_addToSS);
+		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.ADD_TO_SS));
 	}
 	
-	/**
-	 * 选择加入的图像文件后，调用的方法
-	 */
-	private function fun_addToSS($filelist:Array):void
+	private function handler_browseFileDone($evt:SSEvent):void 
 	{
-		var __fileList:Array = $filelist;
-		var __file:File = null;
-		var __urls:Array = [];
-		var __urlobj:Object = null;
-		for(var i:int=0;i<__fileList.length;i++)
+		_addSSFiles = $evt.info as BrowseFileDoneVO;
+		if(_addSSFiles && _addSSFiles.openState == StateType.ADD_TO_SS)
 		{
-			__file = __fileList[i] as File;
-			__urlobj = {url:__file.url};
-			__urlobj.ftype = __file.extension;
-			if(_isAddSSFrame)
-			{
-				__urlobj.ftype = AssetsType.SPRITE_SHEET;
-				__urlobj.mtype = SpriteSheetMetadataType.XML;
-			}
-			__urls.push(__urlobj);
+			_assets.load(_addSSFiles.toAssetsList());
 		}
-		_assets.load(__urls);
 	}
 	
 	private function dispatchOptimize():void
@@ -687,10 +659,11 @@ public class FramesAndLabelMediator extends Mediator
 		//ani.destroy();
 	}
 	
+	//在大Sheet上点击的时候，寻找被点击到的frame
 	private function handler_previewClick($evt:SSEvent):void
 	{
 		if(playing) return;
-		v.findFrameByPoint($evt.info as Point);
+		v.findFrameByPoint($evt.info);
 	}
 	
 	private function handler_optimizeDone($evt:SSEvent):void
