@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
 		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:widget="view.widget.*"
 		  xmlns:comps="view.comps.*">
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5"  paddingTop="5"/>
@@ -18,7 +19,7 @@
 			<s:Label>
 				<s:text>{FxGettext.gettext("Sprite Sheet")}</s:text>
 			</s:Label>
-			<comps:ImageTypeSetting id="imageSetting" width="100%"/>
+			<widget:ImageTypeSetting id="imageSetting" width="100%"/>
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label>
 					<s:text>{FxGettext.gettext("Mask:")}</s:text>

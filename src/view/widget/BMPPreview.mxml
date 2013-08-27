@@ -3,9 +3,9 @@
 <!-- 创建者:zrong(zrongzrong@gmail.com) -->
 <!-- 创建时间：2011-8-5 -->
 <!-- 显示BitmapData格式的预览 -->
-<comps:Preview xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<widget:Preview xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark"
-				   xmlns:comps="view.comps.*" >
+				   xmlns:widget="view.widget.*" >
 	<fx:Declarations>
 		<s:BitmapImage id="viewer" clearOnLoad="true" scaleMode="letterbox" horizontalAlign="left" verticalAlign="top"
 					   ready="handler_loadComplete(event)"/>
@@ -103,4 +103,4 @@
 		}
 	]]>
 	</fx:Script>
-</comps:Preview>
+</widget:Preview>

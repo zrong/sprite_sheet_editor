@@ -6,26 +6,36 @@
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
-				   xmlns:comps="view.comps.*">
+				   xmlns:comps="view.comps.*"
+				   xmlns:widget="view.widget.*" >
 	<s:BorderContainer id="leftPanelBG" width="320" height="100%" borderColor="0x878787" backgroundAlpha="0" enabled="false">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" horizontalAlign="center">
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
-			<comps:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
+			<widget:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
 			<s:VGroup gap="0" width="100%">
-				<s:TabBar width="100%" dataProvider="{vs}"/>
-				<mx:ViewStack id="vs" creationPolicy="all" width="100%">
-					<comps:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969">
-						<comps:label>{FxGettext.gettext("Save a Sprite Sheet")}</comps:label>
-					</comps:SaveSheetSetting>
-					<comps:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969">
-						<comps:label>{FxGettext.gettext("Save a sequence")}</comps:label>
-					</comps:SaveSeqSetting>
+				<s:TabBar width="100%" dataProvider="{exportVS}"/>
+				<mx:ViewStack id="exportVS" creationPolicy="all" width="100%">
+					<widget:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969">
+						<widget:label>{FxGettext.gettext("Save a Sprite Sheet")}</widget:label>
+					</widget:SaveSheetSetting>
+					<widget:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969">
+						<widget:label>{FxGettext.gettext("Save a sequence")}</widget:label>
+					</widget:SaveSeqSetting>
 				</mx:ViewStack>
 			</s:VGroup>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
-	<comps:BMPPreview id="sheetPreview" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>
+	<s:VGroup width="100%" height="100%">
+		<s:TabBar width="100%" dataProvider="{previewVS}"/>
+		<mx:ViewStack id="previewVS" width="100%" height="100%" creationPolicy="all">
+			<s:NavigatorContent width="100%" height="100%">
+				<s:label>{FxGettext.gettext("Sheet preview")}</s:label>
+				<widget:BMPPreview id="sheetPreview" width="100%" height="100%"  borderColor="0x878787" backgroundAlpha="0"/>		
+			</s:NavigatorContent>
+			<comps:SSPreview id="aniPreview" width="100%" height="100%" />		
+		</mx:ViewStack>
+	</s:VGroup>
 	<fx:Script>
 	<![CDATA[
 		import gnu.as3.gettext.FxGettext;

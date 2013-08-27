@@ -6,7 +6,10 @@
 <!-- 管理帧和Label -->
 <s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark"
-		  currentState="{labelCB.selected?'frameAndLabel':'frame'}" xmlns:comps="view.comps.*" minHeight="420" >
+		  xmlns:comps="view.comps.*" 
+		  xmlns:widget="view.widget.*" 
+		  currentState="{labelCB.selected?'frameAndLabel':'frame'}" 
+		  minHeight="420" >
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
@@ -21,10 +24,6 @@
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
-	<!-- 预览窗口相关的界面 -->
-	<s:Button id="openPreviewBTN" height="40" enabled="{frameDG.selectedItem}">
-		<s:label>{FxGettext.gettext("Open preview windows")}</s:label>
-	</s:Button>
 	<s:HGroup width="100%">
 		<s:VGroup id="frameOrLabelGRP" width="100%">
 			<s:RadioButton id="useFrameRB" width="100%"
@@ -80,7 +79,7 @@
 			<s:toolTip>{FxGettext.gettext("Move the frame's position, the frmae Numbers will change after moving.")}</s:toolTip>
 		</s:Button>
 	</s:HGroup>
-	<comps:FrameDataGrid id="frameDG"  minHeight="200" selectionMode="multipleRows" />
+	<widget:FrameDataGrid id="frameDG"  minHeight="200" selectionMode="multipleRows" />
 	
 	<!-- 下面是Label相关的界面 -->
 	<s:HGroup width="100%" verticalAlign="middle">
@@ -130,10 +129,10 @@
 		</s:Button>
 		
 	</s:HGroup>
-	<comps:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
+	<widget:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
 	
 	<!-- 用于改变高度的按钮 -->
-	<comps:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
+	<widget:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
 		import flash.geom.Point;

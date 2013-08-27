@@ -89,7 +89,6 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.mapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
 		eventMap.mapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
 		
-		eventMap.mapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
 		eventMap.mapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		eventMap.mapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameOrLabelChange);
 		
@@ -118,7 +117,6 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.unmapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
 		eventMap.unmapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
 		
-		eventMap.unmapListener(v.openPreviewBTN, MouseEvent.CLICK, handler_openPreview);
 		eventMap.unmapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		eventMap.unmapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameOrLabelChange);
 		
@@ -199,7 +197,6 @@ public class FramesAndLabelMediator extends Mediator
 		selectFrameChange();
 		v.destroy();
 		play(false);
-		destroySSPreview();
 		v.removeEventListener(Event.ENTER_FRAME, handler_enterFrame);
 	}
 	
@@ -254,7 +251,6 @@ public class FramesAndLabelMediator extends Mediator
 		}
 		return __vo;
 	}
-	
 	
 	public function selectFrameChange():void
 	{
@@ -707,35 +703,6 @@ public class FramesAndLabelMediator extends Mediator
 	{
 		ssModel.displayFrame = v.frameOrLabelRBG.selectedValue;
 		previewSSChange();
-	}
-	
-	private var _ssPreview:SSPreview;
-	
-	private function handler_openPreview($evt:MouseEvent):void
-	{
-		if(_ssPreview) 
-		{
-			PopUpManager.addPopUp(_ssPreview, v.root);
-			PopUpManager.centerPopUp(_ssPreview);
-		}
-		else
-		{
-			_ssPreview = PopUpManager.createPopUp(v.root, SSPreview, false) as SSPreview;
-			PopUpManager.centerPopUp(_ssPreview);
-			_ssPreview.addEventListener(CloseEvent.CLOSE, destroySSPreview);
-		}
-		v.openPreviewBTN.enabled = false;
-		if(!mediatorMap.hasMediatorForView(_ssPreview)) mediatorMap.createMediator(_ssPreview);
-	}
-	
-	private function destroySSPreview($evt:CloseEvent=null):void
-	{
-		if(_ssPreview)
-		{
-			PopUpManager.removePopUp(_ssPreview);
-			mediatorMap.removeMediatorByView(_ssPreview);
-			v.openPreviewBTN.enabled = true;
-		}
 	}
 }
 }

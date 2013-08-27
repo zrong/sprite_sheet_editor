@@ -8,7 +8,8 @@
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  horizontalAlign="center"
-		  xmlns:comps="view.comps.*">
+		  xmlns:comps="view.comps.*"
+		  xmlns:widget="view.widget.*">
 	<s:BorderContainer width="320" height="100%"  borderColor="0x878787" backgroundAlpha="0">
 		<s:layout>
 			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
@@ -20,24 +21,24 @@
 			<s:Label fontWeight="bold">
 				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
 			</s:Label>
-			<comps:TransformToolControlBar id="transControlBar">
-				<comps:label>{FxGettext.gettext("Custom size of the frame")}</comps:label>
-				<comps:useCustom>false</comps:useCustom>
-				<comps:layout>
+			<widget:TransformToolControlBar id="transControlBar">
+				<widget:label>{FxGettext.gettext("Custom size of the frame")}</widget:label>
+				<widget:useCustom>false</widget:useCustom>
+				<widget:layout>
 					<s:VerticalLayout horizontalAlign="center" />
-				</comps:layout>
-			</comps:TransformToolControlBar>
+				</widget:layout>
+			</widget:TransformToolControlBar>
 		</s:BorderContainer>
-		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
+		<widget:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
 							enabled="{fileM.fileList.length&gt;0}"/>
-		<comps:FileManager id="fileM" width="100%" height="100%" 
+		<widget:FileManager id="fileM" width="100%" height="100%" 
 							selectionChange="handler_selectionChange(event)" 
 							selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
-	<comps:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0">
-		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
-		<comps:maxSizeLimit>viewer</comps:maxSizeLimit>
-	</comps:ImagePreview>
+	<widget:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0">
+		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
+		<widget:maxSizeLimit>viewer</widget:maxSizeLimit>
+	</widget:ImagePreview>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;

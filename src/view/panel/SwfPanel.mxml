@@ -2,6 +2,7 @@
 <s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:comps="view.comps.*"
+		  xmlns:widget="view.widget.*"
 		  xmlns:mx="library://ns.adobe.com/flex/mx">
 	<s:BorderContainer width="320" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<s:layout>
@@ -14,13 +15,13 @@
 			<s:Label>
 				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
 			</s:Label>
-			<comps:TransformToolControlBar id="transControlBar">
-				<comps:label>{FxGettext.gettext("Custom size of the frame")}</comps:label>
-				<comps:useCustom>false</comps:useCustom>
-				<comps:layout>
+			<widget:TransformToolControlBar id="transControlBar">
+				<widget:label>{FxGettext.gettext("Custom size of the frame")}</widget:label>
+				<widget:useCustom>false</widget:useCustom>
+				<widget:layout>
 					<s:VerticalLayout horizontalAlign="center" />
-				</comps:layout>
-			</comps:TransformToolControlBar>
+				</widget:layout>
+			</widget:TransformToolControlBar>
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label>
 					<s:text>{FxGettext.gettext("1st frame(zero-based):")}</s:text>
@@ -36,14 +37,14 @@
 				<s:NumericStepper id="totalFrameNS" maximum="10000" minimum="1" value="10" stepSize="1" width="100"/>
 			</s:HGroup>
 		</s:BorderContainer>
-		<comps:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
+		<widget:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
 						  enabled="{state&amp;&amp;state==StateType.LOAD_DONE}" />
 	</s:BorderContainer>
-	<comps:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" >
-		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
-		<comps:maxSizeLimit>source</comps:maxSizeLimit>
-		<comps:enableDragContent>true</comps:enableDragContent>
-	</comps:ImagePreview>
+	<widget:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" >
+		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
+		<widget:maxSizeLimit>source</widget:maxSizeLimit>
+		<widget:enableDragContent>true</widget:enableDragContent>
+	</widget:ImagePreview>
 	<fx:Metadata>
 		[Event(name="complete", type="flash.events.Event")]
 	</fx:Metadata>

@@ -17,7 +17,7 @@ import org.zengrong.air.utils.getDesc;
 import org.zengrong.utils.MathUtil;
 import org.zengrong.utils.SOUtil;
 
-import view.comps.Alert;
+import view.widget.Alert;
 
 public class Funs
 {

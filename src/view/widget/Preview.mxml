@@ -4,13 +4,14 @@
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   implements="interf.IPreview"
 				   xmlns:comps="view.comps.*"
+				   xmlns:widget="view.widget.*"
 				   creationComplete="handler_creationComplete(event)">
 	<fx:Metadata>
 		[Event(name="previewLoadComplete", type="events.SSEvent")]
 		[Event(name="transformChange", type="events.SSEvent")]
 	</fx:Metadata>
 	<fx:Declarations>
-		<comps:TransformTool id="transf" width="100" height="100" maxDragW="{sourceWidth}" maxDragH="{sourceHeight}" visible="false" transformChange="handler_transformChange(event)" />
+		<widget:TransformTool id="transf" width="100" height="100" maxDragW="{sourceWidth}" maxDragH="{sourceHeight}" visible="false" transformChange="handler_transformChange(event)" />
 	</fx:Declarations>
 	<s:Scroller id="viewScroller" top="0" bottom="20" width="100%">
 		<s:Group id="scrollerView" width="100%" height="100%">

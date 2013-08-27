@@ -65,7 +65,7 @@ public class SSPanelMediator extends Mediator
 	
 	override public function onRemove():void
 	{
-		trace('remove');
+		trace('SSPanel remove');
 		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
@@ -152,6 +152,7 @@ public class SSPanelMediator extends Mediator
 		v.init(ssModel.adjustedSheet.bitmapData, ssModel.originalSheet.metadata.hasName);
 		
 		mediatorMap.createMediator(v.framesAndLabels);
+		mediatorMap.createMediator(v.aniPreview);
 	}
 	
 	private function exitState():void
@@ -160,6 +161,7 @@ public class SSPanelMediator extends Mediator
 		v.destroy();
 		
 		mediatorMap.removeMediatorByView(v.framesAndLabels);
+		mediatorMap.removeMediatorByView(v.aniPreview);
 	}
 	
 	protected function handler_build($evt:SSEvent):void

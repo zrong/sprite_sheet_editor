@@ -3,9 +3,9 @@
 <!-- 创建者:zrong(zrongzrong@gmail.com) -->
 <!-- 创建时间：2011-09-15 -->
 <!-- 显示载入的SWF动画或者图像 -->
-<comps:Preview xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<widget:Preview xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:comps="view.comps.*">
+				   xmlns:widget="view.widget.*">
 	<fx:Declarations>
 		<s:SWFLoader id="viewer" mouseChildren="false" mouseEnabled="false" scaleContent="{scaleContent}" complete="handler_loadComplete(event)" />
 	</fx:Declarations>
@@ -188,4 +188,4 @@
 		
 	]]>
 	</fx:Script>
-</comps:Preview>
+</widget:Preview>

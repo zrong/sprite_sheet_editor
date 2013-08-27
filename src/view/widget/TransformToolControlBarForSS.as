@@ -1,4 +1,4 @@
-package view.comps 
+package view.widget 
 {
 	import gnu.as3.gettext.FxGettext;
 	import mx.controls.Spacer;
@@ -16,7 +16,7 @@ public class TransformToolControlBarForSS extends TransformToolControlBar
 	{
 		super();
 		var __layout:VerticalLayout = new VerticalLayout();
-		__layout.horizontalAlign = "center";
+		__layout.horizontalAlign = "right";
 		this.layout = __layout;
 	}
 	

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009"
-		  xmlns:s="library://ns.adobe.com/flex/spark" xmlns:comps="view.comps.*">
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:widget="view.widget.*"
+		  xmlns:comps="view.comps.*">
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
@@ -10,7 +12,7 @@
 	<s:Label id="titleLabel" fontWeight="bold">
 	</s:Label>
 	<s:HGroup width="100%">
-		<comps:ImageTypeSetting id="imageSetting" change="preview()"/>
+		<widget:ImageTypeSetting id="imageSetting" change="preview()"/>
 		<s:VGroup width="100%">
 			<s:HGroup width="100%" verticalAlign="middle">
 				<s:Label>

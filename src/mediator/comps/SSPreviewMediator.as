@@ -80,7 +80,7 @@ public class SSPreviewMediator extends Mediator
 	private function handler_previewSSChange($evt:SSEvent):void
 	{
 		updateFrame();
-		v.title = ssModel.displayFrame ? FxGettext.gettext("Frame animation preview") : ("Label("+ssModel.displayLabel+")" + FxGettext.gettext("animation preview"));
+		v.label = ssModel.displayFrame ? FxGettext.gettext("Frame animation preview") : ("Label("+ssModel.displayLabel+")" + FxGettext.gettext("animation preview"));
 	}
 	
 	private function handler_resizeOriginCBChange($evt:FlexEvent):void

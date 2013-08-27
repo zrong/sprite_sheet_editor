@@ -1,4 +1,4 @@
-package view.comps
+package view.widget
 {
 import events.SSEvent;
 import flash.events.Event;

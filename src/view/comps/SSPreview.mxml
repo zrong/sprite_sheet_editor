@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
-				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:comps="view.comps.*"
-				   backgroundColor="0x696969"
-				   borderColor="0x696969"
-				   minWidth="320">
-	<s:title>{FxGettext.gettext("Bitmap animation preview")}</s:title>
+				   xmlns:widget="view.widget.*">
+	<s:label>{FxGettext.gettext("Bitmap animation preview")}</s:label>
 	<s:layout>
-		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+		<s:VerticalLayout horizontalAlign="center" />
 	</s:layout>
-	<comps:BMPPreview id="ani" backgroundColor="0x696969" width="100%" height="220">
-		<comps:transformControlBar>{transControlBar}</comps:transformControlBar>
-		<comps:maxSizeLimit>source</comps:maxSizeLimit>
-	</comps:BMPPreview>
-	<s:HGroup width="100%" verticalAlign="middle">
-		<s:Label id="frameLabel" width="50" />
+	<widget:BMPPreview id="ani" borderColor="0x878787" backgroundAlpha="0" width="100%" height="100%">
+		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
+		<widget:maxSizeLimit>source</widget:maxSizeLimit>
+	</widget:BMPPreview>
+	<s:BorderContainer borderColor="0x878787" backgroundAlpha="0"  width="100%" >
+		<s:layout>
+			<s:HorizontalLayout  verticalAlign="middle" paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" />
+		</s:layout>
+		<s:VGroup horizontalAlign="center">
+			<s:Label id="frameLabel" width="50" />
+			<s:ToggleButton id="playBTN">
+				<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
+			</s:ToggleButton>
+		</s:VGroup>
 		<s:Spacer width="100%"/>
-		<s:ToggleButton id="playBTN">
-			<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
-		</s:ToggleButton>
-	</s:HGroup>
-	<comps:TransformToolControlBarForSS id="transControlBar"/>
+		<widget:TransformToolControlBarForSS id="transControlBar"/>
+	</s:BorderContainer>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -53,4 +55,4 @@
 		}
 	]]>
 	</fx:Script>
-</s:TitleWindow>
+</s:NavigatorContent>
