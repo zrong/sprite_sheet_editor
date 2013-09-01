@@ -11,11 +11,8 @@
 	<s:Label id="stateNameLabel" horizontalCenter="0" verticalCenter="0">
 		<s:text>{FxGettext.gettext("Start")}</s:text>
 	</s:Label>
-	<s:HGroup id="toolGRP" right="5" verticalAlign="middle"
-			  verticalCenter="0">
-		<s:Button id="exportBTN" visible="false">
-			<s:label>{FxGettext.gettext("Export")}</s:label>
-		</s:Button>
+	<s:HGroup id="toolGRP" right="5" verticalAlign="middle" verticalCenter="0">
+		<s:Button id="exportBTN" visible="false"/>
 		<s:Label id="fpsLabel" text="FPS:"/>
 		<s:NumericStepper id="fpsNS" maximum="60" minimum="1" value="30"/>
 	</s:HGroup>
@@ -29,6 +26,7 @@
 			{
 				prevBTN.label = FxGettext.gettext("Back to previous");
 				stateNameLabel.text = FxGettext.gettext("Start");
+				exportBTN.label = FxGettext.gettext("Export");
 			}
 			
 		]]>

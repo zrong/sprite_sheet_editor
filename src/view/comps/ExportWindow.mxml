@@ -1,15 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:s="library://ns.adobe.com/flex/spark"
-	xmlns:comps="view.comps.*"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:widget="view.widget.*"
 	backgroundColor="0x696969"
 	borderColor="0x696969"
-	minWidth="320">
+	minWidth="320" minHeight="300">
 	<s:title>{FxGettext.gettext("Export")}</s:title>
+	<s:layout>
+		<s:VerticalLayout paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5" />
+	</s:layout>
+	<s:TabBar width="100%" dataProvider="{exportVS}"/>
+	<mx:ViewStack id="exportVS" creationPolicy="all" width="100%">
+		<widget:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969">
+			<widget:label>{FxGettext.gettext("Save a Sprite Sheet")}</widget:label>
+		</widget:SaveSheetSetting>
+		<widget:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969">
+			<widget:label>{FxGettext.gettext("Save a sequence")}</widget:label>
+		</widget:SaveSeqSetting>
+	</mx:ViewStack>
 	<fx:Script>
 		<![CDATA[
 		import events.SSEvent;
+		
 		import gnu.as3.gettext.FxGettext;
+		
+		import vo.SaveVO;
+			
+		public function init($hasName:Boolean):void
+		{
+			//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
+			//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
+			saveSheet.nameCB.visible = $hasName;
+			saveSheet.nameCB.selected = $hasName;
+		}
+			
+		public function get isSimple():Boolean
+		{
+			return saveSheet.simpleCB.selected;
+		}
+		
+		public function get includeName():Boolean
+		{
+			return saveSheet.nameCB.selected;
+		}
+		
+		public function getExportPrefenence():SaveVO
+		{
+			return null;
+		}
+			
+		/**
+		 * 蒙版的类型值
+		 */
+		public function get maskTypeValue():int
+		{
+			return saveSheet.maskDDL.selectedIndex;
+		}
+		
+		public function get imageType():String
+		{
+			return saveSheet.imageSetting.imageType;
+		}
+		
+		public function get sheetType():String
+		{
+			return saveSheet.imageSetting.spriteSheetType;
+		}
+			
+		public function getSeqFileNames($num:int):Vector.<String>
+		{
+			return saveSeq.getFileNames($num);
+		}
+			
+		public function get seqQualityValue():int
+		{
+			return saveSeq.imageSetting.qualityValue;
+		}
+		
+		public function get sheetQualityValue():int
+		{
+			return saveSheet.imageSetting.qualityValue;
+		}
+		
+		private function getSaveVO():SaveVO
+		{
+			var __vo:SaveVO = new SaveVO();
+			__vo.picType = imageType;
+			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
+			__vo.isSimple = isSimple;
+			__vo.includeName = includeName;
+			return __vo;
+		}
+		
+		public function getSeqSaveVO():SaveVO
+		{
+			var __vo:SaveVO = getSaveVO();
+			__vo.quality = seqQualityValue;
+			return __vo;
+		}
+		
+		public function getSheetSaveVO():SaveVO
+		{
+			var __vo:SaveVO = getSaveVO();
+			__vo.quality = sheetQualityValue;
+			return __vo;
+		}
 		]]>
 	</fx:Script>
 </s:TitleWindow>

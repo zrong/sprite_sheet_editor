@@ -50,7 +50,7 @@ public class TopPanelMediator extends Mediator
 		}
 		else
 		{
-			_exportWindow = PopUpManager.createPopUp(v.root, ExportWindow, false) as ExportWindow;
+			_exportWindow = PopUpManager.createPopUp(v.root, ExportWindow, true) as ExportWindow;
 			PopUpManager.centerPopUp(_exportWindow);
 			_exportWindow.addEventListener(CloseEvent.CLOSE, destroyExportWindow);
 		}

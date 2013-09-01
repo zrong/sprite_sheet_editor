@@ -37,17 +37,17 @@ public class SaveVO
 	/**
 	 * 图像文件类型
 	 */
-	public var picType:String;
+	public var picType:String = "png";
 	
 	/**
 	 * 元数据类型
 	 */
-	public var metaType:String;
+	public var metaType:String = "xml";
 	
 	/**
 	 * JPEG压缩质量
 	 */
-	public var quality:int;
+	public var quality:int = 80;
 	
 	/**
 	 * 见StateType
@@ -58,11 +58,11 @@ public class SaveVO
 	/**
 	 * 仅包含简单信息
 	 */
-	public var isSimple:Boolean;
+	public var isSimple:Boolean = false;
 	
 	/**
 	 * 包含文件名
 	 */
-	public var includeName:Boolean;
+	public var includeName:Boolean = true;
 }
 }

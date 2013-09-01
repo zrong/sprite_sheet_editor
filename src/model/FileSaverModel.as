@@ -25,6 +25,19 @@ public class FileSaverModel extends FileProcessor
 		super();
 	}
 	
+	private var _exportPreference:SaveVO;
+	
+	public function get exportPreference():SaveVO 
+	{
+		if (_exportPreference) _exportPreference = new SaveVO();
+		return _exportPreference;
+	}
+	
+	public function set exportPreference(value:SaveVO):void 
+	{
+		_exportPreference = value;
+	}
+	
 	private var _saveData:SaveVO;
 	
 	//----------------------------------------

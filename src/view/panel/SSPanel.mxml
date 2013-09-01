@@ -12,17 +12,6 @@
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" horizontalAlign="center">
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
 			<widget:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
-			<s:VGroup gap="0" width="100%">
-				<s:TabBar width="100%" dataProvider="{exportVS}"/>
-				<mx:ViewStack id="exportVS" creationPolicy="all" width="100%">
-					<widget:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969">
-						<widget:label>{FxGettext.gettext("Save a Sprite Sheet")}</widget:label>
-					</widget:SaveSheetSetting>
-					<widget:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969">
-						<widget:label>{FxGettext.gettext("Save a sequence")}</widget:label>
-					</widget:SaveSeqSetting>
-				</mx:ViewStack>
-			</s:VGroup>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
@@ -42,14 +31,10 @@
 		import interf.IPreview;
 		import vo.SaveVO;
 		
-		public function init($bmd:BitmapData, $hasName:Boolean):void
+		public function init($bmd:BitmapData):void
 		{
 			//从SpriteSheet中初始化Label和Frame
 			sheetPreview.source = $bmd;
-			//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
-			//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
-			saveSheet.nameCB.visible = $hasName;
-			saveSheet.nameCB.selected = $hasName;
 			leftPanelBG.enabled = true;
 			//使用当前Sheet的宽高重置WH的相关值
 			optPanel.whDDL.selectedIndex = 0;
@@ -76,45 +61,7 @@
 		{
 			return optPanel.transparentCB.selected;
 		}
-		
-		/**
-		 * 蒙版的类型值
-		 */
-		public function get maskTypeValue():int
-		{
-			return saveSheet.maskDDL.selectedIndex;
-		}
-		
-		public function get imageType():String
-		{
-			return saveSheet.imageSetting.imageType;
-		}
-		
-		public function get sheetType():String
-		{
-			return saveSheet.imageSetting.spriteSheetType;
-		}
-		
-		public function get  seqQualityValue():int
-		{
-			return saveSeq.imageSetting.qualityValue;
-		}
-		
-		public function get sheetQualityValue():int
-		{
-			return saveSheet.imageSetting.qualityValue;
-		}
-		
-		public function get isSimple():Boolean
-		{
-			return saveSheet.simpleCB.selected;
-		}
-		
-		public function get includeName():Boolean
-		{
-			return saveSheet.nameCB.selected;
-		}
-		
+
 		/**
 		 * 限制宽度（true）还是限制高度（false）
 		 */
@@ -156,35 +103,7 @@
 		{
 			return optPanel.resetRectCB.selected;
 		}
-		
-		public function getSeqFileNames($num:int):Vector.<String>
-		{
-			return saveSeq.getFileNames($num);
-		}
-		
-		private function getSaveVO():SaveVO
-		{
-			var __vo:SaveVO = new SaveVO();
-			__vo.picType = imageType;
-			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
-			__vo.isSimple = isSimple;
-			__vo.includeName = includeName;
-			return __vo;
-		}
-		
-		public function getSeqSaveVO():SaveVO
-		{
-			var __vo:SaveVO = getSaveVO();
-			__vo.quality = seqQualityValue;
-			return __vo;
-		}
-		
-		public function getSheetSaveVO():SaveVO
-		{
-			var __vo:SaveVO = getSaveVO();
-			__vo.quality = sheetQualityValue;
-			return __vo;
-		}
+
 	]]>
 	</fx:Script>
 </s:HGroup>
