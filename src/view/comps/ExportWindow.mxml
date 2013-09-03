@@ -4,68 +4,110 @@
 	xmlns:mx="library://ns.adobe.com/flex/mx"
 	xmlns:widget="view.widget.*"
 	backgroundColor="0x696969"
-	borderColor="0x696969"
-	minWidth="320" minHeight="300">
+	borderColor="0x333333"
+	minWidth="320">
+	<s:states>
+		<!-- 保存标准SSE格式 -->
+		<s:State id="sseState" name="savesse"/>
+		<!-- 保存序列图格式 -->
+		<s:State id="seqState" name="saveseq"/>
+		<!-- 保存其他格式，例如Starling，cocos2d -->
+		<s:State id="othState" name="saveoth"/>
+	</s:states>
 	<s:title>{FxGettext.gettext("Export")}</s:title>
+	
 	<s:layout>
-		<s:VerticalLayout paddingTop="5" paddingBottom="5" paddingLeft="5" paddingRight="5" />
+		<s:VerticalLayout paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10" horizontalAlign="center"/>
 	</s:layout>
-	<s:TabBar width="100%" dataProvider="{exportVS}"/>
-	<mx:ViewStack id="exportVS" creationPolicy="all" width="100%">
-		<widget:SaveSheetSetting id="saveSheet" width="100%" backgroundColor="0x696969">
-			<widget:label>{FxGettext.gettext("Save a Sprite Sheet")}</widget:label>
-		</widget:SaveSheetSetting>
-		<widget:SaveSeqSetting id="saveSeq" width="100%" backgroundColor="0x696969">
-			<widget:label>{FxGettext.gettext("Save a sequence")}</widget:label>
-		</widget:SaveSeqSetting>
-	</mx:ViewStack>
+	<s:DropDownList id="exportDDL" change="handler_exportDDLChange(event)" requireSelection="true" width="100%"/>
+	<s:HGroup width="100%" includeIn="savesse">
+		<s:CheckBox id="simpleCB" >
+			<s:label>{FxGettext.gettext("Use simple metadata")}</s:label>
+			<s:toolTip>{FxGettext.gettext("If selected, coordinate and WH are saved only.")}</s:toolTip>
+		</s:CheckBox>
+		<s:CheckBox id="nameCB">
+			<s:label>{FxGettext.gettext("Include file name")}</s:label>
+			<s:toolTip>{FxGettext.gettext("If selected, the relationship between the image file name and the frame index are saved in metadata. Then, you can get the corresponding frame through the file name.")}</s:toolTip>
+		</s:CheckBox>
+	</s:HGroup>
+	<s:HGroup width="100%" verticalAlign="middle" includeIn="savesse">
+		<s:Label>
+			<s:text>{FxGettext.gettext("Mask:")}</s:text>
+		</s:Label>
+		<s:DropDownList id="maskDDL" width="100%" requireSelection="true">
+			<s:ArrayList>
+				<fx:String>{FxGettext.gettext("No mask")}</fx:String>
+				<fx:String>{FxGettext.gettext("Horzontial mask")}</fx:String>
+				<fx:String>{FxGettext.gettext("Vertical mask")}</fx:String>
+			</s:ArrayList>
+		</s:DropDownList>	
+	</s:HGroup>
+	<widget:ImageTypeSetting id="imageSetting" width="100%" includeIn="savesse,saveseq" 
+							 change="handler_imgSettingChange(event)"/>
+	<s:HGroup includeIn="savesse,saveoth">
+		<s:CheckBox id="includeImageCb" selected="true">
+			<s:label>{FxGettext.gettext("Include image")}</s:label>
+		</s:CheckBox>
+		<s:CheckBox id="includeMetadataCb" selected="true">
+			<s:label>{FxGettext.gettext("Include metadata")}</s:label>
+		</s:CheckBox>
+	</s:HGroup>
+	<widget:SaveSeqSetting id="saveSeq" includeIn="saveseq" width="100%"/>
+	<s:Button id="saveBTN" height="30" width="100">
+		<s:label>{FxGettext.gettext("Save")}</s:label>
+	</s:Button>
 	<fx:Script>
 		<![CDATA[
 		import events.SSEvent;
 		
 		import gnu.as3.gettext.FxGettext;
 		
-		import vo.SaveVO;
+		import mx.collections.ArrayList;
+		
+		import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
+		
+		import spark.events.IndexChangeEvent;
+		
+		import vo.MetadataPreferenceVO;
+			
+		/**
+		 * 专门针对序列保存 
+		 */
+		public static const SEQUENCE:String = "sequence";
 			
 		public function init($hasName:Boolean):void
 		{
 			//sheet的name是在编辑器的图像文件处理状态中被加入的，如果没有经历过图像文件处理状态，则hasName为false
 			//这里根据是否拥有name，来显示(选择)或者隐藏(不选择)nameCB，从而影响最终生成的Metadata中的name的值
-			saveSheet.nameCB.visible = $hasName;
-			saveSheet.nameCB.selected = $hasName;
-		}
+			nameCB.visible = $hasName;
+			nameCB.selected = $hasName;
 			
-		public function get isSimple():Boolean
-		{
-			return saveSheet.simpleCB.selected;
-		}
-		
-		public function get includeName():Boolean
-		{
-			return saveSheet.nameCB.selected;
-		}
-		
-		public function getExportPrefenence():SaveVO
-		{
-			return null;
-		}
+			var __export:Array = 
+				[
+					{label:FxGettext.gettext("SpriteSheetEditor XML format"), data:SpriteSheetMetadataType.SSE_XML},
+					{label:FxGettext.gettext("SpriteSheetEditor JSON format"), data:SpriteSheetMetadataType.SSE_JSON},
+					{label:FxGettext.gettext("SpriteSheetEditor TXT format"), data:SpriteSheetMetadataType.SSE_TXT},
+					{label:FxGettext.gettext("Starling format"), data:SpriteSheetMetadataType.STARLING},
+					{label:FxGettext.gettext("Cocos2D format"), data:SpriteSheetMetadataType.COCOS2D},
+					{label:FxGettext.gettext("Save a sequence"), data:SEQUENCE}
+				];
+			exportDDL.dataProvider = new ArrayList(__export);
 			
-		/**
-		 * 蒙版的类型值
-		 */
-		public function get maskTypeValue():int
-		{
-			return saveSheet.maskDDL.selectedIndex;
+			
 		}
 		
-		public function get imageType():String
+		private var _preference:MetadataPreferenceVO;
+		public function get exportPrefenence():MetadataPreferenceVO
 		{
-			return saveSheet.imageSetting.imageType;
-		}
-		
-		public function get sheetType():String
-		{
-			return saveSheet.imageSetting.spriteSheetType;
+			if(!_preference) _preference = new MetadataPreferenceVO();
+			_preference.picType = imageSetting.imageType;
+			_preference.metaType = exportDDL.selectedItem.data as String;
+			_preference.isSimple = simpleCB.selected;
+			_preference.maskType = maskDDL.selectedIndex;
+			_preference.includeName =  nameCB.selected;
+			_preference.spriteSheetType = imageSetting.spriteSheetType;
+			_preference.quality = imageSetting.qualityValue;
+			return _preference;
 		}
 			
 		public function getSeqFileNames($num:int):Vector.<String>
@@ -73,38 +115,29 @@
 			return saveSeq.getFileNames($num);
 		}
 			
-		public function get seqQualityValue():int
+		protected function handler_exportDDLChange($evt:IndexChangeEvent):void
 		{
-			return saveSeq.imageSetting.qualityValue;
+			var __type:String = exportDDL.selectedItem.data as String;
+			trace($evt.newIndex, __type);
+			if(__type == SEQUENCE)
+			{
+				this.currentState = seqState.name;
+			}
+			else if(__type == SpriteSheetMetadataType.SSE_XML||
+					__type == SpriteSheetMetadataType.SSE_JSON ||
+					__type == SpriteSheetMetadataType.SSE_TXT)
+			{
+				this.currentState = sseState.name;
+			}
+			else
+			{
+				this.currentState = othState.name;
+			}
 		}
-		
-		public function get sheetQualityValue():int
+			
+		protected function handler_imgSettingChange($evt:Event):void
 		{
-			return saveSheet.imageSetting.qualityValue;
-		}
-		
-		private function getSaveVO():SaveVO
-		{
-			var __vo:SaveVO = new SaveVO();
-			__vo.picType = imageType;
-			__vo.metaType = saveSheet.metaRBG.selectedValue.toString();
-			__vo.isSimple = isSimple;
-			__vo.includeName = includeName;
-			return __vo;
-		}
-		
-		public function getSeqSaveVO():SaveVO
-		{
-			var __vo:SaveVO = getSaveVO();
-			__vo.quality = seqQualityValue;
-			return __vo;
-		}
-		
-		public function getSheetSaveVO():SaveVO
-		{
-			var __vo:SaveVO = getSaveVO();
-			__vo.quality = sheetQualityValue;
-			return __vo;
+			if(this.currentState == seqState.name) saveSeq.preview(imageSetting.imageType);
 		}
 		]]>
 	</fx:Script>

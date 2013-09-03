@@ -2,13 +2,15 @@ package model
 {
 import flash.display.BitmapData;
 import flash.geom.Rectangle;
-import org.zengrong.display.spritesheet.MaskType;
-import org.zengrong.utils.BitmapUtil;
-import vo.RectsAndBmdsVO;
 
 import org.robotlegs.mvcs.Actor;
+import org.zengrong.display.spritesheet.MaskType;
 import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+import org.zengrong.utils.BitmapUtil;
+
+import vo.PicPreferenceVO;
+import vo.RectsAndBmdsVO;
 
 /**
  * 暂存编辑过程中的位图资源
@@ -21,18 +23,26 @@ public class SpriteSheetModel extends Actor
 	{
 	}
 	
+	public var resizeRect:Rectangle;
+	
+	/**
+	 * 保存当前选择的帧的编号
+	 */
+	public var selectedFrameIndex:int=-1;
+	
+	public var selectedFrmaeNum:int = -1;
+	
+	public var selectedFrameIndices:Vector.<int>;
+	
+	public var playing:Boolean;
+	
+	public var picReference:PicPreferenceVO;
 	
 	public function resetSheet($bmd:BitmapData=null, $meta:SpriteSheetMetadata=null):void
 	{
 		if(_originalSheet) _originalSheet.destroy();
 		_originalSheet = new SpriteSheet($bmd, $meta);
 	}	
-	
-	public function getBMDList():Vector.<BitmapData>
-	{
-		if(displayCrop) return adjustedSheet.getAll();
-		return originalSheet.getAll();
-	}
 	
 	public function destroySheet():void
 	{
@@ -69,6 +79,13 @@ public class SpriteSheetModel extends Actor
 	public function get adjustedSheet():SpriteSheet
 	{
 		return _adjustedSheet;
+	}
+	
+	public function getBMDList($crop:Boolean):Vector.<BitmapData>
+	{
+		if($crop)
+			return adjustedSheet.getAll();
+		return originalSheet.getAll();
 	}
 	
 	/**
@@ -118,7 +135,7 @@ public class SpriteSheetModel extends Actor
 		_adjustedSheet.addFrameAt($index, $bmd, $sizeRect, $originalRect, $name);
 	}
 	
-		/**
+	/**
 	 * 绘制Mask，返回带有Mask的位图（如果有mask的话）
 	 */
 	public function getBitmapDataForSave($maskType:int, $transparent:Boolean, $bgcolor:uint):BitmapData
@@ -193,33 +210,6 @@ public class SpriteSheetModel extends Actor
 		}
 		return  new RectsAndBmdsVO(__bmd, __origin, __frame);
 	}
-	
-	/**
-	 * 是否显示修剪空白后的帧的效果
-	 */
-	public var displayCrop:Boolean;
-	
-	/**
-	 * 为true代表显示选择的Frame，false代表显示Label
-	 */
-	public var displayFrame:Boolean;
-	
-	/**
-	 * 当前选择的Label名称
-	 */
-	public var displayLabel:String;
-	
-	public var resizeRect:Rectangle;
-	
-	/**
-	 * 保存当前选择的帧的编号
-	 */
-	public var selectedFrameIndex:int=-1;
-	
-	public var selectedFrmaeNum:int = -1;
-	
-	public var selectedFrameIndices:Vector.<int>;
-	
-	public var playing:Boolean;
+
 }
 }

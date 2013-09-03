@@ -20,6 +20,7 @@ import view.panel.SSPanel;
 
 import vo.FrameVO;
 import vo.RectsAndBmdsVO;
+import vo.PicPreferenceVO;
 
 public class SSPanelMediator extends Mediator
 {
@@ -31,8 +32,7 @@ public class SSPanelMediator extends Mediator
 	{
 		addContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
-		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
-		addContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
+		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewChange);
 		addContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_selected_frameindices_change);
 
 		eventMap.mapListener(v.optPanel, SSEvent.BUILD, handler_build);
@@ -46,8 +46,7 @@ public class SSPanelMediator extends Mediator
 		trace('SSPanel remove');
 		removeContextListener(SSEvent.ENTER_STATE, handler_enterState);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
-		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_displayChange);
-		removeContextListener(SSEvent.PREVIEW_SS_SHOW, handler_previewShow);
+		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewChange);
 		removeContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_selected_frameindices_change);
 
 		eventMap.unmapListener(v.optPanel, SSEvent.BUILD, handler_build);
@@ -61,14 +60,6 @@ public class SSPanelMediator extends Mediator
 		dispatch($evt);
 	}
 
-	private function handler_displayChange($evt:SSEvent):void
-	{
-		v.saveSeq.titleLabel.text = ssModel.displayCrop ? 
-			FxGettext.gettext("trimmed size"):
-			FxGettext.gettext("original size");
-	}
-	
-
 	private function handler_enterState($evt:SSEvent):void
 	{
 		enterState();
@@ -79,7 +70,7 @@ public class SSPanelMediator extends Mediator
 		if(stateModel.state != StateType.SS) return;
 		//更新调整后的Sheet
 		ssModel.updateAdjustedSheet();
-		v.init(ssModel.adjustedSheet.bitmapData, ssModel.originalSheet.metadata.hasName);
+		v.init(ssModel.adjustedSheet.bitmapData);
 		
 		mediatorMap.createMediator(v.framesAndLabels);
 		mediatorMap.createMediator(v.aniPreview);
@@ -105,12 +96,13 @@ public class SSPanelMediator extends Mediator
 	}
 	
 	//在预览更新的时候，绘制帧的范围
-	private function handler_previewShow($evt:SSEvent):void
+	private function handler_previewChange($evt:SSEvent):void
 	{
+		if(ssModel.selectedFrameIndex<0) return;
 		//仅在播放的时候才绘制帧的范围
 		if(ssModel.playing)
 		{
-			var __rect:Rectangle = $evt.info.rect as Rectangle;
+			var __rect:Rectangle = ssModel.adjustedSheet.metadata.frameRects[ssModel.selectedFrameIndex];
 			v.sheetPreview.clearCanva();
 			v.sheetPreview.drawRect(__rect.x, __rect.y, __rect.width, __rect.height);
 		}
@@ -137,6 +129,8 @@ public class SSPanelMediator extends Mediator
 	private function optimizeSheet():void
 	{
 		v.sheetPreview.destroy();
+		var __picPref:PicPreferenceVO = v.optPanel.preference;
+		ssModel.picReference = __picPref;
 		if(ssModel.originalSheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
 		{
 			Funs.alert(FxGettext.gettext("No frame info, can not generate the sheet."));
@@ -144,7 +138,7 @@ public class SSPanelMediator extends Mediator
 			return;
 		}
 		trace('优化帧数：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
-		var __list:RectsAndBmdsVO = ssModel.getRectsAndBmds(v.trim, v.resetRect);
+		var __list:RectsAndBmdsVO = ssModel.getRectsAndBmds(__picPref.trim, __picPref.resetRect);
 		trace('新生成的：', __list.bmds, __list.frameRects, __list.originRects)
 		//保存新计算出的WH
 		var __whRect:Rectangle = new Rectangle();
@@ -155,13 +149,13 @@ public class SSPanelMediator extends Mediator
 			__list.frameRects, 
 			__newFrameRects, 
 			__whRect,
-			v.limitWidth,
-			v.explicitSize,
-			v.powerOf2,
-			v.square
+			__picPref.limitWidth,
+			__picPref.explicitSize,
+			__picPref.powerOf2,
+			__picPref.square
 		);
 		//绘制大Sheet位图
-		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, v.transparent, v.bgColor);
+		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, __picPref.transparent, __picPref.bgColor);
 		ssModel.redrawAdjustedSheet(__sheetBmd, new RectsAndBmdsVO(__list.bmds, __list.originRects, __newFrameRects));
 		v.sheetPreview.source = ssModel.adjustedSheet.bitmapData;
 		//优化完毕，FramesAndLabel需要更新

@@ -1,7 +1,7 @@
 package type
 {
-	import flash.net.FileFilter;
-	import gnu.as3.gettext.FxGettext;
+import flash.net.FileFilter;
+import gnu.as3.gettext.FxGettext;
 /**
  * 文件扩展名 
  * @author zrong
@@ -9,14 +9,6 @@ package type
  */
 public class ExtendedNameType
 {
-	public static const JPEG_XR:String = '.wdp';
-	public static const JPEG:String = '.jpg';
-	public static const PNG:String = '.png';
-	
-	public static const JSON:String = '.json';
-	public static const XML:String = '.xml';
-	public static const TEXT:String = '.txt';
-	
 	/**
 	 * 要打开的图像文件类型
 	 */	

@@ -97,10 +97,10 @@ public class FileOpenerModel extends FileProcessor
 			var __bfd:BrowseFileDoneVO = new BrowseFileDoneVO(_openState, _selectedFiles);
 			//向SS中加入帧的时候，要判断加入的文件是否是SS类型
 			if(_openState == StateType.ADD_TO_SS &&
-				Funs.hasMetadataFile((_selectedFiles[0] as File).url, SpriteSheetMetadataType.XML))
+				Funs.hasMetadataFile((_selectedFiles[0] as File).url, SpriteSheetMetadataType.SSE_XML))
 			{
 				__bfd.fileType = AssetsType.SPRITE_SHEET;
-				__bfd.metaType = SpriteSheetMetadataType.XML;
+				__bfd.metaType = SpriteSheetMetadataType.SSE_XML;
 			}
 			this.dispatch(new SSEvent(SSEvent.BROWSE_FILE_DONE, 	__bfd));
 		}

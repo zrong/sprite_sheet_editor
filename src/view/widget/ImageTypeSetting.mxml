@@ -4,23 +4,27 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx">
 	<fx:Declarations>
 		<s:RadioButtonGroup id="formatRBG" valueCommit="handler_formatRBGvalueCommit(event)"/>
+		<s:HGroup id="qualityGrp" verticalAlign="middle">
+			<s:Label>
+				<s:text>{FxGettext.gettext("Compress:")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="qualityNS" minimum="1" maximum="100" value="70" maxChars="3" width="100%">
+				<s:toolTip>{FxGettext.gettext("For JPEG, bigger is better;For JPEG-XR, smaller is better.")}</s:toolTip>
+			</s:NumericStepper>
+		</s:HGroup>
 	</fx:Declarations>
-	<s:RadioButton id="pngRB" groupName="formatRBG" selected="true">
+	<s:RadioButton id="pngRB" groupName="formatRBG" selected="true" width="100">
 		<s:label>{FxGettext.gettext("PNG image")}</s:label>
 	</s:RadioButton>
-	<s:RadioButton id="jpgRB" groupName="formatRBG">
-		<s:label>{FxGettext.gettext("JPEG image")}</s:label>
-	</s:RadioButton>
-	<s:RadioButton id="jpgxrRB" groupName="formatRBG">
-		<s:label>{FxGettext.gettext("JPEG-XR image")}</s:label>
-	</s:RadioButton>
-	<s:HGroup verticalAlign="middle" visible="{jpgRB.selected||jpgxrRB.selected}">
-		<s:Label>
-			<s:text>{FxGettext.gettext("Compress:")}</s:text>
-		</s:Label>
-		<s:NumericStepper id="qualityNS" minimum="1" maximum="100" value="70" maxChars="3" width="100%">
-			<s:toolTip>{FxGettext.gettext("For JPEG, bigger is better;For JPEG-XR, smaller is better.")}</s:toolTip>
-		</s:NumericStepper>
+	<s:HGroup id="jpgGrp">
+		<s:RadioButton id="jpgRB" groupName="formatRBG" width="100">
+			<s:label>{FxGettext.gettext("JPEG image")}</s:label>
+		</s:RadioButton>
+	</s:HGroup>
+	<s:HGroup id="jpgxrGrp">
+		<s:RadioButton id="jpgxrRB" groupName="formatRBG" width="100">
+			<s:label>{FxGettext.gettext("JPEG-XR image")}</s:label>
+		</s:RadioButton>
 	</s:HGroup>
 	<fx:Metadata>
 		[Event(name="change", type="flash.events.Event")]
@@ -31,15 +35,17 @@
 			
 			import org.zengrong.display.spritesheet.SpriteSheetType;
 			import gnu.as3.gettext.FxGettext;
+			import org.zengrong.assets.AssetsType;
 			
 			import type.ExtendedNameType;
+			import spark.components.Group;
 			
 			override protected function createChildren():void
 			{
 				super.createChildren();
-				pngRB.value = ExtendedNameType.PNG;
-				jpgRB.value = ExtendedNameType.JPEG;
-				jpgxrRB.value = ExtendedNameType.JPEG_XR;
+				pngRB.value = AssetsType.PNG;
+				jpgRB.value = AssetsType.JPG;
+				jpgxrRB.value = AssetsType.JPEG_XR;
 			}
 			
 			public function get qualityValue():int
@@ -51,13 +57,13 @@
 			{
 				switch(imageType)
 				{
-					case ExtendedNameType.PNG:
+					case AssetsType.PNG:
 						return SpriteSheetType.PNG_IMAGE;
 						break;
-					case ExtendedNameType.JPEG:
+					case AssetsType.JPG:
 						return SpriteSheetType.JPG_IMAGE;
 						break;
-					case ExtendedNameType.JPEG_XR:
+					case AssetsType.JPEG_XR:
 						return SpriteSheetType.JPG_XR_IMAGE;
 						break;
 				}
@@ -76,7 +82,32 @@
 			
 			protected function handler_formatRBGvalueCommit($evt:FlexEvent):void
 			{
+				if(imageType == AssetsType.PNG)
+				{
+					removeQuentifyGrp();
+				}
+				else
+				{
+					removeQuentifyGrp();
+					if(imageType == AssetsType.JPG)
+					{
+						jpgGrp.addElement(qualityGrp);
+					}
+					else
+					{
+						jpgxrGrp.addElement(qualityGrp);
+					}
+				}
+				
 				this.dispatchEvent(new Event(Event.CHANGE));
+			}
+			
+			private function removeQuentifyGrp():void
+			{
+				if(qualityGrp.parent is Group)
+				{
+					Group(qualityGrp.parent).removeElement(qualityGrp);
+				}
 			}
 		]]>
 	</fx:Script>

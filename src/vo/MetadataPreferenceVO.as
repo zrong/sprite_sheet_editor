@@ -1,6 +1,7 @@
 package vo
 {
 import flash.display.BitmapData;
+import org.zengrong.display.spritesheet.SpriteSheetType;
 import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 
 /**
@@ -8,9 +9,9 @@ import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
  * @author zrong
  * 
  */
-public class SaveVO
+public class MetadataPreferenceVO
 {
-	public function SaveVO()
+	public function MetadataPreferenceVO()
 	{
 	}
 	
@@ -42,7 +43,7 @@ public class SaveVO
 	/**
 	 * 元数据类型
 	 */
-	public var metaType:String = "xml";
+	public var metaType:String = "ssexml";
 	
 	/**
 	 * JPEG压缩质量
@@ -64,5 +65,12 @@ public class SaveVO
 	 * 包含文件名
 	 */
 	public var includeName:Boolean = true;
+	
+	/**
+	 * 蒙版类型
+	 */
+	public var maskType:int = 0;
+	
+	public var spriteSheetType:String = SpriteSheetType.PNG_IMAGE;
 }
 }

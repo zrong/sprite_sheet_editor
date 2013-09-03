@@ -6,43 +6,50 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
+	<fx:Declarations>
+		<s:RadioButtonGroup id="frameCropDisplayRBG" />
+	</fx:Declarations>
 	<fx:Metadata>
 		[Event(name="saveSeq", type="events.SSEvent")]
 	</fx:Metadata>
-	<s:Label id="titleLabel" fontWeight="bold">
-	</s:Label>
-	<s:HGroup width="100%">
-		<widget:ImageTypeSetting id="imageSetting" change="preview()"/>
-		<s:VGroup width="100%">
-			<s:HGroup width="100%" verticalAlign="middle">
-				<s:Label>
-					<s:text>{FxGettext.gettext("Prefix")}</s:text>
-				</s:Label>
-				<s:TextInput id="preTI" width="100%" change="preview()"/>
-			</s:HGroup>
-			<s:HGroup width="100%" verticalAlign="middle">
-				<s:Label >
-					<s:text>{FxGettext.gettext("Start at:")}</s:text>
-				</s:Label>
-				<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" width="100%" change="preview()"/>
-			</s:HGroup>
-			<s:HGroup width="100%" verticalAlign="middle">
-				<s:Label >
-					<s:text>{FxGettext.gettext("Digits:")}</s:text>
-				</s:Label>
-				<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%" change="fillTen()"/>
-			</s:HGroup>
-		</s:VGroup>
-	</s:HGroup>
-	<s:HGroup width="100%" verticalAlign="middle">
+	<s:VGroup width="100%">
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Label>
+				<s:text>{FxGettext.gettext("Prefix")}</s:text>
+			</s:Label>
+			<s:TextInput id="preTI" width="100%" change="preview()"/>
+		</s:HGroup>
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Label >
+				<s:text>{FxGettext.gettext("Start at:")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" width="100%" change="preview()"/>
+		</s:HGroup>
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Label >
+				<s:text>{FxGettext.gettext("Digits:")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%" change="fillTen()"/>
+		</s:HGroup>
+	</s:VGroup>
+	<s:HGroup verticalAlign="middle">
 		<s:Label>
 			<s:text>{FxGettext.gettext("File name preview:")}</s:text>
 		</s:Label>
 		<s:Label text='{_fileName}' width="100%"/>
 	</s:HGroup>
-	<s:Button id="saveSeqBTN" click="handler_saveSeqBTNClick(event)" height="30" width="80">
-		<s:label>{FxGettext.gettext("Save")}</s:label>
-	</s:Button>
+	<s:HGroup>
+		<s:RadioButton id="disCropRB" width="100%"
+					   groupName="frameCropDisplayRBG" selected="true" value="true" >
+			<s:label>{FxGettext.gettext("trimmed size")}</s:label>
+			<s:toolTip>{FxGettext.gettext("Display width and height of trimmed frame.")}</s:toolTip>
+		</s:RadioButton>
+		<s:RadioButton id="disOriginRB" width="100%"
+					   groupName="frameCropDisplayRBG" value="false">
+			<s:label>{FxGettext.gettext("original size")}</s:label>
+			<s:toolTip>{FxGettext.gettext("Display the width and height of trimmed. In order to reduce file size, we could trim the blank. If the file does not trim, the original size and the trimmed size is same.")}</s:toolTip>
+		</s:RadioButton>
+	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -65,8 +72,10 @@
 			return __names;
 		}
 		
-		private function preview():void
+		private var _imgExt:String;
+		public function preview($imgExt:String=""):void
 		{
+			_imgExt = $imgExt;
 			_fileName = getFileName(startNS.value);
 		}
 		
@@ -82,12 +91,7 @@
 				if($num<_ten[i])
 					__str += '0';
 			}
-			return __str + String($num) + imageSetting.imageType;
-		}
-		
-		protected function handler_saveSeqBTNClick(event:MouseEvent):void
-		{
-			dispatchEvent(new SSEvent(SSEvent.SAVE_SEQ));
+			return __str + String($num) + _imgExt;
 		}
 		
 		protected function fillTen():void

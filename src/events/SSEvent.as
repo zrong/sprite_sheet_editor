@@ -16,6 +16,11 @@ public class SSEvent extends Event
 	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
 	
 	/**
+	 * 是否选择了使用Label的复选框
+	 */
+	public static const FRAME_AND_LABEL_USING_LABEL:String = "frameAndLabelUsingLabel";
+	
+	/**
 	 * 拖动一个文件到SSE中
 	 */
 	public static const DRAG_FILE:String = "dragFile";
@@ -36,11 +41,6 @@ public class SSEvent extends Event
 	
 	
 	public static const CAPTURE_DONE:String = 'captureDone';
-	
-	public static const SAVE_PIC:String = 'savePic';
-	public static const SAVE_META:String = 'saveMeta';
-	public static const SAVE_ALL:String = 'saveAll';
-	public static const SAVE_SEQ:String = 'saveSeq';
 	
 	/**
 	 * 所有类型的保存事件
@@ -71,6 +71,7 @@ public class SSEvent extends Event
 	 * 变形工具的帧设置大小改变了
 	 */
 	public static const TRANSFORM_FRAME_CHANGE:String = "transformFrameChange";
+	
 	/**
 	 * 变形工具中选择是否使用变形值的事件
 	 */
@@ -85,11 +86,6 @@ public class SSEvent extends Event
 	 * 改变SS中每一帧的大小
 	 */
 	public static const PREVIEW_SS_RESIZE_SAVE:String = 'previewSSResizeSize';
-	
-	/**
-	 * 发送要预览的帧信息
-	 */
-	public static const PREVIEW_SS_SHOW:String = 'previewSSShow';
 	
 	/**
 	 * 要预览的帧的显示范围变化变化，剪切/原始切换

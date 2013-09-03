@@ -2,20 +2,21 @@ package utils
 {
 import flash.filesystem.File;
 import flash.geom.Rectangle;
-import org.zengrong.assets.AssetsType;
-import type.ExtendedNameType;
-import type.StateType;
-
-import mx.managers.PopUpManager;
 
 import gnu.as3.gettext.FxGettext;
 import gnu.as3.gettext.ISO_3166;
 import gnu.as3.gettext.ISO_639_1;
 import gnu.as3.gettext.Locale;
 
+import mx.managers.PopUpManager;
+
 import org.zengrong.air.utils.getDesc;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
 import org.zengrong.utils.MathUtil;
 import org.zengrong.utils.SOUtil;
+
+import type.ExtendedNameType;
+import type.StateType;
 
 import view.widget.Alert;
 
@@ -249,12 +250,13 @@ public class Funs
 	public static function getMetadataUrl($url:String, $type:String):String
 	{
 		var __dotIndex:int = $url.lastIndexOf('.');
+		var __typeExt:String = SpriteSheetMetadataType.getTypeExt($type);
 		if(__dotIndex == -1)
-			return $url + '.'+$type;
-		return $url.slice(0, __dotIndex) + '.'+$type;
+			return $url + '.'+__typeExt;
+		return $url.slice(0, __dotIndex) + '.'+__typeExt;
 	}
 	
-	public static function hasMetadataFile($url:String, $type:String="xml"):Boolean
+	public static function hasMetadataFile($url:String, $type:String="ssexml"):Boolean
 	{
 		var __metaUrl:String = getMetadataUrl($url, $type);
 		var __file:File = new File(__metaUrl);
@@ -273,7 +275,7 @@ public class Funs
 		}
 		else if( ExtendedNameType.ALL_PIC_FILTER.extension.indexOf($file.type) > -1)
 		{
-			if(hasMetadataFile($file.url, "xml")) return StateType.SS;
+			if(hasMetadataFile($file.url, SpriteSheetMetadataType.SSE_XML)) return StateType.SS;
 			return StateType.PIC;
 		}
 		return '';

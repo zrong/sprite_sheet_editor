@@ -1,13 +1,19 @@
 package mediator.comps
 {
+import com.hurlant.util.asn1.parser.boolean;
+
 import events.SSEvent;
+
 import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+
 import gnu.as3.gettext.FxGettext;
+
 import model.SpriteSheetModel;
+
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
 import mx.collections.IList;
@@ -16,6 +22,7 @@ import mx.collections.SortField;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.managers.PopUpManager;
+
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.assets.Assets;
 import org.zengrong.assets.AssetsEvent;
@@ -23,12 +30,17 @@ import org.zengrong.assets.AssetsProgressVO;
 import org.zengrong.assets.AssetsType;
 import org.zengrong.display.spritesheet.ISpriteSheetMetadata;
 import org.zengrong.display.spritesheet.SpriteSheet;
+
 import type.StateType;
+
 import utils.Funs;
+
 import view.comps.FramesAndLabels;
 import view.comps.SSPreview;
+
 import vo.BrowseFileDoneVO;
 import vo.FrameVO;
+import vo.FramesAndLabelChangeVO;
 import vo.LabelListVO;
 import vo.LabelVO;
 
@@ -89,8 +101,7 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.mapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
 		eventMap.mapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
 		
-		eventMap.mapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
-		eventMap.mapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameOrLabelChange);
+		addViewListener(SSEvent.FRAME_AND_LABEL_USING_LABEL, handler_frameOrLabelChange);
 		
 		addContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		addContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
@@ -117,8 +128,7 @@ public class FramesAndLabelMediator extends Mediator
 		eventMap.unmapListener(v.removeLabelBTN, MouseEvent.CLICK, handler_removeLabelBTNclick);
 		eventMap.unmapListener(v.renameBTN, MouseEvent.CLICK, handler_renameBTNClick);
 		
-		eventMap.unmapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
-		eventMap.unmapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameOrLabelChange);
+		removeViewListener(SSEvent.FRAME_AND_LABEL_USING_LABEL, handler_frameOrLabelChange);
 		
 		removeContextListener(SSEvent.PREVIEW_SS_PLAY, handler_ssPreviewPlay);
 		removeContextListener(SSEvent.PREVIEW_SS_RESIZE_SAVE, handler_saveResizeBTNclick);
@@ -127,6 +137,11 @@ public class FramesAndLabelMediator extends Mediator
 		removeContextListener(SSEvent.BROWSE_FILE_DONE, handler_browseFileDone);
 		
 		destroy();
+	}
+	
+	private function get app():SpriteSheetEditor
+	{
+		return contextView as SpriteSheetEditor;
 	}
 	
 	public function init():void
@@ -379,7 +394,7 @@ public class FramesAndLabelMediator extends Mediator
 	private function nextFrame():void
 	{
 		trace('nextFrame:', playing, v.frameDG.selectedIndex, selectedFrameIndices);
-		if(v.frameOrLabelRBG.selectedValue)
+		if(app.ss.aniPreview.frameOrLabelRBG.selectedValue)
 		{
 			v.frameDG.selectedIndex = selectedFrameIndices[_currentIndex];
 			if(_currentIndex == -1 || _currentIndex == selectedFrameIndices.length-1)
@@ -476,8 +491,14 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function previewSSChange():void
 	{
-		ssModel.displayLabel = (v.selectedLabel) ? v.selectedLabel.name: "";
-		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
+		var __vo:FramesAndLabelChangeVO = new FramesAndLabelChangeVO();
+		__vo.labelEnabled = v.labelEnabled;
+		__vo.labelName = v.selectedLabel ? v.selectedLabel.name: "";
+		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE, 
+			{
+				labelEnabled:v.labelEnabled, 
+				labelName:v.selectedLabel ? v.selectedLabel.name: ""
+			}));
 	}
 	
 	private function handler_renameBTNClick($evt:MouseEvent):void
@@ -618,7 +639,6 @@ public class FramesAndLabelMediator extends Mediator
 	private function dispatchOptimize():void
 	{
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET));
-		v.frameCropDisplayRBG.selectedValue = true;
 	}
 	
 	protected function handler_saveResizeBTNclick($evt:SSEvent):void
@@ -693,15 +713,8 @@ public class FramesAndLabelMediator extends Mediator
 		dispatchOptimize();
 	}
 	
-	private function handler_frameDisChange($evt:FlexEvent):void
+	private function handler_frameOrLabelChange($evt:SSEvent):void 
 	{
-		ssModel.displayCrop = v.frameCropDisplayRBG.selectedValue;
-		previewSSChange();
-	}
-	
-	private function handler_frameOrLabelChange($evt:FlexEvent):void 
-	{
-		ssModel.displayFrame = v.frameOrLabelRBG.selectedValue;
 		previewSSChange();
 	}
 }

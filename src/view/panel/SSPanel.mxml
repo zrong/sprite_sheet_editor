@@ -10,8 +10,8 @@
 				   xmlns:widget="view.widget.*" >
 	<s:BorderContainer id="leftPanelBG" width="320" height="100%" borderColor="0x878787" backgroundAlpha="0" enabled="false">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" horizontalAlign="center">
-			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
 			<widget:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
+			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
@@ -29,7 +29,7 @@
 	<![CDATA[
 		import gnu.as3.gettext.FxGettext;
 		import interf.IPreview;
-		import vo.SaveVO;
+		import vo.MetadataPreferenceVO;
 		
 		public function init($bmd:BitmapData):void
 		{
@@ -44,64 +44,6 @@
 		public function destroy():void
 		{
 			sheetPreview.destroy();
-		}
-		
-		/**
-		 * 生成sheet图的背景色
-		 */
-		public function get bgColor():uint
-		{
-			return optPanel.bgColorPicker.selectedColor;
-		}
-		
-		/**
-		 * 是否透明
-		 */
-		public function get transparent():Boolean
-		{
-			return optPanel.transparentCB.selected;
-		}
-
-		/**
-		 * 限制宽度（true）还是限制高度（false）
-		 */
-		public function get limitWidth():Boolean
-		{
-			return optPanel.whDDL.selectedIndex == 0;
-		}
-		
-		/**
-		 * 明确指定Sheet的宽度或高度
-		 */
-		public function get explicitSize():int
-		{
-			return optPanel.whNS.value;
-		}
-		
-		/**
-		 * 是否开启2的幂
-		 */
-		public function get powerOf2():Boolean
-		{
-			return optPanel.powerOf2CB.selected;
-		}
-		
-		/**
-		 * 是否开启正方形
-		 */
-		public function get square():Boolean
-		{
-			return optPanel.squareCB.selected;
-		}
-		
-		public function get trim():Boolean
-		{
-			return optPanel.trimCB.selected;
-		}
-		
-		public function get resetRect():Boolean
-		{
-			return optPanel.resetRectCB.selected;
 		}
 
 	]]>

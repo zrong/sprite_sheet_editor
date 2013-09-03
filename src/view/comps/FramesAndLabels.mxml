@@ -13,10 +13,6 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
-	<fx:Declarations>
-		<s:RadioButtonGroup id="frameCropDisplayRBG" />
-		<s:RadioButtonGroup id="frameOrLabelRBG" />
-	</fx:Declarations>
 	<fx:Metadata>
 		[Event(name="frameAndLabelChange", type="events.SSEvent")]
 	</fx:Metadata>
@@ -24,32 +20,6 @@
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
 	</s:states>
-	<s:HGroup width="100%">
-		<s:VGroup id="frameOrLabelGRP" width="100%">
-			<s:RadioButton id="useFrameRB" width="100%"
-						   groupName="frameOrLabelRBG" selected="true" value="true">
-				<s:label>{FxGettext.gettext("Use frame")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Play the animation of selected frames")}</s:toolTip>
-			</s:RadioButton>
-			<s:RadioButton id="useLabelRB" width="100%"
-						   groupName="frameOrLabelRBG" value="false">
-				<s:label>{FxGettext.gettext("Use label")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Play the animation of selected label")}</s:toolTip>
-			</s:RadioButton>
-		</s:VGroup>
-		<s:VGroup width="100%" enabled="{frameDG.selectedItem}">
-			<s:RadioButton id="disCropRB" width="100%"
-						   groupName="frameCropDisplayRBG" selected="true" value="true" >
-				<s:label>{FxGettext.gettext("Trim")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Display width and height of trimmed frame.")}</s:toolTip>
-			</s:RadioButton>
-			<s:RadioButton id="disOriginRB" width="100%"
-						   groupName="frameCropDisplayRBG" value="false">
-				<s:label>{FxGettext.gettext("Original")}</s:label>
-				<s:toolTip>{FxGettext.gettext("Display the width and height of trimmed. In order to reduce file size, we could trim the blank. If the file does not trim, the original size and the trimmed size is same.")}</s:toolTip>
-			</s:RadioButton>
-		</s:VGroup>
-	</s:HGroup>
 	<!-- 以下是帧相关的界面 -->
 	<s:Label id="frameLabel" fontWeight="bold">
 		<s:text>{frameDG.dataProvider?FxGettext.gettext("All available frames:")+frameDG.dataProvider.length:FxGettext.gettext("The frames are not available.")}</s:text>
@@ -127,7 +97,6 @@
 		<s:Button id="downFrameInLabelBTN" click="handler_downFrameInLabelBTNClick(event)" width="100%">
 			<s:label>{FxGettext.gettext("Move down")}</s:label>
 		</s:Button>
-		
 	</s:HGroup>
 	<widget:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
 	
@@ -135,15 +104,16 @@
 	<widget:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
+		import events.SSEvent;
+		
 		import flash.geom.Point;
+		
+		import gnu.as3.gettext.FxGettext;
+		
 		import mx.collections.ArrayCollection;
 		import mx.collections.ArrayList;
 		import mx.collections.IList;
 		import mx.events.FlexEvent;
-		
-		import events.SSEvent;
-		
-		import gnu.as3.gettext.FxGettext;
 		
 		import vo.FrameVO;
 		import vo.LabelVO;
@@ -348,13 +318,18 @@
 			this.removeEventListener(FlexEvent.UPDATE_COMPLETE, handler_updateComp);
 		}
 		
+		/**
+		 * 当前Label是否可用
+		 */
+		public function get labelEnabled():Boolean
+		{
+			return labelCB.selected && labelDDL.selectedItem;
+		}
+		
 		//有可用Label的时候，才允许选择Frame或者Label显示
 		public function updateFrameOrLabelGRP():void
 		{
-			var __enabled:Boolean = labelCB.selected && labelDDL.selectedItem;
-			 frameOrLabelGRP.enabled= __enabled;
-			 //不可选择的时候，返回默认选项
-			 if(!__enabled) frameOrLabelRBG.selectedValue = true;
+			this.dispatchEvent(new SSEvent(SSEvent.FRAME_AND_LABEL_USING_LABEL));
 		}
 		
 		/**

@@ -3,6 +3,10 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:comps="view.comps.*"
 				   xmlns:widget="view.widget.*">
+	<fx:Declarations>
+		<s:RadioButtonGroup id="frameCropDisplayRBG" />
+		<s:RadioButtonGroup id="frameOrLabelRBG" />
+	</fx:Declarations>
 	<s:label>{FxGettext.gettext("Bitmap animation preview")}</s:label>
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" />
@@ -13,16 +17,45 @@
 	</widget:BMPPreview>
 	<s:BorderContainer borderColor="0x878787" backgroundAlpha="0"  width="100%" >
 		<s:layout>
-			<s:HorizontalLayout  verticalAlign="middle" paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2" />
+			<s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"/>
 		</s:layout>
-		<s:VGroup horizontalAlign="center">
-			<s:Label id="frameLabel" width="50" />
-			<s:ToggleButton id="playBTN">
-				<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
-			</s:ToggleButton>
-		</s:VGroup>
-		<s:Spacer width="100%"/>
-		<widget:TransformToolControlBarForSS id="transControlBar"/>
+		<s:HGroup width="100%">
+			<s:VGroup horizontalAlign="center">
+				<s:Label id="frameLabel" width="50" />
+				<s:ToggleButton id="playBTN">
+					<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
+				</s:ToggleButton>
+			</s:VGroup>
+			<s:Spacer width="100%"/>
+			<widget:TransformToolControlBarForSS id="transControlBar"/>
+		</s:HGroup>
+		<s:HGroup width="100%">
+			<s:HGroup>
+				<s:RadioButton id="disCropRB" width="100%"
+							   groupName="frameCropDisplayRBG" selected="true" value="true" >
+					<s:label>{FxGettext.gettext("Trim")}</s:label>
+					<s:toolTip>{FxGettext.gettext("Display width and height of trimmed frame.")}</s:toolTip>
+				</s:RadioButton>
+				<s:RadioButton id="disOriginRB" width="100%"
+							   groupName="frameCropDisplayRBG" value="false">
+					<s:label>{FxGettext.gettext("Original")}</s:label>
+					<s:toolTip>{FxGettext.gettext("Display the width and height of trimmed. In order to reduce file size, we could trim the blank. If the file does not trim, the original size and the trimmed size is same.")}</s:toolTip>
+				</s:RadioButton>
+			</s:HGroup>
+			<s:Spacer width="100%"/>
+			<s:HGroup id="frameOrLabelGRP" width="100%">
+				<s:RadioButton id="useFrameRB" width="100%"
+							   groupName="frameOrLabelRBG" selected="true" value="true">
+					<s:label>{FxGettext.gettext("Use frame")}</s:label>
+					<s:toolTip>{FxGettext.gettext("Play the animation of selected frames")}</s:toolTip>
+				</s:RadioButton>
+				<s:RadioButton id="useLabelRB" width="100%"
+							   groupName="frameOrLabelRBG" value="false">
+					<s:label>{FxGettext.gettext("Use label")}</s:label>
+					<s:toolTip>{FxGettext.gettext("Play the animation of selected label")}</s:toolTip>
+				</s:RadioButton>
+			</s:HGroup>
+		</s:HGroup>
 	</s:BorderContainer>
 	<fx:Script>
 	<![CDATA[
@@ -52,6 +85,14 @@
 		public function showBmd($bmd:BitmapData):void
 		{
 			ani.source = $bmd;
+		}
+		
+		//有可用Label的时候，才允许选择Frame或者Label显示
+		public function updateFrameOrLabelGRP($enable:Boolean):void
+		{
+			frameOrLabelGRP.enabled= $enable;
+			//不可选择的时候，返回默认选项
+			if(!$enable) frameOrLabelRBG.selectedValue = true;
 		}
 	]]>
 	</fx:Script>

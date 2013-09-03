@@ -9,10 +9,10 @@ import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 import flash.utils.ByteArray;
 import gnu.as3.gettext.FxGettext;
-import type.ExtendedNameType;
 import type.StateType;
-import vo.SaveVO;
+import vo.MetadataPreferenceVO;
 import flash.events.Event;
+import org.zengrong.assets.AssetsType;
 /**
  * 负责保存文件
  * @author zrong(zengrong.net)
@@ -25,26 +25,26 @@ public class FileSaverModel extends FileProcessor
 		super();
 	}
 	
-	private var _exportPreference:SaveVO;
+	private var _exportPreference:MetadataPreferenceVO;
 	
-	public function get exportPreference():SaveVO 
+	public function get exportPreference():MetadataPreferenceVO 
 	{
-		if (_exportPreference) _exportPreference = new SaveVO();
+		if (_exportPreference) _exportPreference = new MetadataPreferenceVO();
 		return _exportPreference;
 	}
 	
-	public function set exportPreference(value:SaveVO):void 
+	public function set exportPreference(value:MetadataPreferenceVO):void 
 	{
 		_exportPreference = value;
 	}
 	
-	private var _saveData:SaveVO;
+	private var _saveData:MetadataPreferenceVO;
 	
 	//----------------------------------------
 	// 保存文件操作
 	//----------------------------------------
 	
-	public function save($vo:SaveVO):void
+	public function save($vo:MetadataPreferenceVO):void
 	{
 		_saveData = $vo;
 		_openState = _saveData.type;
@@ -141,11 +141,11 @@ public class FileSaverModel extends FileProcessor
 	{
 		var __ba:ByteArray = null;
 		var __opt:*;
-		if($ext == ExtendedNameType.PNG)
+		if($ext == AssetsType.PNG)
 		{
 			__opt = new PNGEncoderOptions();
 		}
-		else if($ext == ExtendedNameType.JPEG_XR)
+		else if($ext == AssetsType.JPEG_XR)
 		{
 			__opt = new JPEGXREncoderOptions($quality);
 		}

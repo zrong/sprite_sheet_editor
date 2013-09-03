@@ -74,7 +74,42 @@
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
+		
 		import gnu.as3.gettext.FxGettext;
+		
+		import vo.PicPreferenceVO;
+		
+		private var _picPreference:PicPreferenceVO;
+		
+		public function get preference():PicPreferenceVO
+		{
+			if(!_picPreference) _picPreference = new PicPreferenceVO();
+			_picPreference.bgColor = bgColorPicker.selectedColor;
+			_picPreference.transparent = transparentCB.selected;
+			_picPreference.limitWidth = whDDL.selectedIndex == 1;
+			_picPreference.explicitSize = whNS.value;
+			_picPreference.powerOf2 = powerOf2CB.selected;
+			_picPreference.square = squareCB.selected;
+			_picPreference.trim = trimCB.selected;
+			_picPreference.resetRect = resetRectCB.selected;
+			return _picPreference;
+		}
+		
+		public function set preference($value:PicPreferenceVO):void
+		{
+			_picPreference = $value;
+			if(_picPreference)
+			{
+				bgColorPicker.selectedColor = _picPreference.bgColor;
+				transparentCB.selected = _picPreference.transparent;
+				whDDL.selectedIndex = (_picPreference.limitWidth ? 0 : 1);
+				whNS.value = _picPreference.explicitSize;
+				powerOf2CB.selected = _picPreference.powerOf2;
+				squareCB.selected = _picPreference.square;
+				trimCB.selected = _picPreference.trim;
+				resetRectCB.selected = _picPreference.resetRect;
+			}
+		}
 	]]>
 	</fx:Script>
 </s:BorderContainer>

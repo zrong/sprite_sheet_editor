@@ -2,7 +2,6 @@ package
 {
 import ctrl.BrowseFileCmd;
 import ctrl.DragFileCmd;
-import ctrl.PreviewSSChangeCmd;
 import ctrl.SaveCmd;
 import view.comps.ExportWindow;
 
@@ -60,7 +59,6 @@ public class SSEContext extends Context
 		mediatorMap.mapView(FramesAndLabels, FramesAndLabelMediator, null, false, false);
 		mediatorMap.mapView(ExportWindow, ExportWindowMediator,null, false, false);
 		
-		commandMap.mapEvent(SSEvent.PREVIEW_SS_CHANGE, PreviewSSChangeCmd);
 		commandMap.mapEvent(SSEvent.SAVE, SaveCmd);
 		commandMap.mapEvent(SSEvent.BROWSE_FILE, BrowseFileCmd);
 		commandMap.mapEvent(SSEvent.DRAG_FILE, DragFileCmd);
