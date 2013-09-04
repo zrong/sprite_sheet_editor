@@ -481,7 +481,7 @@ public class FramesAndLabelMediator extends Mediator
 		
 		ssModel.selectedFrameIndex = v.selectedFrameInLabelIndex;
 		ssModel.selectedFrmaeNum = selectedFrameNum;
-		if(v.selectedFrameIndex > -1)
+		if(selectedFrameNum > -1)
 		{
 			previewSSChange();
 		}
@@ -491,14 +491,7 @@ public class FramesAndLabelMediator extends Mediator
 	
 	private function previewSSChange():void
 	{
-		var __vo:FramesAndLabelChangeVO = new FramesAndLabelChangeVO();
-		__vo.labelEnabled = v.labelEnabled;
-		__vo.labelName = v.selectedLabel ? v.selectedLabel.name: "";
-		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE, 
-			{
-				labelEnabled:v.labelEnabled, 
-				labelName:v.selectedLabel ? v.selectedLabel.name: ""
-			}));
+		dispatch(new SSEvent(SSEvent.PREVIEW_SS_CHANGE));
 	}
 	
 	private function handler_renameBTNClick($evt:MouseEvent):void

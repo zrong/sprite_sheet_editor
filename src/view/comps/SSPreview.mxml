@@ -44,12 +44,12 @@
 			</s:HGroup>
 			<s:Spacer width="100%"/>
 			<s:HGroup id="frameOrLabelGRP" width="100%">
-				<s:RadioButton id="useFrameRB" width="100%"
+				<s:RadioButton id="useFrameRB"
 							   groupName="frameOrLabelRBG" selected="true" value="true">
 					<s:label>{FxGettext.gettext("Use frame")}</s:label>
 					<s:toolTip>{FxGettext.gettext("Play the animation of selected frames")}</s:toolTip>
 				</s:RadioButton>
-				<s:RadioButton id="useLabelRB" width="100%"
+				<s:RadioButton id="useLabelRB"
 							   groupName="frameOrLabelRBG" value="false">
 					<s:label>{FxGettext.gettext("Use label")}</s:label>
 					<s:toolTip>{FxGettext.gettext("Play the animation of selected label")}</s:toolTip>
@@ -86,14 +86,7 @@
 		{
 			ani.source = $bmd;
 		}
-		
-		//有可用Label的时候，才允许选择Frame或者Label显示
-		public function updateFrameOrLabelGRP($enable:Boolean):void
-		{
-			frameOrLabelGRP.enabled= $enable;
-			//不可选择的时候，返回默认选项
-			if(!$enable) frameOrLabelRBG.selectedValue = true;
-		}
+
 	]]>
 	</fx:Script>
 </s:NavigatorContent>

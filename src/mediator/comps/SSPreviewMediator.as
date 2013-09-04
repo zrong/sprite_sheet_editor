@@ -2,6 +2,7 @@ package mediator.comps
 {
 import events.SSEvent;
 
+import flash.display.BitmapData;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
@@ -15,9 +16,6 @@ import org.robotlegs.mvcs.Mediator;
 
 import view.comps.SSPreview;
 
-import vo.FramesAndLabelChangeVO;
-import flash.display.BitmapData;
-
 public class SSPreviewMediator extends Mediator
 {
 	[Inject] public var v:SSPreview;
@@ -29,12 +27,11 @@ public class SSPreviewMediator extends Mediator
 		eventMap.mapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.mapListener(v.transControlBar.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
 		eventMap.mapListener(v.transControlBar.useCustomSizeCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
-		eventMap.mapListener(v, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
+		eventMap.mapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		eventMap.mapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		
 		addViewListener(SSEvent.TRANSFORM_CHANGE, handler_transformSizeChange);
 		
-		addContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
 		addContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_framesAndLabelsChange);
 		addContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		addContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSChange);
@@ -48,11 +45,11 @@ public class SSPreviewMediator extends Mediator
 		eventMap.unmapListener(v.playBTN, MouseEvent.CLICK, handler_playBTNclick);
 		eventMap.unmapListener(v.transControlBar.saveResizeBTN, MouseEvent.CLICK, handler_saveResizeBTNclick);
 		eventMap.unmapListener(v.transControlBar.useCustomSizeCB, FlexEvent.VALUE_COMMIT, handler_resizeOriginCBChange);
+		eventMap.unmapListener(v.frameOrLabelRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		eventMap.unmapListener(v.frameCropDisplayRBG, FlexEvent.VALUE_COMMIT, handler_frameDisChange);
 		
 		removeViewListener(SSEvent.TRANSFORM_CHANGE, handler_transformSizeChange);
 		
-		removeContextListener(SSEvent.FRAME_AND_LABEL_CHANGE, handler_framesAndLabelsChange);
 		removeContextListener(SSEvent.SELECTED_FRAMEINDICES_CHANGE, handler_framesAndLabelsChange);
 		removeContextListener(SSEvent.OPTIMIZE_SHEET, handler_optimizeSheet);
 		removeContextListener(SSEvent.PREVIEW_SS_CHANGE, handler_previewSSChange);
@@ -61,11 +58,23 @@ public class SSPreviewMediator extends Mediator
 		handler_playBTNclick(null);
 	}
 	
-	private function handler_frameDisChange($evt:FlexEvent):void
+	private function get app():SpriteSheetEditor
 	{
-		handler_previewSSChange(null);
+		return contextView as SpriteSheetEditor;
 	}
 	
+	private function get framesAndLabels_labelEnabled():Boolean
+	{
+		return app.ss.framesAndLabels.labelEnabled;
+	}
+	
+	private function get framesAndLabels_selectedLabelName():String
+	{
+		return app.ss.framesAndLabels.selectedLabel ? 
+			app.ss.framesAndLabels.selectedLabel.name: 
+			"";
+	}
+
 	protected function handler_optimizeSheet($evt:SSEvent):void
 	{
 		v.destroyAni();
@@ -82,24 +91,18 @@ public class SSPreviewMediator extends Mediator
 		dispatch(new SSEvent(SSEvent.PREVIEW_SS_RESIZE_SAVE));
 	}
 	
-	/**
-	 * 保存预览变动的时候，从FrameAndLabel传来的一些值
-	 */
-	private var _frameAndLabelChange:FramesAndLabelChangeVO;
+	private function handler_frameDisChange($evt:FlexEvent):void
+	{
+		updateFrame();
+		updateTitle();
+		showPreview();
+	}
+	
 	private function handler_previewSSChange($evt:SSEvent):void
 	{
-		_frameAndLabelChange = $evt.info as FramesAndLabelChangeVO;
 		updateFrame();
-		v.label = (_frameAndLabelChange&&_frameAndLabelChange.labelEnabled) ? 
-			("Label("+_frameAndLabelChange.labelName+")" + FxGettext.gettext("animation preview")) :
-			FxGettext.gettext("Frame animation preview");
-		
-		if(ssModel.selectedFrameIndex<0) return;
-		//根据选择显示原始的或者修剪过的Frame
-		var __frameBmd:BitmapData = (v.frameCropDisplayRBG.selectedValue as Boolean) ?
-			ssModel.adjustedSheet.getTrimBMDByIndex(ssModel.selectedFrameIndex):
-			ssModel.adjustedSheet.getBMDByIndex(ssModel.selectedFrameIndex);
-		v.showBmd(__frameBmd);
+		updateTitle();
+		showPreview();
 	}
 	
 	private function handler_resizeOriginCBChange($evt:FlexEvent):void
@@ -110,11 +113,39 @@ public class SSPreviewMediator extends Mediator
 	private function handler_framesAndLabelsChange($evt:SSEvent):void
 	{
 		updateFrame();
+		updateTitle();
 	}
 	
 	private function handler_transformSizeChange($evt:Event):void
 	{
 		updateFrame();
+	}
+	
+	//获取到要显示的帧的图像，直接显示
+	private function showPreview():void
+	{
+		if(ssModel.selectedFrameIndex<0) return;
+		//根据选择显示原始的或者修剪过的Frame
+		var __frameBmd:BitmapData = (v.frameCropDisplayRBG.selectedValue as Boolean) ?
+			ssModel.adjustedSheet.getTrimBMDByIndex(ssModel.selectedFrameIndex):
+			ssModel.adjustedSheet.getBMDByIndex(ssModel.selectedFrameIndex);
+		v.showBmd(__frameBmd);
+	}
+	
+	//更新当前的Title，用于指示当前显示的是帧动画预览还是Label动画预览
+	//有可用Label的时候，才允许选择Frame或者Label显示
+	private function updateTitle():void
+	{
+		v.frameOrLabelGRP.enabled= framesAndLabels_labelEnabled;
+		//不可选择的时候，返回默认选项，即显示帧
+		if(!framesAndLabels_labelEnabled && !v.frameOrLabelRBG.selectedValue) 
+		{
+			v.frameOrLabelRBG.selectedValue = true;
+		}
+		//到了这里，v.frameOrLabelRBG.selectedValue的值一定是个确定值
+		v.label = (!v.frameOrLabelRBG.selectedValue) ? 
+			("Label("+framesAndLabels_selectedLabelName+")" + FxGettext.gettext("animation preview")) :
+			FxGettext.gettext("Frame animation preview");
 	}
 	
 	private function updateFrame():void

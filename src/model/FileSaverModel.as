@@ -110,7 +110,7 @@ public class FileSaverModel extends FileProcessor
 			var __bmds:Vector.<BitmapData> = _saveData.bitmapDataList;
 			var __names:Vector.<String> = _saveData.fileNameList;
 			//获取文件的扩展名
-			var __ext:String = __names[0].slice(__names[0].lastIndexOf('.'));
+			var __ext:String = _saveData.picType;
 			for (var i:int = 0; i < __bmds.length; i++) 
 			{
 				__ba = getSheet(__bmds[i], __ext, _saveData.quality);

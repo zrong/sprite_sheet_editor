@@ -13,8 +13,6 @@ public class SSEvent extends Event
 	public static const ENTER_STATE:String = 'enterState';
 	public static const EXIT_STATE:String = 'exitState';
 	
-	public static const FRAME_AND_LABEL_CHANGE:String = 'frameAndLabelChange';
-	
 	/**
 	 * 是否选择了使用Label的复选框
 	 */

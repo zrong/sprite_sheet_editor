@@ -23,13 +23,13 @@
 			<s:Label >
 				<s:text>{FxGettext.gettext("Start at:")}</s:text>
 			</s:Label>
-			<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" width="100%" change="preview()"/>
+			<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" stepSize="1" width="100%" change="preview()"/>
 		</s:HGroup>
 		<s:HGroup width="100%" verticalAlign="middle">
 			<s:Label >
 				<s:text>{FxGettext.gettext("Digits:")}</s:text>
 			</s:Label>
-			<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" width="100%" change="fillTen()"/>
+			<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" stepSize="1" width="100%" change="fillTen()"/>
 		</s:HGroup>
 	</s:VGroup>
 	<s:HGroup verticalAlign="middle">
@@ -91,7 +91,7 @@
 				if($num<_ten[i])
 					__str += '0';
 			}
-			return __str + String($num) + _imgExt;
+			return __str + String($num) + "." + _imgExt;
 		}
 		
 		protected function fillTen():void
@@ -102,7 +102,7 @@
 			{
 				_ten.push(Math.pow(10, i));
 			}
-			preview();
+			preview(_imgExt);
 		}
 		
 	]]>

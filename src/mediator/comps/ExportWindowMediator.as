@@ -83,19 +83,21 @@ public class ExportWindowMediator extends Mediator
 			//根据显示的帧类型来保存序列
 			__vo.bitmapDataList = ssModel.getBMDList(v.saveSeq.frameCropDisplayRBG.selectedValue as Boolean);
 		}
-		else if(v.includeImageCb.selected && v.includeMetadataCb.selected)
+		else if(v.includeImageCb.selected)
 		{
-			__vo.type = StateType.SAVE_ALL;
+			__vo.bitmapData = 
+				ssModel.getBitmapDataForSave(
+					__vo.maskType, 
+					ssModel.picReference.transparent, 
+					ssModel.picReference.bgColor);
+			__vo.type = StateType.SAVE_SHEET_PIC;
+			if(v.includeMetadataCb.selected) __vo.type = StateType.SAVE_ALL;
 		}
 		else if(v.includeMetadataCb.selected)
 		{
 			__vo.type = StateType.SAVE_META;
 		}
-		else if(v.includeImageCb.selected)
-		{
-			__vo.type = StateType.SAVE_SHEET_PIC;
-		}
-		dispatch(new SSEvent(SSEvent.SAVE, __vo));
+		fileSaver.save(__vo);
 	}
 	
 	private function getMetadata($metaType:String):ISpriteSheetMetadata

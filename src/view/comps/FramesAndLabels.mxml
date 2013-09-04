@@ -13,9 +13,6 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
-	<fx:Metadata>
-		[Event(name="frameAndLabelChange", type="events.SSEvent")]
-	</fx:Metadata>
 	<s:states>
 		<s:State id="frameState" name="frame" enterState="handler_frameEnterState(event)" />
 		<s:State id="labelState" name="frameAndLabel" enterState="handler_labelEnterState(event)" />
