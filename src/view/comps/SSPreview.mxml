@@ -11,24 +11,10 @@
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" />
 	</s:layout>
-	<widget:BMPPreview id="ani" borderColor="0x878787" backgroundAlpha="0" width="100%" height="100%">
-		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
-		<widget:maxSizeLimit>source</widget:maxSizeLimit>
-	</widget:BMPPreview>
 	<s:BorderContainer borderColor="0x878787" backgroundAlpha="0"  width="100%" >
 		<s:layout>
 			<s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="2" paddingBottom="2"/>
 		</s:layout>
-		<s:HGroup width="100%">
-			<s:VGroup horizontalAlign="center">
-				<s:Label id="frameLabel" width="50" />
-				<s:ToggleButton id="playBTN">
-					<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
-				</s:ToggleButton>
-			</s:VGroup>
-			<s:Spacer width="100%"/>
-			<widget:TransformToolControlBarForSS id="transControlBar"/>
-		</s:HGroup>
 		<s:HGroup width="100%">
 			<s:HGroup>
 				<s:RadioButton id="disCropRB" width="100%"
@@ -43,7 +29,7 @@
 				</s:RadioButton>
 			</s:HGroup>
 			<s:Spacer width="100%"/>
-			<s:HGroup id="frameOrLabelGRP" width="100%">
+			<s:HGroup id="frameOrLabelGRP">
 				<s:RadioButton id="useFrameRB"
 							   groupName="frameOrLabelRBG" selected="true" value="true">
 					<s:label>{FxGettext.gettext("Use frame")}</s:label>
@@ -56,7 +42,21 @@
 				</s:RadioButton>
 			</s:HGroup>
 		</s:HGroup>
+		<s:HGroup width="100%">
+			<s:VGroup horizontalAlign="center">
+				<s:ToggleButton id="playBTN">
+					<s:label>{playBTN.selected?FxGettext.gettext("Pause"):FxGettext.gettext("Play")}</s:label>
+				</s:ToggleButton>
+				<s:Label id="frameLabel" width="50" />
+			</s:VGroup>
+			<s:Spacer width="100%"/>
+			<widget:TransformToolControlBarForSS id="transControlBar"/>
+		</s:HGroup>
 	</s:BorderContainer>
+	<widget:BMPPreview id="ani" borderColor="0x878787" backgroundAlpha="0" width="100%" height="100%">
+		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
+		<widget:maxSizeLimit>source</widget:maxSizeLimit>
+	</widget:BMPPreview>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;

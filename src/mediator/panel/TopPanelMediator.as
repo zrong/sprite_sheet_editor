@@ -1,20 +1,21 @@
 package mediator.panel
 {
 import events.SSEvent;
-import mx.events.CloseEvent;
-import mx.managers.PopUpManager;
-import view.comps.ExportWindow;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
 import model.StateModel;
 
+import mx.events.CloseEvent;
+import mx.managers.PopUpManager;
+
 import org.robotlegs.mvcs.Mediator;
 import org.zengrong.utils.SOUtil;
 
 import type.StateType;
 
+import view.comps.ExportWindow;
 import view.panel.TopPanel;
 
 public class TopPanelMediator extends Mediator
@@ -34,11 +35,12 @@ public class TopPanelMediator extends Mediator
 		eventMap.mapListener(v.exportBTN, MouseEvent.CLICK, handler_exportClick);
 		
 		eventMap.mapListener(eventDispatcher, SSEvent.ENTER_STATE, handler_enterState);
+		addContextListener(SSEvent.CLOSE_EXPORT, handler_closeExport);
 		
 		_so = SOUtil.getSOUtil('sse');
 		showFPS();
 	}	
-
+	
 	private var _exportWindow:ExportWindow;
 
 	private function handler_exportClick($evt:MouseEvent):void
@@ -55,6 +57,11 @@ public class TopPanelMediator extends Mediator
 			_exportWindow.addEventListener(CloseEvent.CLOSE, destroyExportWindow);
 		}
 		if(!mediatorMap.hasMediatorForView(_exportWindow)) mediatorMap.createMediator(_exportWindow);
+	}
+	
+	private function handler_closeExport($evt:SSEvent):void
+	{
+		destroyExportWindow();
 	}
 
 	private function destroyExportWindow($evt:CloseEvent=null):void

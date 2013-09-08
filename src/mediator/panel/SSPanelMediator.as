@@ -130,7 +130,6 @@ public class SSPanelMediator extends Mediator
 	{
 		v.sheetPreview.destroy();
 		var __picPref:PicPreferenceVO = v.optPanel.preference;
-		ssModel.picReference = __picPref;
 		if(ssModel.originalSheet.metadata.totalFrame==0 || ssModel.adjustedSheet.metadata.totalFrame==0)
 		{
 			Funs.alert(FxGettext.gettext("No frame info, can not generate the sheet."));

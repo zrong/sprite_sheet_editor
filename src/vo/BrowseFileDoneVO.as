@@ -1,8 +1,9 @@
 package vo 
 {
-	import air.update.utils.StringUtils;
-	import flash.filesystem.File;
-	import org.zengrong.assets.AssetsType;
+import air.update.utils.StringUtils;
+import flash.filesystem.File;
+import org.zengrong.assets.AssetsType;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
 /**
  * 选择一个或者一组文件成功后发出事件所带VO
  * @author zrong
@@ -50,7 +51,7 @@ public class BrowseFileDoneVO
 			if(fileType == AssetsType.SPRITE_SHEET)
 			{
 				__urlobj.ftype = AssetsType.SPRITE_SHEET;
-				__urlobj.mtype = metaType;
+				__urlobj.mtype = SpriteSheetMetadataType.getTypeExt(metaType);
 			}
 			__urls.push(__urlobj);
 		}

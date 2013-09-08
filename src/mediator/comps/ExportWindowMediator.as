@@ -1,7 +1,5 @@
 package mediator.comps 
 {
-import com.hurlant.util.asn1.parser.boolean;
-
 import events.SSEvent;
 
 import flash.display.BitmapData;
@@ -22,6 +20,8 @@ import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataXML;
 import org.zengrong.file.FileEnding;
 
+import gnu.as3.gettext.FxGettext;
+
 import type.StateType;
 
 import utils.Funs;
@@ -30,6 +30,7 @@ import view.comps.ExportWindow;
 
 import vo.LabelListVO;
 import vo.MetadataPreferenceVO;
+import vo.PicPreferenceVO;
 
 /**
  * 导出SpriteSheet或者序列图的界面
@@ -76,6 +77,7 @@ public class ExportWindowMediator extends Mediator
 		updateMetadata();
 		var __vo:MetadataPreferenceVO = v.exportPrefenence;
 		__vo.metadata = getMetadata(__vo.metaType);
+		//首先判断是否要保存序列
 		if(__vo.metaType == ExportWindow.SEQUENCE)
 		{
 			__vo.fileNameList = v.getSeqFileNames(ssModel.adjustedSheet.metadata.totalFrame);
@@ -83,19 +85,27 @@ public class ExportWindowMediator extends Mediator
 			//根据显示的帧类型来保存序列
 			__vo.bitmapDataList = ssModel.getBMDList(v.saveSeq.frameCropDisplayRBG.selectedValue as Boolean);
 		}
+		//包含图像
 		else if(v.includeImageCb.selected)
 		{
+			var __ref:PicPreferenceVO = app.ss.optPanel.preference;
 			__vo.bitmapData = 
 				ssModel.getBitmapDataForSave(
 					__vo.maskType, 
-					ssModel.picReference.transparent, 
-					ssModel.picReference.bgColor);
+					__ref.transparent, 
+					__ref.bgColor);
 			__vo.type = StateType.SAVE_SHEET_PIC;
+			//如果又包含了metadata，就是包含所有
 			if(v.includeMetadataCb.selected) __vo.type = StateType.SAVE_ALL;
 		}
 		else if(v.includeMetadataCb.selected)
 		{
 			__vo.type = StateType.SAVE_META;
+		}
+		else
+		{
+			Funs.alert(FxGettext.gettext("Please select the content for save!"));
+			return;
 		}
 		fileSaver.save(__vo);
 	}

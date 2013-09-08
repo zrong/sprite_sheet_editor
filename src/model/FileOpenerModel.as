@@ -102,7 +102,7 @@ public class FileOpenerModel extends FileProcessor
 				__bfd.fileType = AssetsType.SPRITE_SHEET;
 				__bfd.metaType = SpriteSheetMetadataType.SSE_XML;
 			}
-			this.dispatch(new SSEvent(SSEvent.BROWSE_FILE_DONE, 	__bfd));
+			this.dispatch(new SSEvent(SSEvent.BROWSE_FILE_DONE, __bfd));
 		}
 		//trace('checkSelectedFiles', _file.nativePath, $evt.files, _openState);
 	}

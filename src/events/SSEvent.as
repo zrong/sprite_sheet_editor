@@ -14,6 +14,11 @@ public class SSEvent extends Event
 	public static const EXIT_STATE:String = 'exitState';
 	
 	/**
+	 * 关闭导出面板 
+	 */
+	public static const CLOSE_EXPORT:String = "closeExoprt";
+	
+	/**
 	 * 是否选择了使用Label的复选框
 	 */
 	public static const FRAME_AND_LABEL_USING_LABEL:String = "frameAndLabelUsingLabel";

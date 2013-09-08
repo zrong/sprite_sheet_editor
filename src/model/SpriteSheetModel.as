@@ -36,8 +36,6 @@ public class SpriteSheetModel extends Actor
 	
 	public var playing:Boolean;
 	
-	public var picReference:PicPreferenceVO;
-	
 	public function resetSheet($bmd:BitmapData=null, $meta:SpriteSheetMetadata=null):void
 	{
 		if(_originalSheet) _originalSheet.destroy();

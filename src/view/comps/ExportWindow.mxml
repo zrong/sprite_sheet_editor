@@ -10,7 +10,7 @@
 		<!-- 保存标准SSE格式 -->
 		<s:State id="sseState" name="savesse"/>
 		<!-- 保存序列图格式 -->
-		<s:State id="seqState" name="saveseq"/>
+		<s:State id="seqState" name="saveseq" enterState="handler_enterState()"/>
 		<!-- 保存其他格式，例如Starling，cocos2d -->
 		<s:State id="othState" name="saveoth"/>
 	</s:states>
@@ -92,8 +92,6 @@
 					{label:FxGettext.gettext("Save a sequence"), data:SEQUENCE}
 				];
 			exportDDL.dataProvider = new ArrayList(__export);
-			
-			
 		}
 		
 		private var _preference:MetadataPreferenceVO;
@@ -137,7 +135,15 @@
 			
 		protected function handler_imgSettingChange($evt:Event):void
 		{
-			if(this.currentState == seqState.name) saveSeq.preview(imageSetting.imageType);
+			if(this.currentState == seqState.name)
+			{
+				saveSeq.imageType = imageSetting.imageType;
+			}
+		}
+			
+		private function handler_enterState():void
+		{
+			handler_imgSettingChange(null);
 		}
 		]]>
 	</fx:Script>

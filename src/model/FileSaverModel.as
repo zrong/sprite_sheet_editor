@@ -1,18 +1,26 @@
 package model 
 {
+import events.SSEvent;
+
 import flash.display.BitmapData;
 import flash.display.JPEGEncoderOptions;
 import flash.display.JPEGXREncoderOptions;
 import flash.display.PNGEncoderOptions;
+import flash.events.Event;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 import flash.utils.ByteArray;
+
 import gnu.as3.gettext.FxGettext;
-import type.StateType;
-import vo.MetadataPreferenceVO;
-import flash.events.Event;
+
 import org.zengrong.assets.AssetsType;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
+
+import type.StateType;
+
+import vo.MetadataPreferenceVO;
+
 /**
  * 负责保存文件
  * @author zrong(zengrong.net)
@@ -47,7 +55,6 @@ public class FileSaverModel extends FileProcessor
 	public function save($vo:MetadataPreferenceVO):void
 	{
 		_saveData = $vo;
-		_openState = _saveData.type;
 		var __title:String;
 		switch(_saveData.type)
 		{
@@ -79,33 +86,20 @@ public class FileSaverModel extends FileProcessor
 		var __stream:FileStream = new FileStream();
 		var __ba:ByteArray = null;
 		var __imgFile:File = getFile(_saveData.picType);
-		if(_openState == StateType.SAVE_META)
+		if(_saveData.type == StateType.SAVE_META)
 		{
-			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName, __imgFile.name));
-			__stream.close();
+			saveMetadata(__imgFile.name);
 		}
-		else if(_openState == StateType.SAVE_SHEET_PIC)
+		else if(_saveData.type == StateType.SAVE_SHEET_PIC)
 		{
-			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
-			__stream.open(__imgFile, FileMode.WRITE);
-			__stream.writeBytes(__ba);
-			__stream.close();
+			savePic(__imgFile, _saveData.bitmapData, _saveData.picType, _saveData.quality);
 		}
-		else if(_openState == StateType.SAVE_ALL)
+		else if(_saveData.type == StateType.SAVE_ALL)
 		{
-			//使用sheet的扩展名（数组元素0）新建一个File
-			__ba = getSheet(_saveData.bitmapData, _saveData.picType, _saveData.quality);
-			__stream.open(__imgFile, FileMode.WRITE);
-			__stream.writeBytes(__ba);
-			__stream.close();
-			
-			//使用metadata的扩展名（数组元素1）新建一个File
-			__stream.open(getFile(_saveData.metaType), FileMode.WRITE);
-			__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName,__imgFile.name));
-			__stream.close();
+			saveMetadata(__imgFile.name);
+			savePic(__imgFile, _saveData.bitmapData, _saveData.picType, _saveData.quality);
 		}
-		else if(_openState == StateType.SAVE_SEQ)
+		else if(_saveData.type == StateType.SAVE_SEQ)
 		{
 			var __bmds:Vector.<BitmapData> = _saveData.bitmapDataList;
 			var __names:Vector.<String> = _saveData.fileNameList;
@@ -113,12 +107,29 @@ public class FileSaverModel extends FileProcessor
 			var __ext:String = _saveData.picType;
 			for (var i:int = 0; i < __bmds.length; i++) 
 			{
-				__ba = getSheet(__bmds[i], __ext, _saveData.quality);
-				__stream.open(_file.resolvePath(__names[i]), FileMode.WRITE);
-				__stream.writeBytes(__ba);
-				__stream.close();
+				savePic(_file.resolvePath(__names[i]), __bmds[i], __ext, _saveData.quality);
 			}
 		}
+		dispatch(new SSEvent(SSEvent.CLOSE_EXPORT));
+	}
+	
+	//保存metadata信息，其中需要传递图像文件名
+	private function saveMetadata($name:String):void
+	{
+		var __stream:FileStream = new FileStream();
+		__stream.open(getFile(SpriteSheetMetadataType.getTypeExt(_saveData.metaType)), FileMode.WRITE);
+		__stream.writeUTFBytes(_saveData.metadata.objectify(_saveData.isSimple, _saveData.includeName, $name));
+		__stream.close();
+	}
+	
+	//保存图像，包括sheet或者序列图中的一帧
+	private function savePic($file:File, $bmd:BitmapData, $picType:String, $quality:int):void
+	{
+		var __stream:FileStream = new FileStream();
+		var __ba:ByteArray = getSheet($bmd, $picType, $quality);
+		__stream.open($file, FileMode.WRITE);
+		__stream.writeBytes(__ba);
+		__stream.close();
 	}
 	
 	//----------------------------------------
@@ -130,7 +141,17 @@ public class FileSaverModel extends FileProcessor
 	 */	
 	private function getFile($ext:String):File
 	{
-		var __file:File = _file.parent.resolvePath(_file.name.split('.')[0]+$ext);
+		var __newFileName:String = _file.name;
+		var __fileNameAndExt:Array = __newFileName.split('.');
+		if(__fileNameAndExt.length>1)
+		{
+			__newFileName = __fileNameAndExt[0] + "." + $ext;
+		}
+		else
+		{
+			__newFileName += ("." + $ext);
+		}
+		var __file:File = _file.parent.resolvePath(__newFileName);
 		return __file;
 	}
 	

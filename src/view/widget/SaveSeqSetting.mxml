@@ -15,21 +15,15 @@
 	<s:VGroup width="100%">
 		<s:HGroup width="100%" verticalAlign="middle">
 			<s:Label>
-				<s:text>{FxGettext.gettext("Prefix")}</s:text>
+				<s:text>{FxGettext.gettext("File name:")}</s:text>
 			</s:Label>
-			<s:TextInput id="preTI" width="100%" change="preview()"/>
+			<s:TextInput id="fileNameTI" width="100%" change="preview()" text="frame_##" maxChars="30"/>
 		</s:HGroup>
 		<s:HGroup width="100%" verticalAlign="middle">
 			<s:Label >
 				<s:text>{FxGettext.gettext("Start at:")}</s:text>
 			</s:Label>
-			<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" stepSize="1" width="100%" change="preview()"/>
-		</s:HGroup>
-		<s:HGroup width="100%" verticalAlign="middle">
-			<s:Label >
-				<s:text>{FxGettext.gettext("Digits:")}</s:text>
-			</s:Label>
-			<s:NumericStepper id="numNS" minimum="1" maximum="6" maxChars="1" stepSize="1" width="100%" change="fillTen()"/>
+			<s:NumericStepper id="startNS" minimum="0" maximum="999999" maxChars="6" stepSize="1" valueFormatFunction="intFun" width="100%" change="preview()"/>
 		</s:HGroup>
 	</s:VGroup>
 	<s:HGroup verticalAlign="middle">
@@ -55,9 +49,33 @@
 		import events.SSEvent;
 		
 		import gnu.as3.gettext.FxGettext;
+		import org.zengrong.assets.AssetsType;
+		
+		import utils.Funs;
+		
+		//用作数字占位符
+		private static const PLACEHOLDER:String = "#";
 		
 		private var _ten:Array=[0];	//编号位数中每一位的十进制最小值，例如10，1000，1000
 		[Bindable] private var _fileName:String;	//主文件名
+		
+		private var _imageType:String;
+		
+		public function get imageType():String
+		{
+			return _imageType;
+		}
+		
+		public function set imageType(value:String):void
+		{
+			_imageType = value;
+			preview();
+		}
+
+		private function intFun($value:Number):String
+		{
+			return String(int($value));
+		}
 		
 		/**
 		 * 根据提供的文件数量返回符合命名规则的文件名数组
@@ -72,10 +90,9 @@
 			return __names;
 		}
 		
-		private var _imgExt:String;
-		public function preview($imgExt:String=""):void
+
+		private function preview():void
 		{
-			_imgExt = $imgExt;
 			_fileName = getFileName(startNS.value);
 		}
 		
@@ -84,25 +101,35 @@
 		 */
 		private function getFileName($num:int):String
 		{
-			var __str:String = preTI.text;
-			for(var i:int=0; i<_ten.length; i++)
+			var __str:String = fileNameTI.text;
+			//有几个占位符
+			var __holderNum:int = __str.split(PLACEHOLDER).length - 1;
+			if(__holderNum<=0)
 			{
-				//位数不够的数字补0
-				if($num<_ten[i])
-					__str += '0';
+				Funs.alert(FxGettext.gettext("Please input at least a # mark in the field!"));
+				return FxGettext.gettext("N/A");
 			}
-			return __str + String($num) + "." + _imgExt;
-		}
-		
-		protected function fillTen():void
-		{
+			else if(__holderNum > 6)
+			{
+				Funs.alert(FxGettext.gettext("The largest number is 6!"));
+				return FxGettext.gettext("N/A");
+			}
 			//更新每位的最大值的数组
 			_ten = [];
-			for(var i:int=1;i<numNS.value;i++)
+			var __holderValue:String = PLACEHOLDER;
+			for(var i:int=1;i<__holderNum;i++)
 			{
 				_ten.push(Math.pow(10, i));
+				__holderValue += PLACEHOLDER;
 			}
-			preview(_imgExt);
+			var __numStr:String = $num.toString();
+			for(var j:int=0; j<_ten.length; j++)
+			{
+				//位数不够的数字补0
+				if($num<_ten[j])
+					__numStr = '0' + __numStr;
+			}
+			return __str.replace(__holderValue, __numStr) + "." + _imageType;
 		}
 		
 	]]>
