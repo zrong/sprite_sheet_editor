@@ -120,5 +120,10 @@ public class StateType
 	 * 在PicPanel界面将图片加入到Pic列表中的状态
 	 */
 	public static const ADD_TO_PIC_List:String = "addToPicList";
+	
+	/**
+	 * 在StartPanel中导入或打开文件的状态
+	 */
+	public static const OPEN_OR_IMPORT:String = "openOrImport";
 }
 }

@@ -1,18 +1,27 @@
 package model 
 {
 import events.SSEvent;
-import flash.events.IOErrorEvent;
-import flash.filesystem.File;
-import gnu.as3.gettext.FxGettext;
-import org.zengrong.assets.AssetsType;
-import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
-import org.zengrong.net.SpriteSheetLoader;
-import type.ExtendedNameType;
-import type.StateType;
+
 import flash.events.Event;
 import flash.events.FileListEvent;
+import flash.events.IOErrorEvent;
+import flash.filesystem.File;
+
+import gnu.as3.gettext.FxGettext;
+
+import org.zengrong.assets.AssetsType;
+import org.zengrong.display.spritesheet.SpriteSheet;
+import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
+import org.zengrong.net.SpriteSheetLoader;
+import org.zengrong.utils.MathUtil;
+
+import type.ExtendedNameType;
+import type.StateType;
+
 import utils.Funs;
+
 import vo.BrowseFileDoneVO;
+
 /**
  * 负责打开文件
  * @author zrong(zengrong.net)
@@ -48,25 +57,21 @@ public class FileOpenerModel extends FileProcessor
 		_openState = $state;
 		switch(_openState)
 		{
-			case StateType.SWF:
-				_file.browseForOpen(FxGettext.gettext("Select a swf file"), [ExtendedNameType.SWF_FILTER]);
-				break;
-			case StateType.SS:
-				_file.browseForOpen(FxGettext.gettext("Select a Sprite Sheet file"), ExtendedNameType.ALL_PIC_FILTER_LIST);
-				break;
-			case StateType.PIC:
-				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), ExtendedNameType.ALL_PIC_FILTER_LIST);
+			case StateType.OPEN_OR_IMPORT:
+				_file.browseForOpenMultiple(FxGettext.gettext("Select a/some compatible file(s) for open"), 
+					ExtendedNameType.ALL_FILTER_LIST);
 				break;
 			case StateType.ADD_TO_PIC_List:
-				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), ExtendedNameType.ALL_PIC_FILTER_LIST);
+				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), 
+					ExtendedNameType.ALL_PIC_FILTER_LIST);
 				break;
 			case StateType.ADD_TO_SS:
-				_file.browseForOpenMultiple(FxGettext.gettext("Select image file"), ExtendedNameType.ALL_PIC_FILTER_LIST);
+				_file.browseForOpenMultiple(FxGettext.gettext("Select image or metadata file"), 
+					ExtendedNameType.ALL_TEXT_FILTER_LIST.concat(ExtendedNameType.ALL_PIC_FILTER_LIST));
 				break;
 		}
 	}
 	
-		
 	/**
 	 * 打开一个被拖入界面中的文件
 	 * @param	$file 要处理的文件，可能是一个File，也可能是File数组
@@ -75,6 +80,23 @@ public class FileOpenerModel extends FileProcessor
 	public function openFilesByDrag($files:Array, $openState:String):void
 	{
 		_openState = $openState;
+		checkSelectedFiles($files);
+	}
+	
+	/**
+	 * 通过检测打开的文件的扩展名，判断应该进入哪个界面
+	 * 		//对于图像文件的处理，会自动搜索同名的metadata
+		//若没有则作为图像处理，否则作为SpriteSheet打开
+	 */
+	private function checkOpenOrImportFiles($files:Array):void
+	{
+		var __state:String = Funs.getStateByFile($files[0]);
+		if(!__state)
+		{
+			Funs.alert(FxGettext.gettext("These files are not supported!"));
+			return;
+		}
+		_openState = __state;
 		checkSelectedFiles($files);
 	}
 	
@@ -110,14 +132,23 @@ public class FileOpenerModel extends FileProcessor
 	//----------------------------------------
 	// handler
 	//----------------------------------------
+	//选择单个文件
 	override protected function handler_selectSingle($evt:Event):void
 	{
 		checkSelectedFiles([_file.clone()]);
 	}
 	
+	//选择多个文件
 	override protected function handler_selectMulti($evt:FileListEvent):void
 	{
-		checkSelectedFiles($evt.files);
+		if(_openState == StateType.OPEN_OR_IMPORT)
+		{
+			checkOpenOrImportFiles($evt.files);
+		}
+		else
+		{
+			checkSelectedFiles($evt.files);	
+		}
 	}
 	
 	/**
@@ -125,7 +156,26 @@ public class FileOpenerModel extends FileProcessor
 	 */
 	private function handler_ssLoadComplete($evt:Event):void
 	{
-		ssModel.updateOriginalSheet(_ssLoader.getSpriteSheet());
+		var __ss:SpriteSheet = _ssLoader.getSpriteSheet();
+		//对于没有名称的metadata，自动为其加入名称。
+		//这样处理的必要性在于，某些metadata必须要使用名称（例如Starling、cocos2d），若此处不加入，那么在导出该种metadata的时候
+		//就会出现没有名称的情况
+		if(!__ss.metadata.hasName)
+		{
+			//帧数量的位数
+			var __zeroCount:int = String(__ss.metadata.totalFrame).length;
+			var __names:Vector.<String> = new Vector.<String>;
+			var __namesIndex:Object = {};
+			for(var i:int=0; i< __ss.metadata.totalFrame; i++)
+			{
+				__names[i] = "frame_" + MathUtil.addZeroBeforeInt(i+1, __zeroCount);
+				__namesIndex[__names[i]] = i;
+			}
+			__ss.metadata.hasName = true;
+			__ss.metadata.names = __names;
+			__ss.metadata.namesIndex = __namesIndex;
+		}
+		ssModel.updateOriginalSheet(__ss);
 		stateModel.state = StateType.SS;
 	}
 	

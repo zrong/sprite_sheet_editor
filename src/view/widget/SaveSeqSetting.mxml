@@ -49,14 +49,15 @@
 		import events.SSEvent;
 		
 		import gnu.as3.gettext.FxGettext;
+		
 		import org.zengrong.assets.AssetsType;
+		import org.zengrong.utils.MathUtil;
 		
 		import utils.Funs;
 		
 		//用作数字占位符
 		private static const PLACEHOLDER:String = "#";
 		
-		private var _ten:Array=[0];	//编号位数中每一位的十进制最小值，例如10，1000，1000
 		[Bindable] private var _fileName:String;	//主文件名
 		
 		private var _imageType:String;
@@ -70,6 +71,11 @@
 		{
 			_imageType = value;
 			preview();
+		}
+		
+		public function get isNA():Boolean
+		{
+			return _fileName == FxGettext.gettext("N/A");
 		}
 
 		private function intFun($value:Number):String
@@ -114,22 +120,12 @@
 				Funs.alert(FxGettext.gettext("The largest number is 6!"));
 				return FxGettext.gettext("N/A");
 			}
-			//更新每位的最大值的数组
-			_ten = [];
 			var __holderValue:String = PLACEHOLDER;
 			for(var i:int=1;i<__holderNum;i++)
 			{
-				_ten.push(Math.pow(10, i));
 				__holderValue += PLACEHOLDER;
 			}
-			var __numStr:String = $num.toString();
-			for(var j:int=0; j<_ten.length; j++)
-			{
-				//位数不够的数字补0
-				if($num<_ten[j])
-					__numStr = '0' + __numStr;
-			}
-			return __str.replace(__holderValue, __numStr) + "." + _imageType;
+			return __str.replace(__holderValue, MathUtil.addZeroBeforeInt($num, __holderNum)) + "." + _imageType;
 		}
 		
 	]]>

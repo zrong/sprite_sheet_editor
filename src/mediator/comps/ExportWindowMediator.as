@@ -52,62 +52,71 @@ public class ExportWindowMediator extends Mediator
 	{
 		v.init( ssModel.originalSheet.metadata.hasName);
 		
-		
 		eventMap.mapListener(v.saveBTN, MouseEvent.CLICK, handler_save);
-		eventMap.mapListener(v.nameCB, Event.CHANGE, handler_nameCBChange);
 		
 		v.init(ssModel.originalSheet.metadata.hasName);
 	}
 	
 	override public function onRemove():void 
 	{
-		
 		eventMap.unmapListener(v.saveBTN, MouseEvent.CLICK, handler_save);
-		eventMap.unmapListener(v.nameCB, Event.CHANGE, handler_nameCBChange);
-	}
-	
-	
-	protected function handler_nameCBChange($evt:Event):void
-	{
-		ssModel.adjustedSheet.metadata.hasName = v.nameCB.selected;
 	}
 	
 	private function handler_save($evt:MouseEvent):void
 	{
 		updateMetadata();
 		var __vo:MetadataPreferenceVO = v.exportPrefenence;
-		__vo.metadata = getMetadata(__vo.metaType);
 		//首先判断是否要保存序列
 		if(__vo.metaType == ExportWindow.SEQUENCE)
 		{
-			__vo.fileNameList = v.getSeqFileNames(ssModel.adjustedSheet.metadata.totalFrame);
+			if(v.saveSeq.isNA)
+			{
+				Funs.alert(FxGettext.gettext("Please correct the file name!"));
+				return;
+			}
+			__vo.fileNameList = v.saveSeq.getFileNames(ssModel.adjustedSheet.metadata.totalFrame);
 			__vo.type = StateType.SAVE_SEQ;
 			//根据显示的帧类型来保存序列
 			__vo.bitmapDataList = ssModel.getBMDList(v.saveSeq.frameCropDisplayRBG.selectedValue as Boolean);
+			fileSaver.save(__vo);
 		}
-		//包含图像
-		else if(v.includeImageCb.selected)
+		//SpriteSheet格式
+		else 
 		{
-			var __ref:PicPreferenceVO = app.ss.optPanel.preference;
-			__vo.bitmapData = 
-				ssModel.getBitmapDataForSave(
-					__vo.maskType, 
-					__ref.transparent, 
-					__ref.bgColor);
-			__vo.type = StateType.SAVE_SHEET_PIC;
-			//如果又包含了metadata，就是包含所有
-			if(v.includeMetadataCb.selected) __vo.type = StateType.SAVE_ALL;
+			__vo.metadata = getMetadata(__vo.metaType);
+			//对于SSE的SpriteSheet格式，选择是否包含name
+			if(SpriteSheetMetadataType.isSSEType(__vo.metaType))
+			{
+				__vo.metadata.hasName = v.nameCB.selected;
+			}
+			//其他的格式一律认为必须包含name，因为Starling/cocos2d格式是必须包含name的。
+			else
+			{
+				__vo.metadata.hasName = true;
+			}
+			if(v.includeImageCb.selected)
+			{
+				var __ref:PicPreferenceVO = app.ss.optPanel.preference;
+				__vo.bitmapData = 
+					ssModel.getBitmapDataForSave(
+						__vo.maskType, 
+						__ref.transparent, 
+						__ref.bgColor);
+				__vo.type = StateType.SAVE_SHEET_PIC;
+				//如果又包含了metadata，就是包含所有
+				if(v.includeMetadataCb.selected) __vo.type = StateType.SAVE_ALL;
+			}
+			else if(v.includeMetadataCb.selected)
+			{
+				__vo.type = StateType.SAVE_META;
+			}
+			else
+			{
+				Funs.alert(FxGettext.gettext("Please select the content for save!"));
+				return;
+			}
+			fileSaver.save(__vo);
 		}
-		else if(v.includeMetadataCb.selected)
-		{
-			__vo.type = StateType.SAVE_META;
-		}
-		else
-		{
-			Funs.alert(FxGettext.gettext("Please select the content for save!"));
-			return;
-		}
-		fileSaver.save(__vo);
 	}
 	
 	private function getMetadata($metaType:String):ISpriteSheetMetadata

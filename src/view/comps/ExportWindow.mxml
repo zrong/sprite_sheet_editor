@@ -108,11 +108,6 @@
 			return _preference;
 		}
 			
-		public function getSeqFileNames($num:int):Vector.<String>
-		{
-			return saveSeq.getFileNames($num);
-		}
-			
 		protected function handler_exportDDLChange($evt:IndexChangeEvent):void
 		{
 			var __type:String = exportDDL.selectedItem.data as String;
