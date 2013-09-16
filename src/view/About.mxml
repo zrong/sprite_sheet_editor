@@ -6,15 +6,13 @@
 		  width="500" height="300" resizable="true"
 		  showStatusBar="false" minimizable="false"
 		  closing="handler_closing(event)"
-		  backgroundColor="0x696969"
-		  creationComplete="handler_create(event)">
+		  backgroundColor="0x696969">
 	<fx:Script>
 	<![CDATA[
-		import mx.events.FlexEvent;
-		import utils.Global;
-		
 		import flashx.textLayout.conversion.TextConverter;
 		import flashx.textLayout.elements.TextFlow;
+		
+		import mx.events.FlexEvent;
 		
 		import org.zengrong.air.utils.getDesc;
 		

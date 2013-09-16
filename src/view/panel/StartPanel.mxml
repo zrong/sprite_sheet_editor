@@ -37,9 +37,12 @@
 	</s:HGroup>
 	<fx:Script>
 	<![CDATA[
+		import flash.display.NativeWindow;
 		import flash.net.navigateToURL;
 		
 		import gnu.as3.gettext.FxGettext;
+		
+		import mx.core.FlexGlobals;
 		
 		import org.zengrong.utils.SOUtil;
 		
@@ -48,6 +51,7 @@
 		import type.ExtendedNameType;
 		
 		import utils.Funs;
+		import utils.Global;
 		
 		import view.About;
 		

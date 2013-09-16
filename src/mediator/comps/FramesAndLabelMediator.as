@@ -1,7 +1,5 @@
 package mediator.comps
 {
-import com.hurlant.util.asn1.parser.boolean;
-
 import events.SSEvent;
 
 import flash.display.BitmapData;
