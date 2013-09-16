@@ -19,7 +19,7 @@ import utils.Funs;
 import view.panel.SSPanel;
 
 import vo.FrameVO;
-import vo.RectsAndBmdsVO;
+import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
 
 public class SSPanelMediator extends Mediator
@@ -137,25 +137,11 @@ public class SSPanelMediator extends Mediator
 			return;
 		}
 		trace('优化帧数：', ssModel.originalSheet.metadata.totalFrame, ssModel.adjustedSheet.metadata.totalFrame);
-		var __list:RectsAndBmdsVO = ssModel.getRectsAndBmds(__picPref.trim, __picPref.resetRect);
-		trace('新生成的：', __list.bmds, __list.frameRects, __list.originRects)
-		//保存新计算出的WH
-		var __whRect:Rectangle = new Rectangle();
-		//保存新计算出的每个帧在大Sheet中放置的位置
-		var __newFrameRects:Vector.<Rectangle> = new Vector.<Rectangle>;
-		//重新计算出最终Sheet的宽高以及修改过的frameRect
-		Funs.calculateSize(	
-			__list.frameRects, 
-			__newFrameRects, 
-			__whRect,
-			__picPref.limitWidth,
-			__picPref.explicitSize,
-			__picPref.powerOf2,
-			__picPref.square
-		);
+		var __list:OptimizedResultVO = ssModel.optimize(__picPref);
+		trace('新生成的：', __list.bmds, __list.frameRects, __list.originRects);
 		//绘制大Sheet位图
-		var __sheetBmd:BitmapData = new BitmapData(__whRect.width, __whRect.height, __picPref.transparent, __picPref.bgColor);
-		ssModel.redrawAdjustedSheet(__sheetBmd, new RectsAndBmdsVO(__list.bmds, __list.originRects, __newFrameRects));
+		var __sheetBmd:BitmapData = new BitmapData(__list.bigSheetRect.width, __list.bigSheetRect.height, __picPref.transparent, __picPref.bgColor);
+		ssModel.redrawAdjustedSheet(__sheetBmd, __list);
 		v.sheetPreview.source = ssModel.adjustedSheet.bitmapData;
 		//优化完毕，FramesAndLabel需要更新
 		dispatch(new SSEvent(SSEvent.OPTIMIZE_SHEET_DONE));

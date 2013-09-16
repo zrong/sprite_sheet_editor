@@ -9,8 +9,11 @@ import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.utils.BitmapUtil;
 
+import utils.calc.FrameCalculator;
+import utils.calc.CalculatorType;
+
+import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
-import vo.RectsAndBmdsVO;
 
 /**
  * 暂存编辑过程中的位图资源
@@ -117,7 +120,7 @@ public class SpriteSheetModel extends Actor
 	 * @param	$bmd
 	 * @param	$list
 	 */
-	public function redrawAdjustedSheet($bmd:BitmapData, $list:RectsAndBmdsVO):void
+	public function redrawAdjustedSheet($bmd:BitmapData, $list:OptimizedResultVO):void
 	{
 		_adjustedSheet.setFrames($list.bmds, $list.frameRects, $list.originRects, originalSheet.metadata.names);
 		_adjustedSheet.drawSheet($bmd);
@@ -145,12 +148,19 @@ public class SpriteSheetModel extends Actor
 		return adjustedSheet.bitmapData;
 	}
 	
+	public function optimize($picPref:PicPreferenceVO):OptimizedResultVO
+	{
+		var __list:OptimizedResultVO = getRectsAndBmds($picPref.trim, $picPref.resetRect);
+		var __calculator:FrameCalculator = FrameCalculator.getCalculator(CalculatorType.BASIC);
+		return __calculator.calc(__list, $picPref);
+	}
+	
 	/**
 	 * 返回生成的原始帧rect尺寸（origin），在大sheet中的rect尺寸（frame），以及所有的BitmapData列表（bmd）
 	 * @param $trim 是否修剪
 	 * @param $reset 是否重置大小
 	 */
-	public function getRectsAndBmds($trim:Boolean, $reset:Boolean):RectsAndBmdsVO
+	private function getRectsAndBmds($trim:Boolean, $reset:Boolean):OptimizedResultVO
 	{
 		//所有的BitmapData列表
 		var __bmd:Vector.<BitmapData> = null;
@@ -206,7 +216,7 @@ public class SpriteSheetModel extends Actor
 				__origin[j].y = 0;
 			}
 		}
-		return  new RectsAndBmdsVO(__bmd, __origin, __frame);
+		return  new OptimizedResultVO(__bmd, __origin, __frame);
 	}
 
 }

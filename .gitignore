@@ -4,8 +4,9 @@
 .settings
 *.as3proj
 *.bat
-bin
-obj
-bat
-dist
+bin-debug/
+bin/
+obj/
+bat/
+dist/
 build.properties

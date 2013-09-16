@@ -11,6 +11,7 @@
 	<![CDATA[
 		import flashx.textLayout.conversion.TextConverter;
 		import flashx.textLayout.elements.TextFlow;
+		import utils.Global;
 		
 		import mx.events.FlexEvent;
 		
