@@ -10,6 +10,6 @@ public class CalculatorType
 	 */
 	public static const BASIC:String = "basic";
 	
-	public static const MAX_RECT:String = "maxRect";
+	public static const MAX_RECTS:String = "maxRects";
 }
 }

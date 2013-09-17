@@ -1,6 +1,7 @@
 package model
 {
 import flash.display.BitmapData;
+import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
 import org.robotlegs.mvcs.Actor;
@@ -9,17 +10,18 @@ import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.utils.BitmapUtil;
 
-import utils.calc.FrameCalculatorManager;
 import utils.calc.CalculatorType;
+import utils.calc.FrameCalculatorManager;
+import utils.calc.IFrameCalculator;
 
 import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
-import utils.calc.IFrameCalculator;
 
 /**
  * 暂存编辑过程中的位图资源
- * @author zrong
- * 创建日期：2012-07-25
+ * @author zrong(zengrong.net)
+ * Creation: 2012-07-25
+ * Modification: 2013-09-17
  */
 public class SpriteSheetModel extends Actor
 {
@@ -149,75 +151,117 @@ public class SpriteSheetModel extends Actor
 		return adjustedSheet.bitmapData;
 	}
 	
+	/**
+	 * 根据提供的参数对Sheet进行优化
+	 * @param $picPref BuildSetting组件中提供的优化
+	 * @return 优化之后的图像数组、
+	 */
 	public function optimize($picPref:PicPreferenceVO):OptimizedResultVO
 	{
-		var __list:OptimizedResultVO = getRectsAndBmds($picPref.trim, $picPref.resetRect);
+		var __list:OptimizedResultVO = getRectsAndBmds($picPref);
 		var __calculator:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
 		return __calculator.calc(__list, $picPref);
 	}
 	
 	/**
 	 * 返回生成的原始帧rect尺寸（origin），在大sheet中的rect尺寸（frame），以及所有的BitmapData列表（bmd）
-	 * @param $trim 是否修剪
-	 * @param $reset 是否重置大小
 	 */
-	private function getRectsAndBmds($trim:Boolean, $reset:Boolean):OptimizedResultVO
+	private function getRectsAndBmds($picPref:PicPreferenceVO):OptimizedResultVO
 	{
 		//所有的BitmapData列表
-		var __bmd:Vector.<BitmapData> = null;
-		//在大sheet中的rect列表
-		var __frame:Vector.<Rectangle> = null;
-		//原始的（在程序中使用的）rect列表
-		var __origin:Vector.<Rectangle> = null; 
-		if($trim)
+		var __bmds:Vector.<BitmapData> = null;
+		//修剪过的rect列表，这个Rectangle并不包含在大sheet中的坐标信息
+		//大sheet中的坐标信息在IFrameCalculator中设置
+		var __frames:Vector.<Rectangle> = null;
+		//原始的（未修剪）rect列表
+		var __origins:Vector.<Rectangle> = null; 
+		//处理修剪
+		if($picPref.trim)
 		{
-			__bmd = new Vector.<BitmapData>;
-			__frame = new Vector.<Rectangle>;
-			__origin = new Vector.<Rectangle>; 
-			var __sizeRect:Rectangle = null;
+			__frames = new Vector.<Rectangle>;
+			__origins = new Vector.<Rectangle>; 
 			//用于保存执行trim方法后的结果
 			var __trim:Object = null;
-			for (var i:int=0; i < originalSheet.metadata.totalFrame; i++) 
+			var i:int=0;
+			if($picPref.resetRect)
 			{
-				__trim = BitmapUtil.trim(originalSheet.getBMDByIndex(i));
-				__sizeRect = originalSheet.metadata.originalFrameRects[i];
-				__frame[i] = __trim.rect;
-				//如果重设帧的尺寸，就使用trim过后的帧的宽高建立一个新的Rect尺寸，并更新bmd
-				if($reset)
+				__bmds = new Vector.<BitmapData>;
+				for (i=0; i < originalSheet.metadata.totalFrame; i++) 
 				{
-					__origin[i] = new Rectangle(0,0,__trim.rect.width,__trim.rect.height);
-					__bmd[i] = __trim.bitmapData;
+					//对每张小图进行修剪操作
+					__trim = BitmapUtil.trimByColor(originalSheet.getBMDByIndex(i));
+					__frames[i] = __trim.rect;
+					//重设帧的尺寸，就使用trim过后的帧的宽高建立一个新的Rect尺寸，并更新bmd
+					__origins[i] = new Rectangle(0,0,__trim.rect.width,__trim.rect.height);
+					__bmds[i] = __trim.bitmapData;
 				}
-				else
+			}
+			else
+			{
+				for (i=0; i < originalSheet.metadata.totalFrame; i++) 
 				{
-					//如果不重设帧的尺寸，就使用原始大小的宽高。同时计算trim后的xy的偏移。
+					//对每张小图进行修剪操作
+					__trim = BitmapUtil.trimByColor(originalSheet.getBMDByIndex(i));
+					var __sizeRect:Rectangle = originalSheet.metadata.originalFrameRects[i];
+					__frames[i] = __trim.rect;
+					//不重设帧的尺寸，就使用原始大小的宽高。同时计算trim后的xy的偏移。
 					//因为获得xy的偏移是基于与原始帧大小的正数，要将其转换为基于trim后的帧的偏移，用0减
-					//不重设尺寸的情况下，不更新bmd，因为原始尺寸没变。SpriteSheet中保存的bmdList，永远都与原始尺寸相同
-					__bmd = originalSheet.cloneFrames();
-					__origin[i] = new Rectangle(
+					__origins[i] = new Rectangle(
 						0-__trim.rect.x,
 						0-__trim.rect.y,
 						__sizeRect.width, 
 						__sizeRect.height);
 				}
+				//不重设尺寸的情况下，不更新bmd，因为原始尺寸没变。SpriteSheet中保存的bmdList，永远都与原始尺寸相同
+				__bmds = originalSheet.cloneFrames();
 			}
 		}
+		//不修剪就复制
 		else
 		{
 			//bmdlist永远都是原始尺寸的，因此不需要重新绘制
-			__bmd = originalSheet.cloneFrames();
-			__frame = originalSheet.metadata.frameRects.concat();
-			__origin = originalSheet.metadata.originalFrameRects.concat();
+			__bmds = originalSheet.cloneFrames();
+			__frames = originalSheet.metadata.frameRects.concat();
+			__origins = originalSheet.metadata.originalFrameRects.concat();
 			//不trim，将以前trim过的信息还原
-			for (var j:int = 0; j < __frame.length; j++) 
+			for (var j:int = 0; j < __frames.length; j++) 
 			{
-				__frame[j].width = __origin[j].width;
-				__frame[j].height = __origin[j].height;
-				__origin[j].x = 0;
-				__origin[j].y = 0;
+				__frames[j].width = __origins[j].width;
+				__frames[j].height = __origins[j].height;
+				__origins[j].x = 0;
+				__origins[j].y = 0;
 			}
 		}
-		return  new OptimizedResultVO(__bmd, __origin, __frame);
+		//对位图和尺寸进行缩放
+		if($picPref.scale != 1)
+		{
+			for(var k:int=0;k<__bmds.length;k++)
+			{
+				var __oldBmd:BitmapData = __bmds[k];
+				var __scaleBmd:BitmapData = new BitmapData(
+					__oldBmd.width*$picPref.scale, 
+					__oldBmd.height*$picPref.scale, 
+					$picPref.transparent, 
+					$picPref.bgColor);
+				var __matrix:Matrix = new Matrix();
+				__matrix.scale($picPref.scale, $picPref.scale);
+				__scaleBmd.draw(__oldBmd, __matrix, null, null, null, $picPref.smooth);
+				__bmds[k] = __scaleBmd;
+				var __oldFrameRect:Rectangle = __frames[k];
+				__frames[k] = new Rectangle(
+					__oldFrameRect.x*$picPref.scale,
+					__oldFrameRect.y*$picPref.scale,
+					__oldFrameRect.width*$picPref.scale,
+					__oldFrameRect.height*$picPref.scale );
+				var __oldOriginRect:Rectangle = __origins[k];
+				__origins[k] = new Rectangle(
+					__oldOriginRect.x*$picPref.scale,
+					__oldOriginRect.y*$picPref.scale,
+					__oldOriginRect.width*$picPref.scale,
+					__oldOriginRect.height*$picPref.scale );
+			}
+		}
+		return new OptimizedResultVO(__bmds, __origins, __frames);
 	}
 
 }

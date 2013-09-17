@@ -90,6 +90,7 @@ public class BasicCalculator implements IFrameCalculator
 				//使用当前计算出的面积开方得到正方形的基准尺寸
 				var __newWH:int = Math.sqrt($bigSheetRect.width*$bigSheetRect.height);
 				//trace("newWH:", __newWH, $explicitSize);
+				
 				//使用基准尺寸重新排列一次
 				if($exeTime==0)
 				{

@@ -3,6 +3,9 @@
 		  xmlns:s="library://ns.adobe.com/flex/spark"
 		  xmlns:utils="com.youxi.utils.*"
 		  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:ns="http://flex.apache.org/experimental/ns">
+	<!-- @author zrong(zengrong.net) -->
+	<!-- Modification: 2013-09-17 -->
+	<!-- Optimizate the Big Sheet -->
 	<s:layout>
 		<s:VerticalLayout horizontalAlign="center" verticalAlign="middle" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
 	</s:layout>
@@ -56,7 +59,6 @@
 			</s:CheckBox>
 		</s:VGroup>
 		<s:VGroup width="100%">
-			<!--<s:CheckBox id="OptimizedCB" label="优化排列" toolTip="选中后，在排列Sheet的时候，会尽量利用空白区域" visible="false"/>-->
 			<s:CheckBox id="powerOf2CB">
 				<s:label>{FxGettext.gettext("Power of 2")}</s:label>
 				<s:toolTip>{FxGettext.gettext("If selected, then output size are power of 2(e.g., 256,512)")}</s:toolTip>
@@ -67,6 +69,43 @@
 			</s:CheckBox>
 		</s:VGroup>
 	</s:HGroup>
+	<s:VGroup includeIn="buildAndOpt" width="100%">
+		<s:HGroup width="100%" gap="5">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Border padding")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="borderPaddingNS" width="50%" minimum="0" maximum="100" value="2"/>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Sprite padding")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="spritePaddingNS" width="50%" minimum="0" maximum="100" value="2"/>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Scale")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="scaleNS" width="50%" minimum="0.01" maximum="10" value="1.0" stepSize="0.01"/>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Layout algorithm")}</s:text>
+			</s:Label>
+			<s:DropDownList id="layoutDDL" requireSelection="true" width="50%">
+				<s:ArrayList>
+					<fx:Object>
+						<fx:label>{FxGettext.gettext("MaxRects")}</fx:label>
+						<fx:data>maxRects</fx:data>
+					</fx:Object>
+					<fx:Object>
+						<fx:label>{FxGettext.gettext("Basic")}</fx:label>
+						<fx:data>basic</fx:data>
+					</fx:Object>
+				</s:ArrayList>
+			</s:DropDownList>
+		</s:HGroup>
+	</s:VGroup>
 	<s:Button id="buildBTN" height="30" width="80" click="this.dispatchEvent(new SSEvent(SSEvent.BUILD))">
 		<s:label.build>{FxGettext.gettext("Build")}</s:label.build>
 		<s:label.buildAndOpt>{FxGettext.gettext("Optimize")}</s:label.buildAndOpt>
@@ -86,12 +125,17 @@
 			if(!_picPreference) _picPreference = new PicPreferenceVO();
 			_picPreference.bgColor = bgColorPicker.selectedColor;
 			_picPreference.transparent = transparentCB.selected;
-			_picPreference.limitWidth = whDDL.selectedIndex == 1;
+			_picPreference.limitWidth = whDDL.selectedIndex == 0;
+			_picPreference.smooth = smoothCB.selected;
 			_picPreference.explicitSize = whNS.value;
 			_picPreference.powerOf2 = powerOf2CB.selected;
 			_picPreference.square = squareCB.selected;
 			_picPreference.trim = trimCB.selected;
 			_picPreference.resetRect = resetRectCB.selected;
+			_picPreference.borderPadding = int(borderPaddingNS.value);
+			_picPreference.spritePadding = int(spritePaddingNS.value);
+			_picPreference.scale = scaleNS.value;
+			_picPreference.algorithm = layoutDDL.selectedItem.data;
 			return _picPreference;
 		}
 		
@@ -103,12 +147,27 @@
 				bgColorPicker.selectedColor = _picPreference.bgColor;
 				transparentCB.selected = _picPreference.transparent;
 				whDDL.selectedIndex = (_picPreference.limitWidth ? 0 : 1);
+				smoothCB.selected = _picPreference.smooth;
 				whNS.value = _picPreference.explicitSize;
 				powerOf2CB.selected = _picPreference.powerOf2;
 				squareCB.selected = _picPreference.square;
 				trimCB.selected = _picPreference.trim;
 				resetRectCB.selected = _picPreference.resetRect;
+				borderPaddingNS.value = _picPreference.borderPadding;
+				spritePaddingNS.value = _picPreference.spritePadding;
+				layoutDDL.selectedIndex = getLayerIndex(_picPreference.algorithm);
+				scaleNS.value = _picPreference.scale;
 			}
+		}
+		
+		private function getLayerIndex($algorithm:String):int
+		{
+			for(var i:int=0;i<layoutDDL.dataProvider.length;i++)
+			{
+				if(layoutDDL.dataProvider.getItemAt(i).data == $algorithm)
+					return i;
+			}
+			return 0;
 		}
 	]]>
 	</fx:Script>

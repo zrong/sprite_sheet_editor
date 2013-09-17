@@ -27,22 +27,22 @@ public class OptimizedResultVO
 	}
 	
 	/**
-	 * 在大sheet中的rect列表
+	 * 在大sheet中的rect列表，包含坐标和尺寸（修剪过的）信息
 	 */
 	public var frameRects:Vector.<Rectangle>;
 	
 	/**
-	 * 原始的（在程序中使用的）rect列表
+	 * 原始大小的（未修剪）rect列表
 	 */
 	public var  originRects:Vector.<Rectangle>;
 	
 	/**
-	 * 所有的BitmapData列表
+	 * 所有的BitmapData列表（修剪过的）
 	 */
-	public var  bmds:Vector.<BitmapData>;
+	public var bmds:Vector.<BitmapData>;
 	
 	/**
-	 * 生成的大Sheet的尺寸
+	 * 合并而成的大Sheet的尺寸
 	 */
 	public var bigSheetRect:Rectangle;
 }

@@ -107,7 +107,7 @@
 			_rectInSheet = null;
 			_whRect = null;
 			_rectInSheet = null;
-			_limitW = buildSetting.whDDL.selectedIndex == 0;
+			_limitW = buildSetting.preference.limitWidth;
 			drawFrame();
 		}
 		
@@ -156,7 +156,7 @@
 				__ma = new Matrix();
 				__ma.translate(-1*$rect.x, -1*$rect.y);
 			}
-			__bmd.draw(pic.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+			__bmd.draw(pic.content, __ma, null, null, null, buildSetting.preference.smooth);
 			return __bmd;
 		}
 		

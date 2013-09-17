@@ -105,7 +105,7 @@
 			_whRect = null;
 			_rectInSheet = null;
 			_frameRect = null;
-			_limitW = buildSetting.whDDL.selectedIndex == 0;
+			_limitW = buildSetting.preference.limitWidth;
 			drawFrame();
 		}
 		
@@ -178,7 +178,7 @@
 				if(!__ma) __ma = new Matrix;
 				__ma.translate(swf.contentX, swf.contentY);
 			}
-			__bmd.draw(swf.content, __ma, null, null, null, buildSetting.smoothCB.selected);
+			__bmd.draw(swf.content, __ma, null, null, null, buildSetting.preference.smooth);
 			return __bmd;
 		}
 	]]>

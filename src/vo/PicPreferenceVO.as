@@ -32,6 +32,11 @@ public class PicPreferenceVO
 	public var explicitSize:int = 200;
 	
 	/**
+	 * 是否开启平滑
+	 */
+	public var smooth:Boolean = false;
+	
+	/**
 	 * 是否开启2的幂
 	 */
 	public var powerOf2:Boolean = false;
@@ -50,5 +55,25 @@ public class PicPreferenceVO
 	 * 是否重设帧大小（仅当trim为true时可用）
 	 */
 	public var resetRect:Boolean = false;
+	
+	/**
+	 * 大Sheet边缘的空白，单位像素
+	 */
+	public var borderPadding:int = 2;
+	
+	/**
+	 * 每个Sprite之间的空白，单位像素
+	 */
+	public var spritePadding:int = 2;
+	
+	/**
+	 * 缩放设置
+	 */
+	public var scale:Number = 1.0;
+	
+	/**
+	 * 布局算法
+	 */
+	public var algorithm:String = "maxRects";
 }
 }
