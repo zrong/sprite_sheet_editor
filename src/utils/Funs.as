@@ -1,6 +1,8 @@
 package utils
 {
 import flash.filesystem.File;
+import flash.filesystem.FileMode;
+import flash.filesystem.FileStream;
 import flash.geom.Rectangle;
 
 import gnu.as3.gettext.FxGettext;
@@ -12,6 +14,7 @@ import mx.managers.PopUpManager;
 
 import org.zengrong.air.utils.getDesc;
 import org.zengrong.display.spritesheet.SpriteSheetMetadataType;
+import org.zengrong.net.SpriteSheetLoader;
 import org.zengrong.utils.MathUtil;
 import org.zengrong.utils.SOUtil;
 
@@ -19,6 +22,8 @@ import type.ExtendedNameType;
 import type.StateType;
 
 import view.widget.Alert;
+
+import vo.MetadataFileVO;
 
 public class Funs
 {
@@ -52,158 +57,6 @@ public class Funs
 	public static function mklocale(iso639:String, iso3166:String):String
 	{
 		return ISO_639_1.codes[iso639]+"_"+ISO_3166.codes[iso3166];
-	}
-	
-	/**
-	 * 根据提供的Rectangle数组计算最终Sheet的宽高以及每帧在Sheet中的位置
-	 * @param $frameRect 当前帧的独立大小
-	 */
-	public static function calculateSize($frameRects:Vector.<Rectangle>, 
-								   $newSizeRects:Vector.<Rectangle>,
-								   $whRect:Rectangle, 
-								   $limitW:Boolean, 
-								   $wh:int,
-								   $powOf2:Boolean=false,
-								   $square:Boolean=false):void
-	{
-		if($frameRects.length==0) return;
-		var __frameRect:Rectangle = $frameRects[0];
-		$newSizeRects[0] = new Rectangle(0,0,__frameRect.width, __frameRect.height);
-		var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
-		trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
-		//设置sheet的初始宽高
-		if($limitW)
-		{
-			//若限制宽度小于帧的宽度，就扩大限制宽度
-			$whRect.width = $wh;
-			if($whRect.width<__frameRect.width) $whRect.width = __frameRect.width;
-			//计算2的幂
-			if($powOf2) $whRect.width = MathUtil.nextPowerOf2($whRect.width);
-			$whRect.height = __frameRect.height;
-		}
-		else
-		{
-			$whRect.height = $wh;
-			if($whRect.height<__frameRect.height) $whRect.height = __frameRect.height;
-			if($powOf2) $whRect.height = MathUtil.nextPowerOf2($whRect.height);
-			$whRect.width = __frameRect.width;
-		}
-		for (var i:int = 1; i < $frameRects.length; i++) 
-		{
-			__frameRect = $frameRects[i];
-			updateRectInSheet(__rectInSheet, $whRect, __frameRect, $limitW);
-			trace('getSheetWH:', __rectInSheet, __frameRect, $whRect);
-			$newSizeRects[i] = __rectInSheet.clone();
-		}
-		if($square)
-		{
-			//计算正方形的尺寸
-			if($whRect.width!=$whRect.height)
-			{
-				//使用当前计算出的面积开方得到正方形的基准尺寸
-				var __newWH:int = Math.sqrt($whRect.width*$whRect.height);
-				//使用基准尺寸重新排列一次
-				calculateSize($frameRects,$newSizeRects,$whRect,$limitW,__newWH, $powOf2);
-				//trace('正方形计算1:', $whRect);
-				//如果基准尺寸无法实现正方形尺寸，就使用结果WH中比较大的那个尺寸作为正方形边长
-				if($whRect.width!=$whRect.height)
-				{
-					var __max:int = Math.max($whRect.width, $whRect.height);
-					$whRect.width = __max;
-					$whRect.height = __max;
-				}
-				//trace('正方形计算2:', $whRect);
-			}
-		}
-		if($powOf2)
-		{
-			$whRect.width = MathUtil.nextPowerOf2($whRect.width);
-			$whRect.height = MathUtil.nextPowerOf2($whRect.height);
-		}
-	}
-	
-	/**
-	 * 更新在Sheet中帧的Rect的位置，根据Rect位置计算出大Sheet的WH
-	 * 会直接修改$rectInSheet和$whRect参数的值。
-	 * @param $rectInSheet	当前处理的帧在整个Sheet中的位置和大小，会修改此参数的值
-	 * @param $whRect		保存Sheet的W和H，会修改此参数的值
-	 * @param $frameRect	要处理的帧大小的Rect
-	 * @param $limitW		为true代表限制宽度，否则是显示高度
-	 */
-	public static function updateRectInSheet($rectInSheet:Rectangle, 
-											 $whRect:Rectangle,
-											 $frameRect:Rectangle,
-											 $limitW:Boolean):void
-	{
-
-		//限制宽度的计算
-		if($limitW)
-		{
-			$rectInSheet.height = $frameRect.height;
-			//若限制宽度小于帧的宽度，就扩大限制宽度，并进入新行
-			if($whRect.width < $frameRect.width)
-			{
-				$whRect.width = $frameRect.width;
-				newRow($rectInSheet, $frameRect, $whRect);
-			}
-				//如果这一行的宽度已经不够放下当前的位图，就进入新行
-			else if($rectInSheet.right + $frameRect.width > $whRect.width)
-			{
-				newRow($rectInSheet, $frameRect, $whRect);
-			}
-			else
-			{
-				$rectInSheet.x += $rectInSheet.width;
-				//如果当前帧比较高，就增加Sheet的高度
-				if($whRect.height<$rectInSheet.bottom)
-					$whRect.height = $rectInSheet.bottom;
-			}
-			//更新帧的宽
-			$rectInSheet.width = $frameRect.width;
-		}
-		//限制高度的计算
-		else
-		{
-			//更新帧的宽
-			$rectInSheet.width = $frameRect.width;
-			//若限制高度小于帧的高度，就扩大限制高度，并进入新列
-			if($whRect.height < $frameRect.height)
-			{
-				$whRect.height = $frameRect.height;
-				newColumn($rectInSheet, $frameRect, $whRect);
-			}
-			//如果这一列的高度已经放不下当前的位图，就进入新列
-			else if($rectInSheet.bottom + $frameRect.height > $whRect.height)
-			{
-				newColumn($rectInSheet, $frameRect, $whRect);
-			}
-			else
-			{
-				//如果当前帧比Sheet还要宽，就增大Sheet的宽度
-				$rectInSheet.y += $rectInSheet.height;
-				if($whRect.width<$rectInSheet.right)
-					$whRect.width = $rectInSheet.right;
-			}
-			
-			$rectInSheet.height = $frameRect.height;
-		}
-	}
-	
-	private static function newRow($rectInSheet:Rectangle, $frameRect:Rectangle, $whRect:Rectangle):void
-	{
-		//让x回到行首
-		$rectInSheet.x = 0;
-		//更新新行的y值
-		$rectInSheet.y = $whRect.height;
-		//更新Sheet的高度
-		$whRect.height += $frameRect.height;
-	}
-	
-	private static function newColumn($rectInSheet:Rectangle, $frameRect:Rectangle, $whRect:Rectangle):void
-	{
-		$rectInSheet.y = 0;
-		$rectInSheet.x = $whRect.width;
-		$whRect.width += $frameRect.width;
 	}
 	
 	public static function alert($text:String, $title:String=null):void
@@ -245,22 +98,37 @@ public class Funs
 	}
 	
 	/**
-	 * 根据载入的图片的地址，获取同名的metadata文件
+	 * 根据传递的图像文件查找该图像文件对应的外部metadata文件。
+	 * 如果找不到文件，那么返回null
 	 */
-	public static function getMetadataUrl($url:String, $type:String):String
+	public static function getMetadataFile($imgFile:File):MetadataFileVO
 	{
-		var __dotIndex:int = $url.lastIndexOf('.');
-		var __typeExt:String = SpriteSheetMetadataType.getTypeExt($type);
-		if(__dotIndex == -1)
-			return $url + '.'+__typeExt;
-		return $url.slice(0, __dotIndex) + '.'+__typeExt;
-	}
-	
-	public static function hasMetadataFile($url:String, $type:String="ssexml"):Boolean
-	{
-		var __metaUrl:String = getMetadataUrl($url, $type);
-		var __file:File = new File(__metaUrl);
-		return __file.exists;
+		for(var i:int=0;i<SpriteSheetLoader.SUPPORTED_TYPES.length;i++)
+		{
+			var __type:String = SpriteSheetLoader.SUPPORTED_TYPES[i];
+			var __metaUrl:String = SpriteSheetLoader.getMetadataUrl($imgFile.url, __type);
+			var __file:File = new File(__metaUrl);
+			if(__file.exists) 
+			{
+				var __metaFile:MetadataFileVO = new MetadataFileVO(__file, __type);
+				//如果文件存在，需要判断这个文件的具体类型
+				//不能相信 __type 的值，因SSE_XML和STARLING的文件扩展名都是xml
+				if( __type == SpriteSheetMetadataType.SSE_XML ||
+					__type == SpriteSheetMetadataType.STARLING)
+				{
+					var __stream:FileStream = new FileStream();
+					__stream.open(__file, FileMode.READ);
+					var __xml:XML = new XML(__stream.readUTFBytes(__stream.bytesAvailable));
+					//若找到了对应的Tag，直接返回，不必继续循环
+					if(__xml.localName() == "TextureAtlas")
+						__metaFile.type = SpriteSheetMetadataType.STARLING;
+					else if(__xml.localName() == "metadata")
+						__metaFile.type = SpriteSheetMetadataType.SSE_XML;
+				}
+				return __metaFile;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -273,9 +141,9 @@ public class Funs
 		{
 			return StateType.SWF;
 		}
-		else if( ExtendedNameType.ALL_PIC_FILTER.extension.indexOf($file.type) > -1)
+		else if(ExtendedNameType.ALL_PIC_FILTER.extension.indexOf($file.type) > -1)
 		{
-			if(hasMetadataFile($file.url, SpriteSheetMetadataType.SSE_XML)) return StateType.SS;
+			if(getMetadataFile($file)) return StateType.SS;
 			return StateType.PIC;
 		}
 		return '';

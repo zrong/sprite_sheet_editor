@@ -11,17 +11,17 @@ import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
 
 /**
- * 帧计算器，用于计算帧的大小
+ * 管理帧计算器，用于计算帧的大小
  * @author zrong(zengrong.net)
  * Creation: 2013-09-16
  */
-public class FrameCalculator
+public class FrameCalculatorManager
 {
 	private static var _calculators:Object = {};
 	
-	public static function getCalculator($type:String):FrameCalculator
+	public static function getCalculator($type:String):IFrameCalculator
 	{
-		var __cal:FrameCalculator = _calculators[$type] as FrameCalculator;
+		var __cal:IFrameCalculator = _calculators[$type] as IFrameCalculator;
 		if(!__cal)
 		{
 			if($type == CalculatorType.BASIC)
@@ -33,14 +33,9 @@ public class FrameCalculator
 		return __cal;
 	}
 	
-	public function FrameCalculator()
+	public function FrameCalculatorManager()
 	{
-		//throw new IllegalOperationError(FxGettext.gettext("Please use getCalculator() method to get a calculateor!"));
-	}
-	
-	public function calc($optimizedResult:OptimizedResultVO, $picPref:PicPreferenceVO):OptimizedResultVO
-	{
-		return null;
+		throw new IllegalOperationError(FxGettext.gettext("Please use getCalculator() method to get a calculateor!"));
 	}
 }
 }

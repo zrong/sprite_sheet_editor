@@ -21,6 +21,7 @@ import type.StateType;
 import utils.Funs;
 
 import vo.BrowseFileDoneVO;
+import vo.MetadataFileVO;
 
 /**
  * 负责打开文件
@@ -32,7 +33,7 @@ public class FileOpenerModel extends FileProcessor
 	public function FileOpenerModel() 
 	{
 		super();
-		_ssLoader = new SpriteSheetLoader();
+		_ssLoader = new SpriteSheetLoader(JSON.parse);
 		_ssLoader.addEventListener(Event.COMPLETE, handler_ssLoadComplete);
 		_ssLoader.addEventListener(IOErrorEvent.IO_ERROR, handler_ssLoadError);
 	}
@@ -103,12 +104,16 @@ public class FileOpenerModel extends FileProcessor
 	private function checkSelectedFiles($files:Array):void
 	{
 		_selectedFiles = $files;
+		var __metafile:MetadataFileVO = null;
 		if(StateType.isViewState(_openState))
 		{
 			//如果要切换到SS状态，需要等待SS文件载入并解析完毕后才能切换状态。
 			//载入的工作交给SpriteSheetLaoderModel。
 			if(_openState == StateType.SS)
-				_ssLoader.load(File(_selectedFiles[0]).url);
+			{
+				__metafile = Funs.getMetadataFile(_selectedFiles[0] as File);
+				_ssLoader.load(File(_selectedFiles[0]).url, null, __metafile.type);
+			}
 			//如果发生选择事件的state是编辑器界面/open状态，就执行状态切换
 			else
 				stateModel.state = _openState;
@@ -118,11 +123,14 @@ public class FileOpenerModel extends FileProcessor
 		{
 			var __bfd:BrowseFileDoneVO = new BrowseFileDoneVO(_openState, _selectedFiles);
 			//向SS中加入帧的时候，要判断加入的文件是否是SS类型
-			if(_openState == StateType.ADD_TO_SS &&
-				Funs.hasMetadataFile((_selectedFiles[0] as File).url, SpriteSheetMetadataType.SSE_XML))
+			if(_openState == StateType.ADD_TO_SS )
 			{
-				__bfd.fileType = AssetsType.SPRITE_SHEET;
-				__bfd.metaType = SpriteSheetMetadataType.SSE_XML;
+				__metafile = Funs.getMetadataFile(_selectedFiles[0] as File);
+				if(__metafile)
+				{
+					__bfd.fileType = AssetsType.SPRITE_SHEET;
+					__bfd.metaType = __metafile.type;
+				}
 			}
 			this.dispatch(new SSEvent(SSEvent.BROWSE_FILE_DONE, __bfd));
 		}

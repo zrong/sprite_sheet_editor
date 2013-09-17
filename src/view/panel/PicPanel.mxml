@@ -42,12 +42,17 @@
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
+		
 		import flash.geom.Rectangle;
 		
-		import type.StateType;
 		import gnu.as3.gettext.FxGettext;
 		
+		import type.StateType;
+		
 		import utils.Funs;
+		import utils.calc.IFrameCalculator;
+		import utils.calc.FrameCalculatorManager;
+		import utils.calc.CalculatorType;
 		
 		import vo.NamesVO;
 		
@@ -217,7 +222,8 @@
 			else
 			{
 				//计算并更新当前帧在整个Sheet中的位置
-				Funs.updateRectInSheet(_rectInSheet, _whRect, __rect, _limitW);
+				var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
+				__calc.updateRectInSheet(_rectInSheet, _whRect, __rect, _limitW);
 			}
 			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
 			var __bmd:BitmapData =  drawBMD(__rect);

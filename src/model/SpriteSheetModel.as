@@ -9,11 +9,12 @@ import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.utils.BitmapUtil;
 
-import utils.calc.FrameCalculator;
+import utils.calc.FrameCalculatorManager;
 import utils.calc.CalculatorType;
 
 import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
+import utils.calc.IFrameCalculator;
 
 /**
  * 暂存编辑过程中的位图资源
@@ -151,7 +152,7 @@ public class SpriteSheetModel extends Actor
 	public function optimize($picPref:PicPreferenceVO):OptimizedResultVO
 	{
 		var __list:OptimizedResultVO = getRectsAndBmds($picPref.trim, $picPref.resetRect);
-		var __calculator:FrameCalculator = FrameCalculator.getCalculator(CalculatorType.BASIC);
+		var __calculator:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
 		return __calculator.calc(__list, $picPref);
 	}
 	

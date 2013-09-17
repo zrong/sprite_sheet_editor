@@ -55,6 +55,9 @@
 		import flash.events.Event;
 		import flash.geom.Rectangle;
 		import gnu.as3.gettext.FxGettext;
+		import utils.calc.IFrameCalculator;
+		import utils.calc.FrameCalculatorManager;
+		import utils.calc.CalculatorType;
 		
 		import type.StateType;
 		
@@ -143,7 +146,8 @@
 				else
 				{
 					//不是第一帧，直接更新rect
-					Funs.updateRectInSheet(_rectInSheet, _whRect, _frameRect, _limitW);
+					var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
+					__calc.updateRectInSheet(_rectInSheet, _whRect, _frameRect, _limitW);
 				}
 				var __bmd:BitmapData =  drawBMD(_frameRect);
 				//向Sheet中添加这个位图
