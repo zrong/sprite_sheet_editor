@@ -16,6 +16,7 @@ import utils.calc.IFrameCalculator;
 
 import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
+import gnu.as3.gettext.FxGettext;
 
 /**
  * 暂存编辑过程中的位图资源
@@ -97,8 +98,7 @@ public class SpriteSheetModel extends Actor
 	 */
 	public function updateAdjustedSheet():void
 	{
-		//TODO 将支持多语言
-		if(!_originalSheet) throw new TypeError("无法获取原始Sprite Sheet！");
+		if(!_originalSheet) throw new TypeError(FxGettext.gettext("Original Sprite Sheet is unavailable！"));
 		if(_adjustedSheet) _adjustedSheet.destroy();
 		_adjustedSheet = _originalSheet.clone();
 	}
@@ -106,6 +106,10 @@ public class SpriteSheetModel extends Actor
 	public function drawOriginalSheet($bmd:BitmapData):void
 	{
 		_originalSheet.drawSheet($bmd);
+	}
+	public function redrawOriginalSheet():void
+	{
+		
 	}
 	
 	public function addOriginalFrame($bmd:BitmapData, $sizeRect:Rectangle=null, $originalRect:Rectangle=null, $name:String=null):void
@@ -154,17 +158,20 @@ public class SpriteSheetModel extends Actor
 	/**
 	 * 根据提供的参数对Sheet进行优化
 	 * @param $picPref BuildSetting组件中提供的优化
-	 * @return 优化之后的图像数组、
+	 * @return 优化之后的图像数组
 	 */
 	public function optimize($picPref:PicPreferenceVO):OptimizedResultVO
 	{
 		var __list:OptimizedResultVO = getRectsAndBmds($picPref);
 		var __calculator:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
-		return __calculator.calc(__list, $picPref);
+		__calculator.picPreference = $picPref;
+		return __calculator.calc(__list);
 	}
 	
 	/**
 	 * 返回生成的原始帧rect尺寸（origin），在大sheet中的rect尺寸（frame），以及所有的BitmapData列表（bmd）
+	 * 这个方法只负责计算单个sprite的尺寸信息，以及大Sheet中每个Sprite的修剪情况，并不负责计算Sprite在大Sheet中的坐标信息
+	 * 大Sheet中的坐标信息在IFrameCalculator中设置
 	 */
 	private function getRectsAndBmds($picPref:PicPreferenceVO):OptimizedResultVO
 	{

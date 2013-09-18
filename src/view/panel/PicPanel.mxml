@@ -43,28 +43,20 @@
 	<![CDATA[
 		import events.SSEvent;
 		
-		import flash.geom.Rectangle;
-		
 		import gnu.as3.gettext.FxGettext;
 		
-		import type.StateType;
+		import org.zengrong.display.spritesheet.SpriteSheetMetadata;
+		import org.zengrong.utils.Vec2D;
 		
-		import utils.Funs;
-		import utils.calc.IFrameCalculator;
-		import utils.calc.FrameCalculatorManager;
-		import utils.calc.CalculatorType;
-		
-		import vo.NamesVO;
-		
-		private var _frameNum:int;				//当前正在处理的帧编号
-		private var _rectInSheet:Rectangle;	//正在处理的帧在整个Sheet上的rect位置
-		private var _whRect:Rectangle;			//保存Sheet的宽高
-		private var _limitW:Boolean;			//限制宽度还是限制高度
+		import vo.PicPreferenceVO;
 		
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
-		
+		public function get preference():PicPreferenceVO
+		{
+			return buildSetting.preference;
+		}
 		/**
 		 * 从当前界面控件的值中新建Rect
 		 */
@@ -78,11 +70,11 @@
 		/**
 		 * 获取当前正在获取的帧的Rect
 		 */
-		private function getCaptureFrameRect():Rectangle
+		public function getCaptureFrameRect($frameNum:int):Rectangle
 		{
 			//若使用自定义的Rect，且设置过Rect，就使用保存的Rect
-			if(transControlBar.useCustom && fileM.fileList.getItemAt(_frameNum).rect)
-				return Rectangle(fileM.fileList.getItemAt(_frameNum).rect);
+			if(transControlBar.useCustom && fileM.fileList.getItemAt($frameNum).rect)
+				return Rectangle(fileM.fileList.getItemAt($frameNum).rect);
 			//否则从当前界面新建
 			return getFrameRect();
 		}
@@ -90,65 +82,48 @@
 		//----------------------------------------
 		// public
 		//----------------------------------------
-
-		
 		//----------------------------------
 		//  绘制相关方法
 		//----------------------------------
-		
-		public function capture():void
+		public function init():void
 		{
-			trace('pic capture');
+			trace('pic init');
 			//保存当前选择的文件的rect
 			handler_selectionChanging(null);
 			pic.viewer.source = null;
-			pic.viewer.addEventListener(Event.COMPLETE, handler_picLoadDone);
-			_frameNum = 0;
-			_rectInSheet = null;
-			_whRect = null;
-			_rectInSheet = null;
-			_limitW = buildSetting.preference.limitWidth;
-			drawFrame();
 		}
 		
-		private function captureDone():void
+		public function destory():void
 		{
-			pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
-			//根据sheet的w和h建立一个大bitmapData
-			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
-			this.dispatchEvent(new SSEvent(SSEvent.CAPTURE_DONE, {bmd:__bmd, updateNames:getUpdateNames()}));
+			fileM.init();
+			pic.viewer.source = null;
 		}
 		
 		/**
 		 * 绘制一帧，并开始载入下一帧的图片
+		 * @return 如果draw完毕，则返回true
 		 */
-		private function drawFrame():void
+		public function drawFrame($frameNum:int):Boolean
 		{
-			if (_frameNum < fileM.fileList.length)
+			if ($frameNum < fileM.fileList.length)
 			{
-				trace('drawing frame:', _frameNum, fileM.fileList.length);
-				pic.viewer.source = File(fileM.fileList.getItemAt(_frameNum).file).url;
+				trace('drawing frame:', $frameNum, fileM.fileList.length);
+				pic.viewer.source = File(fileM.fileList.getItemAt($frameNum).file).url;
+				return false;
 			}
-			else
-			{
-				try
-				{
-					captureDone();
-				}
-				catch($err:Error)
-				{
-					Funs.alert($err.message);
-				}
-			}
+			return true;
 		}
 		
 		/**
 		 * 绘制当前帧，返回位图
 		 * @param $rect 位图的大小和偏移
 		 */
-		private function drawBMD($rect:Rectangle):BitmapData
+		public function drawBMD($rect:Rectangle):BitmapData
 		{
-			var __bmd:BitmapData = new BitmapData($rect.width, $rect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
+			var __bmd:BitmapData = new BitmapData($rect.width, 
+				$rect.height, 
+				preference.transparent, 
+				preference.bgColor);
 			var __ma:Matrix = null;
 			if(transControlBar.useCustom)
 			{
@@ -161,15 +136,13 @@
 		}
 		
 		/**
-		 * 更新保存在全局变量中的sheet中的name值
+		 * 获取图片名称
 		 */
-		private function getUpdateNames():NamesVO
+		public function getNames():Vector.<String>
 		{
 			if(fileM.fileList.length>0)
 			{
-				var __namesvo:NamesVO = new NamesVO();
 				var __names:Vector.<String> = new Vector.<String>(fileM.fileList.length);
-				var __namesIndex:Object = {};
 				var __dotIndex:int = 0;
 				var __name:String = '';
 				var __main:String = '';
@@ -181,59 +154,15 @@
 					if(__dotIndex == -1)
 						__dotIndex = __name.length;
 					__main = __name.slice(0, __dotIndex);
-					__namesIndex[__main] = i;
 					__names[i] = __main;
 				}
-				__namesvo.hasName = true;
-				__namesvo.names = __names;
-				__namesvo.namesIndex = __namesIndex;
-				return __namesvo;
+				return __names;
 			}
 			return null;
 		}
 		//----------------------------------------
 		// handler
 		//----------------------------------------
-		
-		private function handler_picLoadDone($evt:Event):void
-		{
-			var __rect:Rectangle = getCaptureFrameRect();
-			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
-			//如果没有创建过_rectInSheet，且当前是第一帧捕获，就建立第一帧在sheet中的rect位置
-			if(!_rectInSheet && _frameNum==0)
-			{
-				_rectInSheet = new Rectangle(0,0,__rect.width,__rect.height);
-				_whRect = new Rectangle();
-				//设置sheet的初始宽高
-				if(_limitW)
-				{
-					//若限制宽度小于帧的宽度，就扩大限制宽度
-					_whRect.width = buildSetting.whNS.value;
-					if(_whRect.width<__rect.width) _whRect.width = __rect.width;
-					_whRect.height = __rect.height;
-				}
-				else
-				{
-					_whRect.height = buildSetting.whNS.value;
-					if(_whRect.height<__rect.height) _whRect.height = __rect.height;
-					_whRect.width = __rect.width;
-				}
-			}
-			else
-			{
-				//计算并更新当前帧在整个Sheet中的位置
-				var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
-				__calc.updateRectInSheet(_rectInSheet, _whRect, __rect, _limitW);
-			}
-			trace('handler_picLoadDone:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',whRect:', _whRect);
-			var __bmd:BitmapData =  drawBMD(__rect);
-			//向Sheet中添加这个位图，同时添加当前帧在Sheet中的位置
-			this.dispatchEvent(new SSEvent(SSEvent.ADD_FRAME, {bmd:__bmd, rect:_rectInSheet.clone()}));
-			//绘制下一帧
-			_frameNum ++;
-			drawFrame();
-		}
-		
 		/**
 		 * 在切换选择的文件之前，将选择的帧rect信息保存在该item中
 		 */

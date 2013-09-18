@@ -20,79 +20,40 @@
 		<s:text.build>{FxGettext.gettext("Build Sprite Sheet")}</s:text.build>
 		<s:text.buildAndOpt>{FxGettext.gettext("Optimize Sprite Sheet")}</s:text.buildAndOpt>
 	</s:Label>
-	<s:HGroup width="100%">
-		<s:VGroup verticalAlign="middle" width="100%">
-			<s:CheckBox id="smoothCB">
-				<s:label>{FxGettext.gettext("Smooth")}</s:label>
-			</s:CheckBox>
-			<s:CheckBox id="transparentCB" selected="true">
-				<s:label>{FxGettext.gettext("Transparent")}</s:label>
-			</s:CheckBox>
-			<s:HGroup verticalAlign="middle">
-				<mx:ColorPicker id="bgColorPicker" enabled="{!transparentCB.selected}"/>
-				<s:Label>
-					<s:text>{FxGettext.gettext("Background")}</s:text>
-				</s:Label>
-			</s:HGroup>
-		</s:VGroup>
-		<s:VGroup width="100%" >
-			<s:DropDownList id="whDDL" requireSelection="true" width="100%">
-				<s:toolTip>{FxGettext.gettext("Select width or height of the SpriteSheet. Another dimension needed to automatically calculate.")}</s:toolTip>
-				<s:ArrayList>
-					<fx:String>{FxGettext.gettext("Width")}</fx:String>
-					<fx:String>{FxGettext.gettext("Height")}</fx:String>
-				</s:ArrayList>
-			</s:DropDownList>
-			<!-- AIR3已经取消了对位图尺寸的限制，但这里还是限制一下 -->
-			<s:NumericStepper id="whNS" width="100%" minimum="1" maximum="1000000" maxChars="6" value="200"/>
-		</s:VGroup>
-	</s:HGroup>
-	<s:HGroup includeIn="buildAndOpt" width="100%">
-		<s:VGroup width="100%">
-			<s:CheckBox id="trimCB" click="resetRectCB.selected=false;">
-				<s:label>{FxGettext.gettext("Trim blank")}</s:label>
-				<s:toolTip>{FxGettext.gettext("If selected, then in the top left corner of the pixel color as a benchmark, cutting off the edge of the redundant blank.")}</s:toolTip>
-			</s:CheckBox>
-			<s:CheckBox id="resetRectCB" visible="{trimCB.selected}">
-				<s:label>{FxGettext.gettext("Reset frame size")}</s:label>
-				<s:toolTip>{FxGettext.gettext("If selected, reset the original frame to the size after pruning blank. In metadata, the trimmed frame size and the original frame size is same. Otherwise, it has only use in the trimmed size which has been saved Sprite Sheet, and save the original frame size and trimmed frame size in the metadata.")}</s:toolTip>
-			</s:CheckBox>
-		</s:VGroup>
-		<s:VGroup width="100%">
-			<s:CheckBox id="powerOf2CB">
-				<s:label>{FxGettext.gettext("Power of 2")}</s:label>
-				<s:toolTip>{FxGettext.gettext("If selected, then output size are power of 2(e.g., 256,512)")}</s:toolTip>
-			</s:CheckBox>
-			<s:CheckBox id="squareCB">
-				<s:label>{FxGettext.gettext("Square")}</s:label>
-				<s:toolTip>{FxGettext.gettext("If selected, then output file is square,  width and height are automatic identification")}</s:toolTip>
-			</s:CheckBox>
-		</s:VGroup>
-	</s:HGroup>
-	<s:VGroup includeIn="buildAndOpt" width="100%">
-		<s:HGroup width="100%" gap="5">
+	<s:VGroup width="100%">
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
 			<s:Label width="50%" textAlign="right">
 				<s:text>{FxGettext.gettext("Border padding")}</s:text>
 			</s:Label>
 			<s:NumericStepper id="borderPaddingNS" width="50%" minimum="0" maximum="100" value="2"/>
 		</s:HGroup>
-		<s:HGroup width="100%" gap="5">
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
 			<s:Label width="50%" textAlign="right">
 				<s:text>{FxGettext.gettext("Sprite padding")}</s:text>
 			</s:Label>
 			<s:NumericStepper id="spritePaddingNS" width="50%" minimum="0" maximum="100" value="2"/>
 		</s:HGroup>
-		<s:HGroup width="100%" gap="5">
+		<s:HGroup width="100%" verticalAlign="middle">
 			<s:Label width="50%" textAlign="right">
-				<s:text>{FxGettext.gettext("Scale")}</s:text>
+				<s:text>{FxGettext.gettext("Fix")}</s:text>
 			</s:Label>
-			<s:NumericStepper id="scaleNS" width="50%" minimum="0.01" maximum="10" value="1.0" stepSize="0.01"/>
+			<s:VGroup width="50%">
+				<s:DropDownList id="whDDL" requireSelection="true" width="100%">
+					<s:toolTip>{FxGettext.gettext("Select width or height of the SpriteSheet. Another dimension needed to automatically calculate.")}</s:toolTip>
+					<s:ArrayList>
+						<fx:String>{FxGettext.gettext("Width")}</fx:String>
+						<fx:String>{FxGettext.gettext("Height")}</fx:String>
+					</s:ArrayList>
+				</s:DropDownList>
+				<!-- AIR3已经取消了对位图尺寸的限制，但这里还是限制一下 -->
+				<s:NumericStepper id="whNS" width="100%" minimum="1" maximum="1000000" maxChars="6" value="200"/>
+			</s:VGroup>
 		</s:HGroup>
-		<s:HGroup width="100%" gap="5">
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
 			<s:Label width="50%" textAlign="right">
 				<s:text>{FxGettext.gettext("Layout algorithm")}</s:text>
 			</s:Label>
-			<s:DropDownList id="layoutDDL" requireSelection="true" width="50%">
+			<s:DropDownList id="layoutDDL" requireSelection="true" width="50%" selectedIndex="1">
 				<s:ArrayList>
 					<fx:Object>
 						<fx:label>{FxGettext.gettext("MaxRects")}</fx:label>
@@ -104,6 +65,64 @@
 					</fx:Object>
 				</s:ArrayList>
 			</s:DropDownList>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Smooth")}</s:text>
+			</s:Label>
+			<s:CheckBox id="smoothCB" width="50%"/>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Transparent")}</s:text>
+			</s:Label>
+			<s:CheckBox id="transparentCB" selected="true" width="50%"/>
+		</s:HGroup>
+		<s:HGroup width="100%" verticalAlign="middle" gap="5">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Background")}</s:text>
+			</s:Label>
+			<mx:ColorPicker id="bgColorPicker" enabled="{!transparentCB.selected}"/>
+		</s:HGroup>
+	</s:VGroup>
+	<s:VGroup includeIn="buildAndOpt" width="100%">
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Trim blank")}</s:text>
+			</s:Label>
+			<s:CheckBox id="trimCB" click="resetRectCB.selected=false;" width="50%">
+				<s:toolTip>{FxGettext.gettext("If selected, then in the top left corner of the pixel color as a benchmark, cutting off the edge of the redundant blank.")}</s:toolTip>
+			</s:CheckBox>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Reset frame size")}</s:text>
+			</s:Label>
+			<s:CheckBox id="resetRectCB" enabled="{trimCB.selected}" width="50%">
+				<s:toolTip>{FxGettext.gettext("If selected, reset the original frame to the size after pruning blank. In metadata, the trimmed frame size and the original frame size is same. Otherwise, it has only use in the trimmed size which has been saved Sprite Sheet, and save the original frame size and trimmed frame size in the metadata.")}</s:toolTip>
+			</s:CheckBox>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Power of 2")}</s:text>
+			</s:Label>
+			<s:CheckBox id="powerOf2CB" width="50%">
+				<s:toolTip>{FxGettext.gettext("If selected, then output size are power of 2(e.g., 256,512)")}</s:toolTip>
+			</s:CheckBox>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Square")}</s:text>
+			</s:Label>
+			<s:CheckBox id="squareCB" width="50%">
+				<s:toolTip>{FxGettext.gettext("If selected, then output file is square,  width and height are automatic identification")}</s:toolTip>
+			</s:CheckBox>
+		</s:HGroup>
+		<s:HGroup width="100%" gap="5" verticalAlign="middle">
+			<s:Label width="50%" textAlign="right">
+				<s:text>{FxGettext.gettext("Scale")}</s:text>
+			</s:Label>
+			<s:NumericStepper id="scaleNS" width="50%" minimum="0.01" maximum="10" value="1.0" stepSize="0.01"/>
 		</s:HGroup>
 	</s:VGroup>
 	<s:Button id="buildBTN" height="30" width="80" click="this.dispatchEvent(new SSEvent(SSEvent.BUILD))">
@@ -128,14 +147,14 @@
 			_picPreference.limitWidth = whDDL.selectedIndex == 0;
 			_picPreference.smooth = smoothCB.selected;
 			_picPreference.explicitSize = whNS.value;
-			_picPreference.powerOf2 = powerOf2CB.selected;
-			_picPreference.square = squareCB.selected;
-			_picPreference.trim = trimCB.selected;
-			_picPreference.resetRect = resetRectCB.selected;
-			_picPreference.borderPadding = int(borderPaddingNS.value);
-			_picPreference.spritePadding = int(spritePaddingNS.value);
-			_picPreference.scale = scaleNS.value;
-			_picPreference.algorithm = layoutDDL.selectedItem.data;
+			if(powerOf2CB) _picPreference.powerOf2 = powerOf2CB.selected;
+			if(squareCB) _picPreference.square = squareCB.selected;
+			if(trimCB) _picPreference.trim = trimCB.selected;
+			if(resetRectCB) _picPreference.resetRect = resetRectCB.selected;
+			if(borderPaddingNS)	_picPreference.borderPadding = int(borderPaddingNS.value);
+			if(spritePaddingNS)	_picPreference.spritePadding = int(spritePaddingNS.value);
+			if(scaleNS)	_picPreference.scale = scaleNS.value;
+			if(layoutDDL) _picPreference.algorithm = layoutDDL.selectedItem.data;
 			return _picPreference;
 		}
 		
@@ -149,14 +168,14 @@
 				whDDL.selectedIndex = (_picPreference.limitWidth ? 0 : 1);
 				smoothCB.selected = _picPreference.smooth;
 				whNS.value = _picPreference.explicitSize;
-				powerOf2CB.selected = _picPreference.powerOf2;
-				squareCB.selected = _picPreference.square;
-				trimCB.selected = _picPreference.trim;
-				resetRectCB.selected = _picPreference.resetRect;
-				borderPaddingNS.value = _picPreference.borderPadding;
-				spritePaddingNS.value = _picPreference.spritePadding;
-				layoutDDL.selectedIndex = getLayerIndex(_picPreference.algorithm);
-				scaleNS.value = _picPreference.scale;
+				if(powerOf2CB) powerOf2CB.selected = _picPreference.powerOf2;
+				if(squareCB) squareCB.selected = _picPreference.square;
+				if(trimCB) trimCB.selected = _picPreference.trim;
+				if(resetRectCB) resetRectCB.selected = _picPreference.resetRect;
+				if(borderPaddingNS) borderPaddingNS.value = _picPreference.borderPadding;
+				if(spritePaddingNS) spritePaddingNS.value = _picPreference.spritePadding;
+				if(layoutDDL) layoutDDL.selectedIndex = getLayerIndex(_picPreference.algorithm);
+				if(scaleNS) scaleNS.value = _picPreference.scale;
 			}
 		}
 		

@@ -16,14 +16,16 @@ import flash.geom.Rectangle;
 public class OptimizedResultVO
 {
 	public function OptimizedResultVO($bmds:Vector.<BitmapData>=null, 
-									  $origin:Vector.<Rectangle>=null, 
-									  $frame:Vector.<Rectangle>=null,
-									$bigRect:Rectangle=null)
+										$origin:Vector.<Rectangle>=null, 
+										$frame:Vector.<Rectangle>=null,
+										$bigRect:Rectangle=null,
+										$preference:PicPreferenceVO=null)
 	{
 		bmds = $bmds?$bmds:new Vector.<BitmapData>;
 		originRects = $origin?$origin:new Vector.<Rectangle>;
 		frameRects = $frame?$frame:new Vector.<Rectangle>;
 		bigSheetRect = $bigRect?$bigRect:new Rectangle();
+		preference = $preference;
 	}
 	
 	/**
@@ -34,7 +36,7 @@ public class OptimizedResultVO
 	/**
 	 * 原始大小的（未修剪）rect列表
 	 */
-	public var  originRects:Vector.<Rectangle>;
+	public var originRects:Vector.<Rectangle>;
 	
 	/**
 	 * 所有的BitmapData列表（修剪过的）
@@ -45,5 +47,10 @@ public class OptimizedResultVO
 	 * 合并而成的大Sheet的尺寸
 	 */
 	public var bigSheetRect:Rectangle;
+	
+	/**
+	 * 合并的时候使用的参数
+	 */
+	public var preference:PicPreferenceVO;
 }
 }

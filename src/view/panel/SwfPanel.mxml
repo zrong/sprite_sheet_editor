@@ -147,6 +147,7 @@
 				{
 					//不是第一帧，直接更新rect
 					var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
+					__calc.picPreference = buildSetting.preference;
 					__calc.updateRectInSheet(_rectInSheet, _whRect, _frameRect, _limitW);
 				}
 				var __bmd:BitmapData =  drawBMD(_frameRect);
