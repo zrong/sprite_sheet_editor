@@ -69,7 +69,7 @@ public class SpriteSheetModel extends Actor
 	/**
 	 * 更新当前保存的原始Sheet
 	 */
-	public function updateOriginalSheet($sheet:SpriteSheet):void
+	public function replaceOriginalSheet($sheet:SpriteSheet):void
 	{
 		if(_originalSheet) _originalSheet.destroy();
 		_originalSheet = $sheet;
@@ -92,26 +92,7 @@ public class SpriteSheetModel extends Actor
 			return adjustedSheet.getAll();
 		return originalSheet.getAll();
 	}
-	
-	/**
-	 * 基于原始的Sheet更新调整后的Sheet
-	 */
-	public function updateAdjustedSheet():void
-	{
-		if(!_originalSheet) throw new TypeError(FxGettext.gettext("Original Sprite Sheet is unavailable！"));
-		if(_adjustedSheet) _adjustedSheet.destroy();
-		_adjustedSheet = _originalSheet.clone();
-	}
-	
-	public function drawOriginalSheet($bmd:BitmapData):void
-	{
-		_originalSheet.drawSheet($bmd);
-	}
-	public function redrawOriginalSheet():void
-	{
-		
-	}
-	
+
 	public function addOriginalFrame($bmd:BitmapData, $sizeRect:Rectangle=null, $originalRect:Rectangle=null, $name:String=null):void
 	{
 		_originalSheet.addFrame($bmd, $sizeRect, $originalRect, $name);
@@ -122,6 +103,16 @@ public class SpriteSheetModel extends Actor
 		_originalSheet.addFrameAt($index, $bmd, $sizeRect, $originalRect, $name);
 	}
 		
+	/**
+	 * 基于原始的Sheet重建调整后的Sheet
+	 */
+	public function rebuildAdjustedSheet():void
+	{
+		if(!_originalSheet) throw new TypeError(FxGettext.gettext("Original Sprite Sheet is unavailable！"));
+		if(_adjustedSheet) _adjustedSheet.destroy();
+		_adjustedSheet = _originalSheet.clone();
+	}
+	
 	/**
 	 * 重新设置Sheet中的帧信息，并重绘Sheet位图
 	 * @param	$bmd
@@ -270,6 +261,5 @@ public class SpriteSheetModel extends Actor
 		}
 		return new OptimizedResultVO(__bmds, __origins, __frames);
 	}
-
 }
 }

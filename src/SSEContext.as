@@ -1,7 +1,6 @@
 package
 {
-import ctrl.BrowseFileCmd;
-import ctrl.DragFileCmd;
+import ctrl.*;
 import view.comps.ExportWindow;
 
 import events.SSEvent;
@@ -23,9 +22,9 @@ import view.comps.SSPreview;
 import view.panel.*;
 
 /**
- * 
  * @author zrong(zengrong.net)
- * 创建日期：2012-07-18
+ * Creation: 2012-07-18
+ * Modification: 2013-09-18
  */
 public class SSEContext extends Context
 {
@@ -53,6 +52,7 @@ public class SSEContext extends Context
 		mediatorMap.mapView(SSPanel, SSPanelMediator);
 		mediatorMap.mapView(StartPanel, StartPanelMediator);
 		mediatorMap.mapView(PicPanel, PicPanelMediator);
+		mediatorMap.mapView(ProcessPanel, ProcessPanelMediator);
 		
 		mediatorMap.mapView(SSPreview, SSPreviewMediator,null, false, false);
 		mediatorMap.mapView(FramesAndLabels, FramesAndLabelMediator, null, false, false);
@@ -60,6 +60,7 @@ public class SSEContext extends Context
 		
 		commandMap.mapEvent(SSEvent.BROWSE_FILE, BrowseFileCmd);
 		commandMap.mapEvent(SSEvent.DRAG_FILE, DragFileCmd);
+		commandMap.mapEvent(SSEvent.CREATE_PROCESS, CreateProcessCmd);
 	}
 }
 }

@@ -183,7 +183,7 @@ public class FileOpenerModel extends FileProcessor
 			__ss.metadata.names = __names;
 			__ss.metadata.namesIndex = __namesIndex;
 		}
-		ssModel.updateOriginalSheet(__ss);
+		ssModel.replaceOriginalSheet(__ss);
 		stateModel.state = StateType.SS;
 	}
 	

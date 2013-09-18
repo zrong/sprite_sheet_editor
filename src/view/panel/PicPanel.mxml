@@ -5,9 +5,10 @@
 <!-- 更新时间：2011-11-04 -->
 <!-- 更新时间：2013-08-20 -->
 <!-- 选择要拼合成SS文件的图像 -->
-<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<panel:DrawablePanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark" 
 		  horizontalAlign="center"
+		  xmlns:panel="view.panel.*"
 		  xmlns:comps="view.comps.*"
 		  xmlns:widget="view.widget.*">
 	<s:BorderContainer width="320" height="100%"  borderColor="0x878787" backgroundAlpha="0">
@@ -35,7 +36,7 @@
 							selectionChange="handler_selectionChange(event)" 
 							selectionChanging="handler_selectionChanging(event)"/>
 	</s:BorderContainer>
-	<widget:ImagePreview id="pic" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0">
+	<widget:ImagePreview id="preview" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
 		<widget:maxSizeLimit>viewer</widget:maxSizeLimit>
 	</widget:ImagePreview>
@@ -53,19 +54,6 @@
 		//----------------------------------------
 		// getter/setter
 		//----------------------------------------
-		public function get preference():PicPreferenceVO
-		{
-			return buildSetting.preference;
-		}
-		/**
-		 * 从当前界面控件的值中新建Rect
-		 */
-		public function getFrameRect():Rectangle
-		{
-			if(!transControlBar.useCustom)
-				return new Rectangle(0,0,pic.sourceWidth, pic.sourceHeight);
-			return transControlBar.transformRect;
-		}
 		
 		/**
 		 * 获取当前正在获取的帧的Rect
@@ -76,7 +64,12 @@
 			if(transControlBar.useCustom && fileM.fileList.getItemAt($frameNum).rect)
 				return Rectangle(fileM.fileList.getItemAt($frameNum).rect);
 			//否则从当前界面新建
-			return getFrameRect();
+			return this.getFrameRect();
+		}
+		
+		public function get totalFrame():int
+		{
+			return fileM.fileList.length;
 		}
 		
 		//----------------------------------------
@@ -87,16 +80,17 @@
 		//----------------------------------
 		public function init():void
 		{
-			trace('pic init');
+			trace('pic.init');
 			//保存当前选择的文件的rect
 			handler_selectionChanging(null);
-			pic.viewer.source = null;
+			preview.viewer.source = null;
 		}
 		
 		public function destory():void
 		{
+			trace("pic.destory");
 			fileM.init();
-			pic.viewer.source = null;
+			preview.viewer.source = null;
 		}
 		
 		/**
@@ -105,61 +99,31 @@
 		 */
 		public function drawFrame($frameNum:int):Boolean
 		{
-			if ($frameNum < fileM.fileList.length)
+			if ($frameNum < totalFrame)
 			{
-				trace('drawing frame:', $frameNum, fileM.fileList.length);
-				pic.viewer.source = File(fileM.fileList.getItemAt($frameNum).file).url;
+				trace('drawing frame:', $frameNum, totalFrame);
+				preview.viewer.source = File(fileM.fileList.getItemAt($frameNum).file).url;
 				return false;
 			}
 			return true;
 		}
 		
 		/**
-		 * 绘制当前帧，返回位图
-		 * @param $rect 位图的大小和偏移
+		 * 根据帧索引获取帧的名称，帧的名称为图像文件名去掉扩展名
 		 */
-		public function drawBMD($rect:Rectangle):BitmapData
-		{
-			var __bmd:BitmapData = new BitmapData($rect.width, 
-				$rect.height, 
-				preference.transparent, 
-				preference.bgColor);
-			var __ma:Matrix = null;
-			if(transControlBar.useCustom)
-			{
-				//需要向“左上角”移动，将当前帧绘制成位图
-				__ma = new Matrix();
-				__ma.translate(-1*$rect.x, -1*$rect.y);
-			}
-			__bmd.draw(pic.content, __ma, null, null, null, buildSetting.preference.smooth);
-			return __bmd;
-		}
-		
-		/**
-		 * 获取图片名称
-		 */
-		public function getNames():Vector.<String>
+		public function getFrameName($frameNum:int):String
 		{
 			if(fileM.fileList.length>0)
 			{
-				var __names:Vector.<String> = new Vector.<String>(fileM.fileList.length);
-				var __dotIndex:int = 0;
-				var __name:String = '';
-				var __main:String = '';
-				for(var i:int=0;i<fileM.fileList.length;i++)
-				{
-					//提取主文件名
-					__name = File(fileM.fileList.getItemAt(i).file).name;
-					__dotIndex = __name.lastIndexOf('.');
-					if(__dotIndex == -1)
-						__dotIndex = __name.length;
-					__main = __name.slice(0, __dotIndex);
-					__names[i] = __main;
-				}
-				return __names;
+				var __name:String = File(fileM.fileList.getItemAt($frameNum).file).name;
+				var __dotIndex:int = __name.lastIndexOf('.');
+				if(__dotIndex == -1)
+					__dotIndex = __name.length;
+				return __name.slice(0, __dotIndex);
 			}
 			return null;
 		}
+		
 		//----------------------------------------
 		// handler
 		//----------------------------------------
@@ -172,7 +136,7 @@
 			if(__item)
 			{
 				//在选择的项目被修改之前，将这个项目的Rect进行保存
-				__item.rect = getFrameRect();
+				__item.rect = this.getFrameRect();
 				trace(__item.rect);
 			}
 		}
@@ -182,16 +146,16 @@
 			var __item:Object = fileM.fileDG.selectedItem;
 			if(__item)
 			{
-				pic.viewer.source = __item.file.url;
+				preview.viewer.source = __item.file.url;
 				//若为这个文件记录了rect，则改变当前rect的显示
 				if(__item.rect)
-					pic.transf.transformRect = __item.rect;
+					preview.transf.transformRect = __item.rect;
 			}
 			else
 			{
-				pic.viewer.source = null;
+				preview.viewer.source = null;
 			}
 		}
 	]]>
 	</fx:Script>
-</s:HGroup>
+</panel:DrawablePanel>

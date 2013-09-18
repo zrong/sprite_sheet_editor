@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<panel:DrawablePanel xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:panel="view.panel.*"
 		  xmlns:comps="view.comps.*"
 		  xmlns:widget="view.widget.*"
 		  xmlns:mx="library://ns.adobe.com/flex/mx">
@@ -40,148 +41,69 @@
 		<widget:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
 						  enabled="{state&amp;&amp;state==StateType.LOAD_DONE}" />
 	</s:BorderContainer>
-	<widget:ImagePreview id="swf" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" >
+	<widget:ImagePreview id="preview" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0" >
 		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
 		<widget:maxSizeLimit>source</widget:maxSizeLimit>
 		<widget:enableDragContent>true</widget:enableDragContent>
 	</widget:ImagePreview>
-	<fx:Metadata>
-		[Event(name="complete", type="flash.events.Event")]
-	</fx:Metadata>
 	<fx:Script>
 	<![CDATA[
-		import air.update.descriptors.ApplicationDescriptor;
-		import events.SSEvent;
 		import flash.events.Event;
 		import flash.geom.Rectangle;
+		
 		import gnu.as3.gettext.FxGettext;
-		import utils.calc.IFrameCalculator;
-		import utils.calc.FrameCalculatorManager;
-		import utils.calc.CalculatorType;
 		
 		import type.StateType;
 		
-		import utils.Funs;
-		
-		//保存选择的swf文件的路径
-		private var _frameNum:int;					//当前正在播放的帧的索引
-		private var _whRect:Rectangle;				//保存Sheet的宽高
-		private var _rectInSheet:Rectangle;		//保存当前帧在Sheet中的位置和大小
-		private var _limitW:Boolean;
-		private var _frameRect:Rectangle;			//当前帧的位置
 		[Bindable] public var state:String;		//当前的处理状态
 		
 		//----------------------------------
 		//  界面相关方法
 		//----------------------------------
 		
+		public function get firstFrame():int
+		{
+			return int(firstFrameNS.value);
+		}
+		
+		public function get totalFrame():int
+		{
+			return int(totalFrameNS.value);
+		}
+		//----------------------------------
+		//  界面相关方法
+		//----------------------------------
+		
 		public function showSWF($url:String):void
 		{
-			swf.source = $url;
+			preview.source = $url;
 		}
 		
 		public function build($url:String):void
 		{
 			//要生成必须重新载入swf，因为并不知晓swf当前播放到那一帧了
-			swf.destroy();
-			swf.source = $url;
+			preview.destroy();
+			preview.source = $url;
 		}
 		
 		public function destroy():void
 		{
-			swf.source = null;
+			preview.source = null;
 		}
-		
+
 		//----------------------------------
 		//  绘制相关方法
 		//----------------------------------
-		
-		public function capture():void
+		override protected function getOffsetMatrix($x:int, $y:int):Matrix
 		{
-			trace('swf capture');
-			this.addEventListener(Event.EXIT_FRAME, drawFrame);
-			//帧索引永远从0开始，无论正在播放的主时间轴有几帧（可能只有1帧，使用MC做动画），也可以实现多帧捕获
-			_frameNum = 0;
-			_whRect = null;
-			_rectInSheet = null;
-			_frameRect = null;
-			_limitW = buildSetting.preference.limitWidth;
-			drawFrame();
-		}
-		
-		private function captureDone():void
-		{
-			this.removeEventListener(Event.EXIT_FRAME, drawFrame);
-			var __bmd:BitmapData = new BitmapData(_whRect.width, _whRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor)
-			this.dispatchEvent(new SSEvent(SSEvent.CAPTURE_DONE, __bmd));
-		}
-		
-		/**
-		 * 绘制一帧，并判断所有帧绘制是否完成
-		 */
-		private function drawFrame(evt:Event=null):void
-		{
-			if (_frameNum++ >= firstFrameNS.value)
-			{
-				trace('drawing frame:', _frameNum-1)
-				//如果没有设置_rectInSheet，应该是截取第一帧，这种情况下初始化rectInSheet、frameRect和whRect
-				if(!_rectInSheet)
-				{
-					_frameRect = transControlBar.useCustom ? transControlBar.transformRect : new Rectangle(0,0,swf.sourceWidth, swf.sourceHeight);
-					_rectInSheet = new Rectangle(0, 0, _frameRect.width, _frameRect.height);
-					var __w:int=0;
-					var __h:int=0;
-					if(_limitW)
-					{
-						__w = buildSetting.whNS.value;
-						__h = _frameRect.height;
-					}
-					else
-					{
-						__h = buildSetting.whNS.value;
-						__w = _frameRect.width;
-					}
-					_whRect = new Rectangle(0,0,__w, __h);
-				}
-				else
-				{
-					//不是第一帧，直接更新rect
-					var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
-					__calc.picPreference = buildSetting.preference;
-					__calc.updateRectInSheet(_rectInSheet, _whRect, _frameRect, _limitW);
-				}
-				var __bmd:BitmapData =  drawBMD(_frameRect);
-				//向Sheet中添加这个位图
-				this.dispatchEvent(new SSEvent(SSEvent.ADD_FRAME, {bmd:__bmd, rect:_rectInSheet.clone()}));
-			}
-			//所有帧捕获完毕后取消侦听
-			if (_frameNum - firstFrameNS.value >= totalFrameNS.value)
-			{
-				captureDone();
-			}
-		}
-		
-		/**
-		 * 绘制当前帧，返回位图
-		 */
-		private function drawBMD($frameRect:Rectangle):BitmapData
-		{
-			var __bmd:BitmapData = new BitmapData($frameRect.width, $frameRect.height, buildSetting.transparentCB.selected, buildSetting.bgColorPicker.selectedColor);
-			var __ma:Matrix = null;
-			if(transControlBar.useCustom)
-			{
-				//需要向“左上角”移动，将当前帧绘制成位图
-				__ma = new Matrix();
-				__ma.translate(-1*$frameRect.x, -1*$frameRect.y);
-			}
-			if(swf.enableDragContent)
+			var __ma:Matrix = super.getOffsetMatrix($x, $y);
+			if(preview.enableDragContent)
 			{
 				if(!__ma) __ma = new Matrix;
-				__ma.translate(swf.contentX, swf.contentY);
+				__ma.translate(preview.contentX, preview.contentY);
 			}
-			__bmd.draw(swf.content, __ma, null, null, null, buildSetting.preference.smooth);
-			return __bmd;
+			return __ma;
 		}
 	]]>
 	</fx:Script>
-</s:HGroup>
+</panel:DrawablePanel>

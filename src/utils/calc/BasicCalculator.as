@@ -109,7 +109,10 @@ public class BasicCalculator implements IFrameCalculator
 		}
 	}
 	
-	public function calculateFirstRect($explicitSize:int, $bigSheetRect:Rectangle, $frameRect:Rectangle):void
+	/**
+	 * @inheritDoc
+	 */
+	public function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle,$explicitSize:int):void
 	{
 		if(_picPreference.limitWidth)
 		{
@@ -157,23 +160,7 @@ public class BasicCalculator implements IFrameCalculator
 		var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
 		//trace('getSheetWH:', __rectInSheet, __frameRect, "bigSheet:", $bigSheetRect);
 		//设置sheet的初始宽高
-		if(_picPreference.limitWidth)
-		{
-			//默认使用明确指定的宽度
-			$bigSheetRect.width = addBorderPadding($explicitSize);
-			//若限制宽度小于帧的宽度，就扩大限制宽度
-			if($bigSheetRect.width<__frameRect.width) $bigSheetRect.width = addBorderPadding(__frameRect.width);
-			//计算2的幂
-			if(_picPreference.powerOf2) $bigSheetRect.width = MathUtil.nextPowerOf2($bigSheetRect.width);
-			$bigSheetRect.height = addBorderPadding(__frameRect.height);
-		}
-		else
-		{
-			$bigSheetRect.height = addBorderPadding($explicitSize);
-			if($bigSheetRect.height<__frameRect.height) $bigSheetRect.height = addBorderPadding(__frameRect.height);
-			if(_picPreference.powerOf2) $bigSheetRect.height = MathUtil.nextPowerOf2($bigSheetRect.height);
-			$bigSheetRect.width = addBorderPadding(__frameRect.width);
-		}
+		calculateFirstRect($bigSheetRect, __frameRect, $explicitSize);
 		//处理所有帧。因为第1(0)帧在上面已经处理过了，因此从第2(1)帧开始
 		for (var i:int = 1; i < $frameRects.length; i++) 
 		{
@@ -229,9 +216,9 @@ public class BasicCalculator implements IFrameCalculator
 	
 	private function newRow($rectInSheet:Rectangle, $frameRect:Rectangle, $bigSheetRect:Rectangle):void
 	{
-		//让x回到行首
-		$rectInSheet.x = 0;
-		//更新新行的y值
+		//让x回到行首，前面加上borderPadding
+		$rectInSheet.x = addBorderPadding(0, false);
+		//更新新行的y值，中间加上spritePadding
 		$rectInSheet.y = addSpritePadding($bigSheetRect.height);
 		//更新Sheet的高度
 		$bigSheetRect.height += addSpritePadding($frameRect.height);
@@ -239,7 +226,7 @@ public class BasicCalculator implements IFrameCalculator
 	
 	private function newColumn($rectInSheet:Rectangle, $frameRect:Rectangle, $bigSheetRect:Rectangle):void
 	{
-		$rectInSheet.y = 0;
+		$rectInSheet.y = addBorderPadding(0, false);
 		$rectInSheet.x = addSpritePadding($bigSheetRect.width);
 		$bigSheetRect.width += addSpritePadding($frameRect.width);
 	}

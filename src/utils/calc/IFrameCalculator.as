@@ -29,7 +29,10 @@ public interface IFrameCalculator
 	 */
 	function updateRectInSheet($rectInSheet:Rectangle, $bigSheetRect:Rectangle,$frameRect:Rectangle,$limitW:Boolean):void;
 	
-	function calculateFirstRect($explicitSize:int, $bigSheetRect:Rectangle, $frameRect:Rectangle):void;
+	/**
+	 * 计算并更新第一帧信息
+	 */
+	function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle, $explicitSize:int):void;
 	
 	function get picPreference():PicPreferenceVO;
 	function set picPreference($vo:PicPreferenceVO):void;

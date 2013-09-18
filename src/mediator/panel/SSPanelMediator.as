@@ -69,7 +69,7 @@ public class SSPanelMediator extends Mediator
 	{
 		if(stateModel.state != StateType.SS) return;
 		//更新调整后的Sheet
-		ssModel.updateAdjustedSheet();
+		ssModel.rebuildAdjustedSheet();
 		v.init(ssModel.adjustedSheet.bitmapData);
 		
 		mediatorMap.createMediator(v.framesAndLabels);

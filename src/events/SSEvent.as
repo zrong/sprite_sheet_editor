@@ -40,10 +40,6 @@ public class SSEvent extends Event
 	 * 选择的帧变化了
 	 */
 	public static const SELECTED_FRAMEINDICES_CHANGE:String = 'selectedFrameIndicesChange';
-	public static const ADD_FRAME:String = 'addFrame';
-	
-	
-	public static const CAPTURE_DONE:String = 'captureDone';
 	
 	/**
 	 * 所有类型的保存事件
@@ -100,6 +96,13 @@ public class SSEvent extends Event
 	 * 建立或优化SpriteSheet
 	 */
 	public static const BUILD:String = 'build';
+	
+	public static const CREATE_PROCESS:String = "createProcess";
+	public static const END_PROCESS:String = "endPrecess";
+	/**
+	 * 正在处理中
+	 */
+	public static const PROCESS:String = "process";
 	
 	public var info:*;
 	

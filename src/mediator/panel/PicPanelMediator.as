@@ -21,9 +21,9 @@ import utils.calc.FrameCalculatorManager;
 import utils.calc.IFrameCalculator;
 
 import view.panel.PicPanel;
+import view.panel.ProcessPanel;
 
 import vo.BrowseFileDoneVO;
-import vo.NamesVO;
 import vo.OptimizedResultVO;
 
 public class PicPanelMediator extends Mediator
@@ -68,18 +68,19 @@ public class PicPanelMediator extends Mediator
 		this.dispatch(new SSEvent(SSEvent.BROWSE_FILE, StateType.ADD_TO_PIC_List));
 	}
 	
-	private function removePicLoadDone():void
+	private function removeFrameLoaded():void
 	{
-		v.pic.viewer.removeEventListener(Event.COMPLETE, handler_picLoadDone);
+		v.preview.viewer.removeEventListener(Event.COMPLETE, handler_frameLoaded);
 	}
 	
-	private function addPicLoadDone():void
+	private function addFrameLoaded():void
 	{
-		v.pic.viewer.addEventListener(Event.COMPLETE, handler_picLoadDone);
+		v.preview.viewer.addEventListener(Event.COMPLETE, handler_frameLoaded);
 	}
 	
-	private function handler_picLoadDone($evt:Event):void
+	private function handler_frameLoaded($evt:Event):void
 	{
+		this.dispatch(new SSEvent(SSEvent.PROCESS, {current:_frameNum, total:v.totalFrame}));
 		var __rect:Rectangle = v.getCaptureFrameRect(_frameNum);
 		trace('handler_picLoadDone,before:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',bigSheetRect:', _result.bigSheetRect);
 		var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(_result.preference.algorithm);
@@ -88,8 +89,10 @@ public class PicPanelMediator extends Mediator
 		if(!_rectInSheet && _frameNum==0)
 		{
 			
-			_rectInSheet = new Rectangle(0,0,__rect.width,__rect.height);
-			__calc.calculateFirstRect(__calc.picPreference.explicitSize, _result.bigSheetRect, __rect);
+			_rectInSheet = new Rectangle(_result.preference.borderPadding,
+				_result.preference.borderPadding,
+				__rect.width,__rect.height);
+			__calc.calculateFirstRect(_result.bigSheetRect, __rect, __calc.picPreference.explicitSize);
 		}
 		else
 		{
@@ -116,14 +119,26 @@ public class PicPanelMediator extends Mediator
 		}
 	}
 	
+	private function capture():void
+	{
+		addFrameLoaded();
+		_frameNum = 0;
+		_rectInSheet = null;
+		_result = null;
+		_result = new OptimizedResultVO();
+		_result.preference = v.preference;
+		v.init();
+		v.drawFrame(_frameNum);
+	}
+	
 	private function captureDone():void
 	{
-		removePicLoadDone();
+		removeFrameLoaded();
+		this.dispatch(new SSEvent(SSEvent.END_PROCESS));
 		var __meta:SpriteSheetMetadata = new SpriteSheetMetadata();
-		var __names:Vector.<String> = v.getNames();
 		for(var i:int=0;i<_result.frameRects.length;i++)
 		{
-			__meta.addFrame(_result.frameRects[i], null, __names?__names[i]:null);
+			__meta.addFrame(_result.frameRects[i], null, v.getFrameName(i));
 		}
 		var __ss:SpriteSheet = new SpriteSheet(null, __meta);
 		__ss.setFrames(_result.bmds);
@@ -134,7 +149,7 @@ public class PicPanelMediator extends Mediator
 			_result.preference.bgColor);
 		__ss.drawSheet(__bmd); 
 		
-		ssModel.updateOriginalSheet(__ss);
+		ssModel.replaceOriginalSheet(__ss);
 		stateModel.state = StateType.SS;
 	}
 	
@@ -158,23 +173,11 @@ public class PicPanelMediator extends Mediator
 	
 	protected function handler_build($event:SSEvent):void
 	{
-		//ssModel.resetSheet(null, new SpriteSheetMetadata());
 		ssModel.destroySheet();
-		addPicLoadDone();
-		_frameNum = 0;
-		_rectInSheet = null;
-		_result = null;
-		_result = new OptimizedResultVO();
-		_result.preference = v.preference;
-		v.init();
-		v.drawFrame(_frameNum);
+		this.dispatch(new SSEvent(SSEvent.CREATE_PROCESS, "Capturing"));
+		capture();
 	}
 	
-	private function handler_addFrame($evt:SSEvent):void
-	{
-		ssModel.addOriginalFrame($evt.info.bmd, $evt.info.rect);
-	}
-		
 	private function handler_browseFileDone($evt:SSEvent):void 
 	{
 		var __vo:BrowseFileDoneVO = $evt.info as BrowseFileDoneVO;
