@@ -156,7 +156,7 @@ public class SpriteSheetModel extends Actor
 		var __list:OptimizedResultVO = getRectsAndBmds($picPref);
 		var __calculator:IFrameCalculator = FrameCalculatorManager.getCalculator(CalculatorType.BASIC);
 		__calculator.picPreference = $picPref;
-		return __calculator.calc(__list);
+		return __calculator.optimize(__list);
 	}
 	
 	/**

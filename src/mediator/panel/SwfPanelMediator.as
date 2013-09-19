@@ -107,6 +107,8 @@ public class SwfPanelMediator extends Mediator
 	{
 		removeFrameLoaded();
 		this.dispatch(new SSEvent(SSEvent.END_PROCESS));
+		//最后的计算
+		_calc.calculateWhenUpdateDone(_result.bigSheetRect);
 		var __meta:SpriteSheetMetadata = new SpriteSheetMetadata();
 		for(var i:int=0;i<_result.frameRects.length;i++)
 		{
@@ -143,8 +145,7 @@ public class SwfPanelMediator extends Mediator
 			if(!_rectInSheet)
 			{
 				_frameRect = v.getFrameRect();
-				_rectInSheet = new Rectangle(_result.preference.borderPadding, _result.preference.borderPadding, _frameRect.width, _frameRect.height);
-				_calc.calculateFirstRect(_result.bigSheetRect, _frameRect, _calc.picPreference.explicitSize);
+				_rectInSheet = _calc.calculateFirstRect(_result.bigSheetRect, _frameRect, _calc.picPreference.explicitSize);
 			}
 			else
 			{

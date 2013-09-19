@@ -12,12 +12,14 @@ import vo.PicPreferenceVO;
  */
 public interface IFrameCalculator
 {
+	
+	function get picPreference():PicPreferenceVO;
+	function set picPreference($vo:PicPreferenceVO):void;
+	
 	/**
-	 * 重新优化图像，返回一个新的已经优化过的OptimizedResultVO
-	 * @param $optimizedResult 待优化对象
-	 * @return 返回一个已经优化过的OptimizedResultVO
+	 * 计算并更新第一帧信息，并返回第一帧在大Sheet中的位置
 	 */
-	function calc($optimizedResult:OptimizedResultVO):OptimizedResultVO;
+	function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle, $explicitSize:int):Rectangle;
 	
 	/**
 	 * 更新在Sheet中帧的Rect的位置，根据Rect位置计算出大Sheet的WH
@@ -30,11 +32,17 @@ public interface IFrameCalculator
 	function updateRectInSheet($rectInSheet:Rectangle, $bigSheetRect:Rectangle,$frameRect:Rectangle,$limitW:Boolean):void;
 	
 	/**
-	 * 计算并更新第一帧信息
+	 * 计算完毕后，最后调用。一般用于计算的收尾工作
 	 */
-	function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle, $explicitSize:int):void;
+	function calculateWhenUpdateDone($bigSheetRect:Rectangle):void;
+
+	/**
+	 * 重新优化图像，返回一个新的已经优化过的OptimizedResultVO
+	 * @param $optimizedResult 待优化对象
+	 * @return 返回一个已经优化过的OptimizedResultVO
+	 */
+	function optimize($optimizedResult:OptimizedResultVO):OptimizedResultVO;
 	
-	function get picPreference():PicPreferenceVO;
-	function set picPreference($vo:PicPreferenceVO):void;
+	
 }
 }

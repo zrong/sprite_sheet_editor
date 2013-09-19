@@ -33,7 +33,7 @@ public class BasicCalculator implements IFrameCalculator
 	/**
 	 * @inheritDoc
 	 */
-	public function calc($optimizedResult:OptimizedResultVO):OptimizedResultVO
+	public function optimize($optimizedResult:OptimizedResultVO):OptimizedResultVO
 	{
 		if(!_picPreference) throw new TypeError(FxGettext.gettext("Please set the picPreference property first!"));
 		var __newResult:OptimizedResultVO = new OptimizedResultVO();
@@ -44,6 +44,34 @@ public class BasicCalculator implements IFrameCalculator
 		__newResult.bmds = $optimizedResult.bmds;
 		__newResult.originRects = $optimizedResult.originRects;
 		return __newResult;
+	}
+	
+	
+	/**
+	 * @inheritDoc
+	 */
+	public function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle,$explicitSize:int):Rectangle
+	{
+		if(_picPreference.limitWidth)
+		{
+			//默认使用明确指定的宽度
+			$bigSheetRect.width = addBorderPadding($explicitSize, false);
+			//若限制宽度小于帧的宽度，就扩大限制宽度
+			if($bigSheetRect.width<$frameRect.width) $bigSheetRect.width = addBorderPadding($frameRect.width, false);
+			//计算2的幂
+			if(_picPreference.powerOf2) $bigSheetRect.width = MathUtil.nextPowerOf2($bigSheetRect.width);
+			$bigSheetRect.height = addBorderPadding($frameRect.height, false);
+		}
+		else
+		{
+			$bigSheetRect.height = addBorderPadding($explicitSize, false);
+			if($bigSheetRect.height<$frameRect.height) $bigSheetRect.height = addBorderPadding($frameRect.height, false);
+			if(_picPreference.powerOf2) $bigSheetRect.height = MathUtil.nextPowerOf2($bigSheetRect.height);
+			$bigSheetRect.width = addBorderPadding($frameRect.width, false);
+		}
+		return new Rectangle(_picPreference.borderPadding,
+			_picPreference.borderPadding,
+			$frameRect.width,$frameRect.height);
 	}
 	
 	/**
@@ -62,10 +90,10 @@ public class BasicCalculator implements IFrameCalculator
 			//若限制宽度小于帧的宽度，就扩大限制宽度，并进入新行
 			if($bigSheetRect.width < $frameRect.width)
 			{
-				$bigSheetRect.width = addBorderPadding($frameRect.width);
+				$bigSheetRect.width = addBorderPadding($frameRect.width, false);
 				newRow($rectInSheet, $frameRect, $bigSheetRect);
 			}
-				//如果这一行的宽度已经不够放下当前的位图，就进入新行
+			//如果这一行的宽度已经不够放下当前的位图，就进入新行
 			else if($rectInSheet.right + $frameRect.width > $bigSheetRect.width)
 			{
 				newRow($rectInSheet, $frameRect, $bigSheetRect);
@@ -74,9 +102,11 @@ public class BasicCalculator implements IFrameCalculator
 			else
 			{
 				$rectInSheet.x += addSpritePadding($rectInSheet.width);
+				//更新大Sheet宽度，要计算borderPadding
+				$bigSheetRect.width = $rectInSheet.right;
 				//如果当前帧比较高，就增加Sheet的高度
 				if($bigSheetRect.height<$rectInSheet.bottom)
-					$bigSheetRect.height = addBorderPadding($rectInSheet.bottom, false);
+					$bigSheetRect.height = $rectInSheet.bottom;
 			}
 			//更新帧的宽
 			$rectInSheet.width = $frameRect.width;
@@ -89,7 +119,7 @@ public class BasicCalculator implements IFrameCalculator
 			//若限制高度小于帧的高度，就扩大限制高度，并进入新列
 			if($bigSheetRect.height < $frameRect.height)
 			{
-				$bigSheetRect.height = addSpritePadding($frameRect.height);
+				$bigSheetRect.height = addBorderPadding($frameRect.height, false);
 				newColumn($rectInSheet, $frameRect, $bigSheetRect);
 			}
 			//如果这一列的高度已经放不下当前的位图，就进入新列
@@ -101,9 +131,10 @@ public class BasicCalculator implements IFrameCalculator
 			else
 			{
 				//如果当前帧比Sheet还要宽，就增大Sheet的宽度
-				$rectInSheet.y += $rectInSheet.height;
+				$rectInSheet.y += addSpritePadding($rectInSheet.height);
+				$bigSheetRect.height = $rectInSheet.bottom;
 				if($bigSheetRect.width<$rectInSheet.right)
-					$bigSheetRect.width = addBorderPadding($rectInSheet.right, false);
+					$bigSheetRect.width = $rectInSheet.right;
 			}
 			$rectInSheet.height = $frameRect.height;
 		}
@@ -112,25 +143,11 @@ public class BasicCalculator implements IFrameCalculator
 	/**
 	 * @inheritDoc
 	 */
-	public function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle,$explicitSize:int):void
+	public function calculateWhenUpdateDone($bigSheetRect:Rectangle):void
 	{
-		if(_picPreference.limitWidth)
-		{
-			//默认使用明确指定的宽度
-			$bigSheetRect.width = addBorderPadding($explicitSize);
-			//若限制宽度小于帧的宽度，就扩大限制宽度
-			if($bigSheetRect.width<$frameRect.width) $bigSheetRect.width = addBorderPadding($frameRect.width);
-			//计算2的幂
-			if(_picPreference.powerOf2) $bigSheetRect.width = MathUtil.nextPowerOf2($bigSheetRect.width);
-			$bigSheetRect.height = addBorderPadding($frameRect.height);
-		}
-		else
-		{
-			$bigSheetRect.height = addBorderPadding($explicitSize);
-			if($bigSheetRect.height<$frameRect.height) $bigSheetRect.height = addBorderPadding($frameRect.height);
-			if(_picPreference.powerOf2) $bigSheetRect.height = MathUtil.nextPowerOf2($bigSheetRect.height);
-			$bigSheetRect.width = addBorderPadding($frameRect.width);
-		}
+		//为bigSheet加入结束的borderPadding
+		$bigSheetRect.width = addBorderPadding($bigSheetRect.width, false);
+		$bigSheetRect.height = addBorderPadding($bigSheetRect.height, false);
 	}
 	
 	/**
@@ -152,15 +169,11 @@ public class BasicCalculator implements IFrameCalculator
 		if($frameRects.length==0) return;
 		//单独处理第一帧，不需要计算
 		var __frameRect:Rectangle = $frameRects[0];
-		$newSizeRects[0] = new Rectangle(_picPreference.borderPadding,
-			_picPreference.borderPadding,
-			__frameRect.width, 
-			__frameRect.height);
-		//当前帧在大Sheet中的位置和大小
-		var __rectInSheet:Rectangle = new Rectangle(0,0,__frameRect.width,__frameRect.height);
-		//trace('getSheetWH:', __rectInSheet, __frameRect, "bigSheet:", $bigSheetRect);
 		//设置sheet的初始宽高
-		calculateFirstRect($bigSheetRect, __frameRect, $explicitSize);
+		//获得当前帧在大Sheet中的位置和大小
+		var __rectInSheet:Rectangle = calculateFirstRect($bigSheetRect, __frameRect, $explicitSize);
+		$newSizeRects[0] = __rectInSheet.clone();
+		//trace('getSheetWH:', __rectInSheet, __frameRect, "bigSheet:", $bigSheetRect);
 		//处理所有帧。因为第1(0)帧在上面已经处理过了，因此从第2(1)帧开始
 		for (var i:int = 1; i < $frameRects.length; i++) 
 		{
@@ -169,6 +182,8 @@ public class BasicCalculator implements IFrameCalculator
 			//trace('getSheetWH:', __rectInSheet, __frameRect, $bigSheetRect);
 			$newSizeRects[i] = __rectInSheet.clone();
 		}
+		//最后的计算
+		calculateWhenUpdateDone($bigSheetRect);
 		if(_picPreference.square)
 		{
 			//计算正方形的尺寸
@@ -221,14 +236,14 @@ public class BasicCalculator implements IFrameCalculator
 		//更新新行的y值，中间加上spritePadding
 		$rectInSheet.y = addSpritePadding($bigSheetRect.height);
 		//更新Sheet的高度
-		$bigSheetRect.height += addSpritePadding($frameRect.height);
+		$bigSheetRect.height = $rectInSheet.bottom;
 	}
 	
 	private function newColumn($rectInSheet:Rectangle, $frameRect:Rectangle, $bigSheetRect:Rectangle):void
 	{
 		$rectInSheet.y = addBorderPadding(0, false);
 		$rectInSheet.x = addSpritePadding($bigSheetRect.width);
-		$bigSheetRect.width += addSpritePadding($frameRect.width);
+		$bigSheetRect.width = $rectInSheet.right;
 	}
 }
 }

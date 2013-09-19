@@ -58,6 +58,7 @@ public class PicPanelMediator extends Mediator
 	private var _result:OptimizedResultVO;
 	private var _frameNum:int;				//当前正在处理的帧编号
 	private var _rectInSheet:Rectangle;	//正在处理的帧在整个Sheet上的rect位置
+	private var _calc:IFrameCalculator;	//使用的排序算法
 	
 	/**
 	 * 在PicPanel界面中新增Pic
@@ -83,20 +84,14 @@ public class PicPanelMediator extends Mediator
 		this.dispatch(new SSEvent(SSEvent.PROCESS, {current:_frameNum, total:v.totalFrame}));
 		var __rect:Rectangle = v.getCaptureFrameRect(_frameNum);
 		trace('handler_picLoadDone,before:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',bigSheetRect:', _result.bigSheetRect);
-		var __calc:IFrameCalculator = FrameCalculatorManager.getCalculator(_result.preference.algorithm);
-		__calc.picPreference = _result.preference;
 		//如果没有创建过_rectInSheet，且当前是第一帧捕获，就建立第一帧在sheet中的rect位置
 		if(!_rectInSheet && _frameNum==0)
 		{
-			
-			_rectInSheet = new Rectangle(_result.preference.borderPadding,
-				_result.preference.borderPadding,
-				__rect.width,__rect.height);
-			__calc.calculateFirstRect(_result.bigSheetRect, __rect, __calc.picPreference.explicitSize);
+			_rectInSheet = _calc.calculateFirstRect(_result.bigSheetRect, __rect, _calc.picPreference.explicitSize);
 		}
 		else
 		{
-			__calc.updateRectInSheet(_rectInSheet, _result.bigSheetRect, __rect, __calc.picPreference.limitWidth);
+			_calc.updateRectInSheet(_rectInSheet, _result.bigSheetRect, __rect, _calc.picPreference.limitWidth);
 		}
 		trace('handler_picLoadDone,after:', ',frameRect:', __rect, ',rectInSheet:', _rectInSheet, ',bigSheetRect:', _result.bigSheetRect);
 		_result.bmds[_frameNum] = v.drawBMD(__rect);
@@ -127,6 +122,8 @@ public class PicPanelMediator extends Mediator
 		_result = null;
 		_result = new OptimizedResultVO();
 		_result.preference = v.preference;
+		_calc = FrameCalculatorManager.getCalculator(_result.preference.algorithm);
+		_calc.picPreference = _result.preference;
 		v.init();
 		v.drawFrame(_frameNum);
 	}
@@ -135,6 +132,8 @@ public class PicPanelMediator extends Mediator
 	{
 		removeFrameLoaded();
 		this.dispatch(new SSEvent(SSEvent.END_PROCESS));
+		//最后的计算
+		_calc.calculateWhenUpdateDone(_result.bigSheetRect);
 		var __meta:SpriteSheetMetadata = new SpriteSheetMetadata();
 		for(var i:int=0;i<_result.frameRects.length;i++)
 		{
