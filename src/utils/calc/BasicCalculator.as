@@ -48,7 +48,7 @@ public class BasicCalculator implements IFrameCalculator
 	}
 	
 	/**
-	 * @inheritDoc
+	 * 计算并更新第一帧信息，并返回第一帧在大Sheet中的位置
 	 */
 	private function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle,$explicitSize:int):Rectangle
 	{
@@ -75,7 +75,12 @@ public class BasicCalculator implements IFrameCalculator
 	}
 	
 	/**
-	 * @inheritDoc
+	 * 更新在Sheet中帧的Rect的位置，根据Rect位置计算出大Sheet的WH
+	 * 会直接修改$rectInSheet和$whRect参数的值。
+	 * @param $rectInSheet	当前处理的帧在整个Sheet中的位置和大小，会修改此参数的值
+	 * @param $bigSheetRect	最终生成的大Sheet的尺寸，会修改此参数的值
+	 * @param $frameRect	要处理的帧大小的Rect
+	 * @param $limitW		为true代表限制宽度，否则是显示高度
 	 */
 	private function updateRectInSheet($rectInSheet:Rectangle, 
 									  $bigSheetRect:Rectangle,
@@ -150,7 +155,7 @@ public class BasicCalculator implements IFrameCalculator
 	}
 	
 	/**
-	 * @inheritDoc
+	 * 计算完毕后，最后调用。一般用于计算的收尾工作
 	 */
 	private function calculateWhenUpdateDone($bigSheetRect:Rectangle):void
 	{

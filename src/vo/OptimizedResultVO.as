@@ -15,6 +15,14 @@ import flash.geom.Rectangle;
 [Bindable]
 public class OptimizedResultVO
 {
+	public static function createByLength($len:int):OptimizedResultVO
+	{
+		return new OptimizedResultVO(
+		new Vector.<BitmapData>($len),
+		new Vector.<Rectangle>($len),
+		new Vector.<Rectangle>($len),
+		new Rectangle());
+	}
 	public function OptimizedResultVO($bmds:Vector.<BitmapData>=null, 
 										$origin:Vector.<Rectangle>=null, 
 										$frame:Vector.<Rectangle>=null,
