@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:HGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" width="100%"
+		  horizontalAlign="right">
+	<!-- 用于转换List的高度 -->
+	<s:Button id="addHeightBtn" label="+" click="handler_addHeight()"/>
+	<s:Button id="reduceHeightBtn" label="-" click="handler_reduceHeight()"/>
+	<fx:Script>
+		<![CDATA[
+			import mx.core.IVisualElement;
+			
+			private var _initialHeight:int;
+			private var _listUI:IVisualElement;
+			
+			public function init($list:IVisualElement):void
+			{
+				_initialHeight = $list.height;
+				_listUI = $list;
+			}
+			
+			private function handler_addHeight():void
+			{
+				if(_listUI.height + 20> _initialHeight*4) return;
+				_listUI.height += 20;
+			}
+			
+			private function handler_reduceHeight():void
+			{
+				if(_listUI.height - 20<_initialHeight) return;
+				_listUI.height -= 20;
+			}
+		]]>
+	</fx:Script>
+</s:HGroup>

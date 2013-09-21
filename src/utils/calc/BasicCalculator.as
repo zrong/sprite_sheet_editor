@@ -43,14 +43,14 @@ public class BasicCalculator implements IFrameCalculator
 					_picPreference.explicitSize);
 		__newResult.bmds = $optimizedResult.bmds;
 		__newResult.originRects = $optimizedResult.originRects;
+		__newResult.preference = $optimizedResult.preference;
 		return __newResult;
 	}
-	
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle,$explicitSize:int):Rectangle
+	private function calculateFirstRect( $bigSheetRect:Rectangle, $frameRect:Rectangle,$explicitSize:int):Rectangle
 	{
 		if(_picPreference.limitWidth)
 		{
@@ -77,7 +77,7 @@ public class BasicCalculator implements IFrameCalculator
 	/**
 	 * @inheritDoc
 	 */
-	public function updateRectInSheet($rectInSheet:Rectangle, 
+	private function updateRectInSheet($rectInSheet:Rectangle, 
 									  $bigSheetRect:Rectangle,
 									  $frameRect:Rectangle,
 									  $limitW:Boolean):void
@@ -92,24 +92,21 @@ public class BasicCalculator implements IFrameCalculator
 			{
 				$bigSheetRect.width = addBorderPadding($frameRect.width, false);
 				newRow($rectInSheet, $frameRect, $bigSheetRect);
+				$rectInSheet.width = $frameRect.width;
 			}
 			//如果这一行的宽度已经不够放下当前的位图，就进入新行
 			else if($rectInSheet.right + $frameRect.width > $bigSheetRect.width)
 			{
 				newRow($rectInSheet, $frameRect, $bigSheetRect);
+				$rectInSheet.width = $frameRect.width;
 			}
 			//顺着往右放
 			else
 			{
 				$rectInSheet.x += addSpritePadding($rectInSheet.width);
-				//更新大Sheet宽度，要计算borderPadding
-				$bigSheetRect.width = $rectInSheet.right;
-				//如果当前帧比较高，就增加Sheet的高度
-				if($bigSheetRect.height<$rectInSheet.bottom)
-					$bigSheetRect.height = $rectInSheet.bottom;
+				$rectInSheet.width = $frameRect.width;
+				checkSheetThreshold($bigSheetRect, $rectInSheet);
 			}
-			//更新帧的宽
-			$rectInSheet.width = $frameRect.width;
 		}
 		//限制高度的计算
 		else
@@ -121,29 +118,41 @@ public class BasicCalculator implements IFrameCalculator
 			{
 				$bigSheetRect.height = addBorderPadding($frameRect.height, false);
 				newColumn($rectInSheet, $frameRect, $bigSheetRect);
+				$rectInSheet.height = $frameRect.height;
 			}
 			//如果这一列的高度已经放不下当前的位图，就进入新列
 			else if($rectInSheet.bottom + $frameRect.height > $bigSheetRect.height)
 			{
 				newColumn($rectInSheet, $frameRect, $bigSheetRect);
+				$rectInSheet.height = $frameRect.height;
 			}
 			//顺着往下放
 			else
 			{
-				//如果当前帧比Sheet还要宽，就增大Sheet的宽度
 				$rectInSheet.y += addSpritePadding($rectInSheet.height);
-				$bigSheetRect.height = $rectInSheet.bottom;
-				if($bigSheetRect.width<$rectInSheet.right)
-					$bigSheetRect.width = $rectInSheet.right;
+				$rectInSheet.height = $frameRect.height;
+				checkSheetThreshold($bigSheetRect, $rectInSheet);
+				
 			}
-			$rectInSheet.height = $frameRect.height;
 		}
+	}
+	
+	/**
+	 * 检测放置了当前frame之后，bigSheet的宽度和高度是否可以容纳它（们）
+	 * 若无法容纳，就增大bigSheet的宽高
+	 */
+	private function checkSheetThreshold($bigSheetRect:Rectangle, $rectInSheet:Rectangle):void
+	{
+		if($bigSheetRect.height<$rectInSheet.bottom)
+			$bigSheetRect.height = $rectInSheet.bottom;
+		if($bigSheetRect.width<$rectInSheet.right)
+			$bigSheetRect.width = $rectInSheet.right;
 	}
 	
 	/**
 	 * @inheritDoc
 	 */
-	public function calculateWhenUpdateDone($bigSheetRect:Rectangle):void
+	private function calculateWhenUpdateDone($bigSheetRect:Rectangle):void
 	{
 		//为bigSheet加入结束的borderPadding
 		$bigSheetRect.width = addBorderPadding($bigSheetRect.width, false);

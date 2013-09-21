@@ -1,8 +1,10 @@
 package utils
 {
+import flash.display.BitmapData;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
+import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
 import gnu.as3.gettext.FxGettext;
@@ -25,6 +27,7 @@ import view.panel.ProcessPanel;
 import view.widget.Alert;
 
 import vo.MetadataFileVO;
+import vo.PicPreferenceVO;
 
 public class Funs
 {
@@ -130,6 +133,31 @@ public class Funs
 			}
 		}
 		return null;
+	}
+	
+	public static function scaleBmdAndRect($picPref:PicPreferenceVO, $bmd:BitmapData, $rect:Rectangle, $originRect:Rectangle):Object
+	{
+		var __scaleBmd:BitmapData = new BitmapData(
+			$bmd.width*$picPref.scale, 
+			$bmd.height*$picPref.scale, 
+			$picPref.transparent, 
+			$picPref.bgColor);
+		var __matrix:Matrix = new Matrix();
+		__matrix.scale($picPref.scale, $picPref.scale);
+		__scaleBmd.draw($bmd, __matrix, null, null, null, $picPref.smooth);
+		return {
+			bmd:	__scaleBmd, 
+			rect:	new Rectangle(
+					$rect.x*$picPref.scale,
+					$rect.y*$picPref.scale,
+					$rect.width*$picPref.scale,
+					$rect.height*$picPref.scale ),
+			originRect:	new Rectangle(
+					$originRect.x*$picPref.scale,
+					$originRect.y*$picPref.scale,
+					$originRect.width*$picPref.scale,
+					$originRect.height*$picPref.scale )
+		};
 	}
 	
 	/**

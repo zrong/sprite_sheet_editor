@@ -47,6 +47,11 @@ public class DrawablePanel extends HGroup
 		return transControlBar.transformRect;
 	}
 	
+	public function getFrameName($frameNum:int):String
+	{
+		return"";
+	}
+	
 	/**
 	 * 获取一个偏移用的Matrix，子类覆盖
 	 */

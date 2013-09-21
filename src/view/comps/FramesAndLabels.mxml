@@ -96,9 +96,6 @@
 		</s:Button>
 	</s:HGroup>
 	<widget:FrameDataGrid id="frameInLabelDG" minHeight="150" includeIn="frameAndLabel" itemCreationPolicy="immediate"/>
-	
-	<!-- 用于改变高度的按钮 -->
-	<widget:VDividedButton id="dividedHeightBTN" mouseDown="handler_dividedHeightDown(event)"/>
 	<fx:Script>
 	<![CDATA[
 		import events.SSEvent;
@@ -258,33 +255,6 @@
 				__indics[i] = i;
 			}
 			frameDG.selectedIndices = __indics;
-		}
-		
-		protected function handler_dividedHeightDown($evt:MouseEvent):void
-		{
-			this.parent.addEventListener(MouseEvent.MOUSE_MOVE, handler_resizeHeight);
-			this.parent.addEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
-			this.parent.addEventListener(MouseEvent.RELEASE_OUTSIDE, handler_mouseUp);
-		}
-		
-		private function handler_resizeHeight($evt:MouseEvent):void
-		{
-//			trace('contentGrpoup:',this.contentGroup.height);
-//			trace(this.mouseY, _minHeight, this.height);
-			if(this.height< this.minHeight)
-			{
-				this.height = this.minHeight;
-				handler_mouseUp(null);
-				return;
-			}
-			this.height = this.mouseY+10;
-		}
-		
-		private function handler_mouseUp($evt:MouseEvent):void
-		{
-			this.parent.removeEventListener(MouseEvent.MOUSE_MOVE, handler_resizeHeight);
-			this.parent.removeEventListener(MouseEvent.MOUSE_UP, handler_mouseUp);
-			this.parent.removeEventListener(MouseEvent.RELEASE_OUTSIDE, handler_mouseUp);
 		}
 		
 		protected function handler_labelEnterState($evt:FlexEvent):void

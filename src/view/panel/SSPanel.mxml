@@ -7,11 +7,13 @@
 				   xmlns:s="library://ns.adobe.com/flex/spark" 
 				   xmlns:mx="library://ns.adobe.com/flex/mx"
 				   xmlns:comps="view.comps.*"
-				   xmlns:widget="view.widget.*" >
+				   xmlns:widget="view.widget.*" 
+				   creationComplete="handler_creationComp()">
 	<s:BorderContainer id="leftPanelBG" width="320" height="100%" borderColor="0x878787" backgroundAlpha="0" enabled="false">
 		<s:VGroup id="leftPanel" width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" horizontalAlign="center">
 			<widget:BuildSetting id="optPanel" width="100%" backgroundColor="0x696969" currentState="buildAndOpt" />
 			<comps:FramesAndLabels id="framesAndLabels" width="100%" backgroundColor="0x696969"/>
+			<widget:ListSizeChanger id="listChanger"/>
 		</s:VGroup>
 	</s:BorderContainer>
 	<s:VScrollBar height="100%" viewport="{leftPanel}"/>
@@ -28,10 +30,20 @@
 	<fx:Script>
 	<![CDATA[
 		import gnu.as3.gettext.FxGettext;
-		import interf.IPreview;
-		import vo.MetadataPreferenceVO;
 		
-		public function init($bmd:BitmapData):void
+		import interf.IPreview;
+		
+		import vo.MetadataPreferenceVO;
+		import vo.PicPreferenceVO;
+		
+		private var _initialHeight:int;
+		
+		private function handler_creationComp():void
+		{
+			listChanger.init(framesAndLabels);
+		}
+		
+		public function init($bmd:BitmapData, $preference:PicPreferenceVO):void
 		{
 			//从SpriteSheet中初始化Label和Frame
 			sheetPreview.source = $bmd;
@@ -39,6 +51,13 @@
 			//使用当前Sheet的宽高重置WH的相关值
 			optPanel.whDDL.selectedIndex = 0;
 			optPanel.whNS.value = $bmd.width;
+			if($preference)
+			{
+				//在Capture的时候的scale无论是什么，在进行优化的时候，都必须还原到1为基准
+				//因为优化的基准是针对于当前已经显示的位图的。而当前显示的原始位图（无论是否经过scale），基准就是1
+				$preference.scale = 1;
+				optPanel.preference = $preference;
+			}
 		}
 		
 		public function destroy():void

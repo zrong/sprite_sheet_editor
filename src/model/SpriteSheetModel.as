@@ -4,19 +4,21 @@ import flash.display.BitmapData;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
+import gnu.as3.gettext.FxGettext;
+
 import org.robotlegs.mvcs.Actor;
 import org.zengrong.display.spritesheet.MaskType;
 import org.zengrong.display.spritesheet.SpriteSheet;
 import org.zengrong.display.spritesheet.SpriteSheetMetadata;
 import org.zengrong.utils.BitmapUtil;
 
+import utils.Funs;
 import utils.calc.CalculatorType;
 import utils.calc.FrameCalculatorManager;
 import utils.calc.IFrameCalculator;
 
 import vo.OptimizedResultVO;
 import vo.PicPreferenceVO;
-import gnu.as3.gettext.FxGettext;
 
 /**
  * 暂存编辑过程中的位图资源
@@ -42,6 +44,8 @@ public class SpriteSheetModel extends Actor
 	public var selectedFrameIndices:Vector.<int>;
 	
 	public var playing:Boolean;
+	
+	public var picPreference:PicPreferenceVO;
 	
 	public function resetSheet($bmd:BitmapData=null, $meta:SpriteSheetMetadata=null):void
 	{
@@ -235,28 +239,10 @@ public class SpriteSheetModel extends Actor
 		{
 			for(var k:int=0;k<__bmds.length;k++)
 			{
-				var __oldBmd:BitmapData = __bmds[k];
-				var __scaleBmd:BitmapData = new BitmapData(
-					__oldBmd.width*$picPref.scale, 
-					__oldBmd.height*$picPref.scale, 
-					$picPref.transparent, 
-					$picPref.bgColor);
-				var __matrix:Matrix = new Matrix();
-				__matrix.scale($picPref.scale, $picPref.scale);
-				__scaleBmd.draw(__oldBmd, __matrix, null, null, null, $picPref.smooth);
-				__bmds[k] = __scaleBmd;
-				var __oldFrameRect:Rectangle = __frames[k];
-				__frames[k] = new Rectangle(
-					__oldFrameRect.x*$picPref.scale,
-					__oldFrameRect.y*$picPref.scale,
-					__oldFrameRect.width*$picPref.scale,
-					__oldFrameRect.height*$picPref.scale );
-				var __oldOriginRect:Rectangle = __origins[k];
-				__origins[k] = new Rectangle(
-					__oldOriginRect.x*$picPref.scale,
-					__oldOriginRect.y*$picPref.scale,
-					__oldOriginRect.width*$picPref.scale,
-					__oldOriginRect.height*$picPref.scale );
+				var __result:Object = Funs.scaleBmdAndRect($picPref, __bmds[k], __frames[k], __origins[k]);
+				__bmds[k] = __result.bmd;
+				__frames[k] = __result.rect;
+				__origins[k] = __result.originRect;
 			}
 		}
 		return new OptimizedResultVO(__bmds, __origins, __frames);

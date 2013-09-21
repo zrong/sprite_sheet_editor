@@ -10,32 +10,34 @@
 		  horizontalAlign="center"
 		  xmlns:panel="view.panel.*"
 		  xmlns:comps="view.comps.*"
-		  xmlns:widget="view.widget.*">
+		  xmlns:widget="view.widget.*"
+		  creationComplete="handler_creationComp()">
 	<s:BorderContainer width="320" height="100%"  borderColor="0x878787" backgroundAlpha="0">
-		<s:layout>
-			<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
-		</s:layout>
-		<s:BorderContainer width="100%" backgroundColor="0x696969" height="80">
-			<s:layout>
-				<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
-			</s:layout>
-			<s:Label fontWeight="bold">
-				<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
-			</s:Label>
-			<widget:TransformToolControlBar id="transControlBar">
-				<widget:label>{FxGettext.gettext("Custom size of the frame")}</widget:label>
-				<widget:useCustom>false</widget:useCustom>
-				<widget:layout>
-					<s:VerticalLayout horizontalAlign="center" />
-				</widget:layout>
-			</widget:TransformToolControlBar>
-		</s:BorderContainer>
-		<widget:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
-							enabled="{fileM.fileList.length&gt;0}"/>
-		<widget:FileManager id="fileM" width="100%" height="100%" 
-							selectionChange="handler_selectionChange(event)" 
-							selectionChanging="handler_selectionChanging(event)"/>
+		<s:VGroup id="leftPanel" width="100%" height="100%" horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+			<s:BorderContainer width="100%" backgroundColor="0x696969" height="80">
+				<s:layout>
+					<s:VerticalLayout horizontalAlign="center" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"/>
+				</s:layout>
+				<s:Label fontWeight="bold">
+					<s:text>{FxGettext.gettext("frame(x,y,w,h)")}</s:text>
+				</s:Label>
+				<widget:TransformToolControlBar id="transControlBar">
+					<widget:label>{FxGettext.gettext("Custom size of the frame")}</widget:label>
+					<widget:useCustom>false</widget:useCustom>
+					<widget:layout>
+						<s:VerticalLayout horizontalAlign="center" />
+					</widget:layout>
+				</widget:TransformToolControlBar>
+			</s:BorderContainer>
+			<widget:BuildSetting id="buildSetting" width="100%" backgroundColor="0x696969"
+								 enabled="{fileM.fileList.length&gt;0}"/>
+			<widget:FileManager id="fileM" width="100%" height="100%" 
+								selectionChange="handler_selectionChange(event)" 
+								selectionChanging="handler_selectionChanging(event)"/>
+			<widget:ListSizeChanger id="listChanger"/>
+		</s:VGroup>
 	</s:BorderContainer>
+	<s:VScrollBar id="vs" height="100%" viewport="{leftPanel}"/>
 	<widget:ImagePreview id="preview" width="100%" height="100%" borderColor="0x878787" backgroundAlpha="0">
 		<widget:transformControlBar>{transControlBar}</widget:transformControlBar>
 		<widget:maxSizeLimit>viewer</widget:maxSizeLimit>
@@ -50,6 +52,8 @@
 		import org.zengrong.utils.Vec2D;
 		
 		import vo.PicPreferenceVO;
+		
+		
 		
 		//----------------------------------------
 		// getter/setter
@@ -111,7 +115,7 @@
 		/**
 		 * 根据帧索引获取帧的名称，帧的名称为图像文件名去掉扩展名
 		 */
-		public function getFrameName($frameNum:int):String
+		override public function getFrameName($frameNum:int):String
 		{
 			if(fileM.fileList.length>0)
 			{
@@ -155,6 +159,11 @@
 			{
 				preview.viewer.source = null;
 			}
+		}
+		
+		private function handler_creationComp():void
+		{
+			listChanger.init(fileM);
 		}
 	]]>
 	</fx:Script>

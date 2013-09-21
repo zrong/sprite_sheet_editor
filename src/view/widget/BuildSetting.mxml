@@ -85,7 +85,7 @@
 			<mx:ColorPicker id="bgColorPicker" enabled="{!transparentCB.selected}"/>
 		</s:HGroup>
 	</s:VGroup>
-	<s:VGroup includeIn="buildAndOpt" width="100%">
+	<s:VGroup width="100%">
 		<s:HGroup width="100%" gap="5" verticalAlign="middle">
 			<s:Label width="50%" textAlign="right">
 				<s:text>{FxGettext.gettext("Trim blank")}</s:text>

@@ -29,6 +29,12 @@ public class FrameCalculatorManager
 				__cal = new BasicCalculator();
 				_calculators[$type] = __cal;
 			}
+			else if($type == CalculatorType.MAX_RECTS)
+			{
+				__cal = new MaxRectsCalculator();
+				_calculators[$type] = __cal;
+			}
+				
 		}
 		return __cal;
 	}
